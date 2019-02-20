@@ -1,4 +1,4 @@
-OpenSauce is an online party game inspired by [PopSauce](http://popsauce.sparklinlabs.com/) implementing categories.
+OpenSauce is an online party game inspired by [PopSauce](http://popsauce.sparklinlabs.com/) implementing categories and that is not meant to crash.
   <p>
     <a href="https://github.com/HE-Arc/OpenSauce/blob/master/res/logo.png">
       <img src="https://github.com/HE-Arc/OpenSauce/blob/master/res/logo.png" width=500>
