@@ -1,4 +1,8 @@
 # Open Sauce
 <center>
-![https://github.com/HE-Arc/OpenSauce/blob/master/res/logo.png](https://github.com/HE-Arc/OpenSauce/blob/master/res/logo.png)
-</center>
+  <p>
+    <a href="https://github.com/HE-Arc/OpenSauce/blob/master/res/logo.png">
+      <img src="https://github.com/HE-Arc/OpenSauce/blob/master/res/logo.png" width=500>
+    </a>
+  </p>
+ <center>
