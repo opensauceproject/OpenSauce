@@ -1,4 +1,5 @@
 from django.db import models
+<<<<<<< HEAD
 from django.db.models.signals import post_save, post_delete
 
 class BaseModel(models.Model):
@@ -13,3 +14,7 @@ class BaseModel(models.Model):
         description=models.TextField()
         def __str__(self):
             return self.name
+=======
+
+# Create your models here.
+>>>>>>> aa36622bbdb160f9e21396d24fbb66626ff08ef1
