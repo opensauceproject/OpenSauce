@@ -51,10 +51,15 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'opensauceproject.urls'
 
+
+Temp_Path = os.path.realpath('.')
+#TEMPLATE_DIRS = (
+#    Temp_Path +"../opensauceapp/templates",
+#)
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ["opensauceapp/templates"],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -67,10 +72,7 @@ TEMPLATES = [
     },
 ]
 
-Temp_Path = os.path.realpath('.')
-TEMPLATE_DIRS = (
-    Temp_Path +"/templates",
-)
+
 
 WSGI_APPLICATION = 'opensauceproject.wsgi.application'
 
