@@ -67,6 +67,12 @@ TEMPLATES = [
     },
 ]
 
+import os.path
+Temp_Path = os.path.realpath('.')
+TEMPLATE_DIRS = (
+    Temp_Path +"/templates",
+)
+
 WSGI_APPLICATION = 'OpenSauce.wsgi.application'
 
 
