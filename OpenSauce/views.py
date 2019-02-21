@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.views import generic, View
@@ -52,3 +53,8 @@ class SoldierDeleteView(generic.DeleteView):
     model = Soldier
     success_url = reverse_lazy('dashboard-soldiers')
 '''
+=======
+from django.shortcuts import render
+
+# Create your views here.
+>>>>>>> aa36622bbdb160f9e21396d24fbb66626ff08ef1
