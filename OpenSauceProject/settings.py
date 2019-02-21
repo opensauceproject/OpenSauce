@@ -67,17 +67,12 @@ TEMPLATES = [
     },
 ]
 
-<<<<<<< HEAD:OpenSauce/settings.py
-import os.path
 Temp_Path = os.path.realpath('.')
 TEMPLATE_DIRS = (
     Temp_Path +"/templates",
 )
 
-WSGI_APPLICATION = 'OpenSauce.wsgi.application'
-=======
 WSGI_APPLICATION = 'OpenSauceProject.wsgi.application'
->>>>>>> aa36622bbdb160f9e21396d24fbb66626ff08ef1:OpenSauceProject/settings.py
 
 
 # Database
