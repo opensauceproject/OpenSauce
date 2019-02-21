@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'opensauceapp',
     'bootstrap4',
+    'channels',
 ]
 
 MIDDLEWARE = [
@@ -77,6 +78,17 @@ TEMPLATES = [
 
 
 WSGI_APPLICATION = 'opensauceproject.wsgi.application'
+
+# Redis
+ASGI_APPLICATION = "opensauceproject.routing.application"
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],
+        },
+    },
+}
 
 
 # Database

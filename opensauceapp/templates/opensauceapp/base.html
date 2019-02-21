@@ -1,13 +1,16 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
-  <head>
+
+<head>
     <meta charset="utf-8">
     {% load bootstrap4 %}
     {% bootstrap_css %}
     {% bootstrap_javascript jquery='full' %}
-    <title>{% block title %}{% endblock %}</title>
-  </head>
-  <body>
+    <title>OpenSauce - {% block title %}{% endblock %}</title>
+</head>
+
+<body>
     {% block content %}{% endblock %}
-  </body>
+</body>
+
 </html>

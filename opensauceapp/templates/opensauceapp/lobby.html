@@ -1,0 +1,62 @@
+{% extends 'opensauceapp/base.html' %}
+{% block title %}Lobby {% endblock %}
+
+{% block content %}
+<div class="container">
+    <div id='currentData' style='background-color:red; width:800px; height:500px;'></div>
+    <input id='joinButton' type='button' value='Rejoindre'>
+    <input id='leaveButton' type='button' value='Quitter' hidden>
+    <input id='submitAnswer' type='text' hidden>
+</div>
+<script>
+    let lobby_name = {{ lobby_name_json }};
+    let chatSocket = new WebSocket('ws://' + window.location.host + '/ws/lobby/' + lobby_name + '/');
+
+    let submitAnswer = document.getElementById("submitAnswer");
+    let joinButton = document.getElementById("joinButton");
+    let leaveButton = document.getElementById("leaveButton");
+
+    joinButton.addEventListener("click", join);
+
+    chatSocket.onmessage = function(e) {
+        console.log(e);
+        let data = JSON.parse(e.data);
+    };
+
+    chatSocket.onclose = function(e) {
+        console.error('Lobby socket closed unexpectedly');
+    };
+
+    submitAnswer.focus();
+    submitAnswer.onkeydown = function(e) {
+        if (e.keyCode === 13) {
+            let message = e.srcElement.value;
+            sendAnswer(message);
+        }
+    };
+
+    function sendAnswer(answer)
+    {
+        chatSocket.send(JSON.stringify({
+            'answer': answer
+        }));
+    }
+
+    function join(e)
+    {
+        updateUiControls(true);
+    }
+
+    function leave(e)
+    {
+        updateUiControls(false);
+    }
+
+    function updateUiControls(isPlaying)
+    {
+        submitAnswer.hidden = !isPlaying;
+        joinButton.hidden = isPlaying;
+        leaveButton.hidden = !isPlaying;
+    }
+</script>
+{% endblock %}
