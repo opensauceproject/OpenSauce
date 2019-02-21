@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from django.views import generic, View
 from django.urls import reverse_lazy
 
-from .models import BaseModel
+from .models import Sauce, Category
 
 # Create your views here.
 def index(request):

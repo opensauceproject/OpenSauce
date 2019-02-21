@@ -37,6 +37,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'opensauceapp',
+    'bootstrap4', # TODO-0-0 Install django-bootstrap4 via pip and add package to INSTALLED_APPS (bootstrap4)
+    'rest_framework',# TODO-ADV-1-0 Install djangorestframework via pip and add package to INSTALLED_APPS (rest_framework)
 ]
 
 MIDDLEWARE = [

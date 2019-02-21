@@ -1,27 +1,11 @@
-<html>
+{% extends 'opensauceapp/base.html' %}
+{% block title %}OpenSauce{% endblock %}
 
-<head>
-  <title>Resistance django</title>
-</head>
-
-<body style="background-image:url('https://media.giphy.com/media/TZf4ZyXb0lXXi/giphy.gif'); background-size:cover;">
-  <div class="d-flex align-items-center h-100">
-    <div class="container text-white">
-      <div class="row">
-        <div class="col-md-6">
-          <img width="100" src="https://vignette.wikia.nocookie.net/swfanon/images/9/90/Resistance_logo.png/revision/latest?cb=20160903194719" alt="resistance logo" >
-          <h1 class="display-1">Hey there!</h1>
-          <p class="lead">
-            The resistance needs you! A spy informed us that the Empire
-            developed a web app with rails to manage their troops.
-          </p>
-          <p class="lead">
-            <strong>We want to fight back with a django app to manage our soldiers and troops too. Please help us! Quick!</strong>
-          </p>
-          <a href="https://github.com/HE-Arc/demo-django-resistance-app/wiki/The-steps" target="_blank" class="btn btn-warning">Ok... I'll help</a>
-        </div>
+{% block content %}
+<div class="container">
+  <div class="starter-template">
+        <h1>Hello World</h1>
+        <p class="lead">A paragraph.</p>
       </div>
-    </div>
-  </div>
-</body>
-</html>
+</div>
+{% endblock %}
