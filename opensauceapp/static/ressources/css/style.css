@@ -1,0 +1,42 @@
+@font-face {font-family: "DTLProkyonST";
+    src: url("//db.onlinewebfonts.com/t/d0374bf16da70eff39d6f085935f8882.eot");
+    src: url("//db.onlinewebfonts.com/t/d0374bf16da70eff39d6f085935f8882.eot?#iefix") format("embedded-opentype"),
+    url("//db.onlinewebfonts.com/t/d0374bf16da70eff39d6f085935f8882.woff2") format("woff2"),
+    url("//db.onlinewebfonts.com/t/d0374bf16da70eff39d6f085935f8882.woff") format("woff"),
+    url("//db.onlinewebfonts.com/t/d0374bf16da70eff39d6f085935f8882.ttf") format("truetype"),
+    url("//db.onlinewebfonts.com/t/d0374bf16da70eff39d6f085935f8882.svg#DTLProkyonST") format("svg");
+}
+
+.opensaucetitle {
+    font-family: 'DTLProkyonST';
+    font-size: 100px;
+    font-weight: bold;
+}
+
+.opensauce {
+    font-family: 'DTLProkyonST';
+}
+
+.custom_number{
+  text-align: center;
+  width: 100%;
+  margin-bottom: 0;
+  padding-top: 0.375rem;
+  padding-right: 1.75rem;
+  padding-bottom: 0.375rem;
+  padding-left: 0.75rem;
+  line-height: 1.5;
+  color: #495057;
+  vertical-align: middle;
+  border-radius: .25rem;
+  border-style:solid;
+  border-width: .1rem;
+  border-top-left-radius: 0.25rem;
+  border-top-right-radius: 0.25rem;
+  border-bottom-right-radius: 0.25rem;
+  border-bottom-left-radius: 0.25rem;
+}
+
+body {
+  background-color: #FFFFFF;
+}

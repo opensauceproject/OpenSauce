@@ -1,11 +1,29 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
   <head>
+    <title>{% block title %}{% endblock %}</title>
     <meta charset="utf-8">
+
+    <!-- bootstrap -->
     {% load bootstrap4 %}
     {% bootstrap_css %}
     {% bootstrap_javascript jquery='full' %}
-    <title>{% block title %}{% endblock %}</title>
+
+    <!-- jquery -->
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js">
+    <!-- jquery UI -->
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+    <!-- custom scripts -->
+    <script src="{% static 'ressources/js/script.js' %}" charset="utf-8"></script>
+
+    <!-- custom stylesheets -->
+    <link rel="stylesheet" type="text/css" href="{% static 'ressources/css/style.css' %}">
+
+
   </head>
   <body>
     {% block content %}{% endblock %}
