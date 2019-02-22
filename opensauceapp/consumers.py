@@ -19,11 +19,8 @@ class OpenSauceConsumer(AsyncWebsocketConsumer):
         )
 
         await self.accept()
-
-        await self.send(text_data=json.dumps({
-            "type": "hello",
-            "message": "test"
-        }))
+        # Send the gamestate on load
+        await self.update_game_state(None)
 
     async def disconnect(self, close_code):
         # Leave lobby group
@@ -31,6 +28,11 @@ class OpenSauceConsumer(AsyncWebsocketConsumer):
             self.lobby_group_name,
             self.channel_name
         )
+        secKey = str(dict(self.scope["headers"])[b'sec-websocket-key'])[2:-1]
+        lobby = Game.getInstance().getLobby(self.lobby_name)
+        lobby.removePlayer(secKey)
+
+        print(Game.getInstance())
 
     # Receive message from WebSocket
     async def receive(self, text_data):
@@ -56,6 +58,7 @@ class OpenSauceConsumer(AsyncWebsocketConsumer):
             shouldInformOthers = True
         elif type == "submit":
             lobby.submit(secKey, data["answer"])
+            shouldInformOthers = True
 
         print(Game.getInstance())
 
@@ -64,15 +67,13 @@ class OpenSauceConsumer(AsyncWebsocketConsumer):
             await self.channel_layer.group_send(
                 self.lobby_group_name,
                 {
-                    "type": "update_game_state",
-                    "message": "asasd"
+                    "type": "update_game_state"
                 }
             )
 
     async def update_game_state(self, event):
-        message = event["message"]
-
-        # Send message to WebSocket
+        lobby = Game.getInstance().getLobby(self.lobby_name)
         await self.send(text_data=json.dumps({
-            "message": message
+            "type": "game_state",
+            "state": lobby.getStatus()
         }))

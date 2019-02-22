@@ -2,16 +2,31 @@
 {% block title %}Lobby {% endblock %}
 
 {% block content %}
-<div class="container">
-	<div id="currentData" style="background-color:red; width:800px; height:500px;"></div>
-	<input id="joinButton" type="button" value="Rejoindre">
-	<input id="pseudoField" type="text" placeholder="Pseudo">
-	<input id="leaveButton" type="button" value="Quitter" hidden>
-	<input id="submitAnswer" type="text" hidden>
+<style>
+#game {
+}
+#scoreBoard {
+
+}
+</style>
+
+<div id="game">
+
 </div>
+<div id="scoreBoard-container">
+    <ul id="scoreBoard">
+    </ul>
+</div>
+<input id="joinButton" type="button" value="Rejoindre">
+<input id="pseudoField" type="text" placeholder="Pseudo">
+<input id="leaveButton" type="button" value="Quitter" hidden>
+<input id="submitAnswer" type="text" hidden>
+
 <script>
 	let lobbyName = {{lobby_name_json}};
 	let lobbySocket = new WebSocket("ws://" + window.location.host + "/ws/lobby/" + lobbyName + "/");
+
+	let scoreBoard = document.getElementById("scoreBoard");
 
 	let submitAnswer = document.getElementById("submitAnswer");
 	let joinButton = document.getElementById("joinButton");
@@ -22,7 +37,11 @@
 
 	lobbySocket.onmessage = function(e) {
 		let data = JSON.parse(e.data);
-		console.log(data);
+        console.log(data);
+        if(data.type == "game_state")
+        {
+            updateScoreBoard(data.state);
+        }
 	};
 
 	lobbySocket.onclose = function(e) {
@@ -30,13 +49,13 @@
 	};
 
 	submitAnswer.focus();
-	submitAnswer.onkeydown = function(e) {
+	submitAnswer.addEventListener("keydown", function(e) {
         let message = e.srcElement.value;
 		if (e.keyCode === 13 && message.length > 0) {
 			sendAnswer(message);
             e.srcElement.value = "";
 		}
-	};
+	});
 
 	function sendAnswer(answer) {
 		lobbySocket.send(JSON.stringify({
@@ -66,5 +85,19 @@
 		leaveButton.hidden = !isPlaying;
         submitAnswer.hidden = !isPlaying;
 	}
+
+    function updateScoreBoard(data) {
+        scoreBoard.innerHTML = '';
+        for(let i = 0; i < data["players"].length; i++)
+        {
+            let player = data["players"][i];
+            let playerLi = document.createElement("li");
+            console.log(player);
+            playerLi.innerHTML = player["name"];
+            playerLi.innerHTML += " : ";
+            playerLi.innerHTML += player.score;
+            scoreBoard.appendChild(playerLi)
+        }
+    }
 </script>
 {% endblock %}

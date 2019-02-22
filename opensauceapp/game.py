@@ -1,5 +1,4 @@
 class Game:
-
     # Singleton
     instance = None
 
@@ -51,13 +50,21 @@ class Lobby:
             Game.getInstance().removeLobby(self.name)
 
     def submit(self, secKey, answer):
-        print(answer)
+        self.players[secKey].score += 1;
 
     def __str__(self):
         s = "--" + self.name + "\n"
         for name, player in self.players.items():
             s += "---- " + str(name) + " : " + str(player) + "\n"
         return s
+
+    def getStatus(self):
+        status = {}
+        status["name"] = self.name
+        status["players"] = []
+        for player in self.players.values():
+            status["players"].append(player.getStatus())
+        return status
 
 
 class Player:
@@ -67,3 +74,9 @@ class Player:
 
     def __str__(self):
         return self.name + " " + str(self.score)
+
+    def getStatus(self):
+        status = {}
+        status["name"] = self.name
+        status["score"] = self.score
+        return status
