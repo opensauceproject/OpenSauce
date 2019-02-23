@@ -1,11 +1,45 @@
 {% extends 'opensauceapp/base.html' %}
 {% block title %}{% endblock %}
 
+{% load static %}
+
 {% block content %}
 <div class="container">
-    <div class="starter-template">
-        <h1>Hello World</h1>
-        <p class="lead">A paragraph.</p>
+  <center>
+    <p class="opensaucetitle">
+      OpenSauce
+    </p>
+  </center>
+  <hr>
+  <div>
+    <p class="h2 opensauce">
+      Liste des salons publiques
+    </p>
+  </div>
+  <br><br><br><br><br><br><br><br><br><br><br>
+  <div>
+    <p class="h2 opensauce">
+      Création de salon
+    </p>
+  </div>
+  <div>
+    <form>
+    <div class="form-group">
+      <label for="inputLobbyName">Nom du salon</label>
+      <input type="text" class="form-control" id="inputLobbyName" aria-describedby="lobbyNameHelp" placeholder="SalonSympa">
+      <!--<small id="lobbyNameHelp" class="form-text text-muted">Le nom de votre salon</small>-->
     </div>
+    <div class="form-group">
+      <label for="inputMaxPlayers">Nombre de joueurs maximum</label>
+      <input type=text id="spinner" placeholder="50"/>
+      <input type="password" class="form-control" id="inputMaxPlayers" placeholder="Password">
+    </div>
+    <div class="form-group form-check">
+      <input type="checkbox" class="form-check-input" id="exampleCheck1">
+      <label class="form-check-label" for="exampleCheck1">Check me out</label>
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+  </form>
+  </div>
 </div>
 {% endblock %}
