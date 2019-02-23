@@ -1,3 +1,6 @@
+import random
+import datetime
+
 class Game:
     # Singleton
     instance = None
@@ -32,13 +35,35 @@ class Game:
 
 
 class Lobby:
+
+    sauces = [("q1", "a1"), ("q2", "a2"), ("q3", "a3")]
+
+    timeAvailableToAnswer = datetime.timedelta(seconds=15)
+
+    # the last is repeated for all the next players
+    pointsRepartition = [5, 3, 2, 1]
+
     def __init__(self, name):
         self.name = name
         self.players = {}
         self.settings = {}
+        self.currentSauce = None
+        self.questionDateTimeEnd = None
+        self.currentPointsIndex = None
+        self.nextRound()
 
     def count(self):
         return len(self.players)
+
+    def getAndSetCurrentPointsIndex(self):
+        index = self.currentPointsIndex
+        lenPointsRepartitionMinusOne = len(Lobby.pointsRepartition) - 1
+        if self.currentPointsIndex >= lenPointsRepartitionMinusOne:
+            index = lenPointsRepartitionMinusOne
+
+        self.currentPointsIndex += 1
+
+        return Lobby.pointsRepartition[index]
 
     def addPlayer(self, secKey, playerName):
         self.players[secKey] = Player(playerName)
@@ -50,7 +75,44 @@ class Lobby:
             Game.getInstance().removeLobby(self.name)
 
     def submit(self, secKey, answer):
-        self.players[secKey].score += 1;
+        player = self.players[secKey]
+        if not player.canEarnPoints():
+            return False
+
+        if answer == self.currentSauce[1]:
+            player.addPointsRound(self.getAndSetCurrentPointsIndex())
+            self.changeRoundIfShould()
+            return True # true : tell other players that his score has been updated
+
+        return False
+
+    def changeRoundIfShould(self):
+        # if a player can earn points the round is still active
+        for player in self.players.values():
+            if player.canEarnPoints():
+                return False
+
+        self.nextRound()
+        return True
+
+    def nextRound(self):
+        self.resetPlayers()
+        self.pickRandomNewSauce()
+        self.setNewDateTimeEnd()
+        self.resetPointsIndex()
+
+    def resetPointsIndex(self):
+        self.currentPointsIndex = 0
+
+    def setNewDateTimeEnd(self):
+        self.questionDateTimeEnd = datetime.datetime.now() + Lobby.timeAvailableToAnswer
+
+    def pickRandomNewSauce(self):
+        self.currentSauce = random.choice(Lobby.sauces)
+
+    def resetPlayers(self):
+        for player in self.players.values():
+            player.resetRound()
 
     def __str__(self):
         s = "--" + self.name + "\n"
@@ -61,9 +123,13 @@ class Lobby:
     def getStatus(self):
         status = {}
         status["name"] = self.name
-        status["players"] = []
+        players = []
         for player in self.players.values():
-            status["players"].append(player.getStatus())
+            players.append(player.getStatus())
+        # sorted by score
+        status["players"] = list(sorted(players,  key=lambda x: -x["score"]))
+        status["currentQuestion"] = self.currentSauce[0]
+        status["questionDateTimeEnd"] = self.questionDateTimeEnd.isoformat()
         return status
 
 
@@ -71,6 +137,20 @@ class Player:
     def __init__(self, name):
         self.name = name
         self.score = 0
+        # -1 : not found yet
+        self.pointsThisRound = None
+        self.resetRound()
+
+    def canEarnPoints(self):
+        return self.pointsThisRound < 0
+
+    def resetRound(self):
+        self.pointsThisRound = -1
+
+    def addPointsRound(self, points):
+        if self.canEarnPoints():
+            self.pointsThisRound = points
+            self.score += points
 
     def __str__(self):
         return self.name + " " + str(self.score)
@@ -79,4 +159,5 @@ class Player:
         status = {}
         status["name"] = self.name
         status["score"] = self.score
+        status["pointsThisRound"] = self.pointsThisRound
         return status

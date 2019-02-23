@@ -3,19 +3,18 @@
 
 {% block content %}
 <style>
-#game {
-}
-#scoreBoard {
 
-}
 </style>
 
-<div id="game">
+<div id="currentQuestion">
 
 </div>
 <div id="scoreBoard-container">
     <ul id="scoreBoard">
     </ul>
+</div>
+<div id="timeRemaining">
+
 </div>
 <input id="joinButton" type="button" value="Rejoindre">
 <input id="pseudoField" type="text" placeholder="Pseudo">
@@ -24,9 +23,12 @@
 
 <script>
 	let lobbyName = {{lobby_name_json}};
+    let currentTimeEnd;
+
 	let lobbySocket = new WebSocket("ws://" + window.location.host + "/ws/lobby/" + lobbyName + "/");
 
 	let scoreBoard = document.getElementById("scoreBoard");
+	let currentQuestion = document.getElementById("currentQuestion");
 
 	let submitAnswer = document.getElementById("submitAnswer");
 	let joinButton = document.getElementById("joinButton");
@@ -40,7 +42,7 @@
         console.log(data);
         if(data.type == "game_state")
         {
-            updateScoreBoard(data.state);
+            updateGameStatus(data.state);
         }
 	};
 
@@ -86,16 +88,29 @@
         submitAnswer.hidden = !isPlaying;
 	}
 
-    function updateScoreBoard(data) {
+    function updateGameStatus(data) {
+        updateScoreBoard(data["players"]);
+        updateTimeEnd(data["questionDateTimeEnd"]);
+        updateQuestion(data["currentQuestion"]);
+    }
+
+    function updateTimeEnd(timeEnd)
+    {
+        currentTimeEnd = Date.parse(timeEnd);
+    }
+
+    function updateQuestion(question)
+    {
+        currentQuestion.innerHTML = question;
+    }
+
+    function updateScoreBoard(players) {
         scoreBoard.innerHTML = '';
-        for(let i = 0; i < data["players"].length; i++)
+        for(let i = 0; i < players.length; i++)
         {
-            let player = data["players"][i];
+            let player = players[i];
             let playerLi = document.createElement("li");
-            console.log(player);
-            playerLi.innerHTML = player["name"];
-            playerLi.innerHTML += " : ";
-            playerLi.innerHTML += player.score;
+            playerLi.innerHTML = player["name"] + " : " + player.score + " (" + player.pointsThisRound + ")";
             scoreBoard.appendChild(playerLi)
         }
     }

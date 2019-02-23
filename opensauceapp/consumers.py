@@ -57,8 +57,7 @@ class OpenSauceConsumer(AsyncWebsocketConsumer):
             lobby.removePlayer(secKey)
             shouldInformOthers = True
         elif type == "submit":
-            lobby.submit(secKey, data["answer"])
-            shouldInformOthers = True
+            shouldInformOthers = lobby.submit(secKey, data["answer"])
 
         print(Game.getInstance())
 
