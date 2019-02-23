@@ -1,7 +1,9 @@
 from channels.generic.websocket import AsyncWebsocketConsumer
+from django.utils.html import escape
 import json
 
 from .game import *
+
 
 class OpenSauceConsumer(AsyncWebsocketConsumer):
 
@@ -13,10 +15,7 @@ class OpenSauceConsumer(AsyncWebsocketConsumer):
         self.lobby_group_name = "lobby_%s" % self.lobby_name
 
         # Join lobby group
-        await self.channel_layer.group_add(
-            self.lobby_group_name,
-            self.channel_name
-        )
+        await self.channel_layer.group_add(self.lobby_group_name, self.channel_name)
 
         await self.accept()
         # Send the gamestate on load
@@ -24,10 +23,7 @@ class OpenSauceConsumer(AsyncWebsocketConsumer):
 
     async def disconnect(self, close_code):
         # Leave lobby group
-        await self.channel_layer.group_discard(
-            self.lobby_group_name,
-            self.channel_name
-        )
+        await self.channel_layer.group_discard(self.lobby_group_name, self.channel_name)
         secKey = str(dict(self.scope["headers"])[b'sec-websocket-key'])[2:-1]
         lobby = Game.getInstance().getLobby(self.lobby_name)
         lobby.removePlayer(secKey)
@@ -51,7 +47,7 @@ class OpenSauceConsumer(AsyncWebsocketConsumer):
 
         # Evaluate the message
         if type == "join":
-            lobby.addPlayer(secKey, data["pseudo"])
+            lobby.addPlayer(secKey, escape(data["pseudo"]))
             shouldInformOthers = True
         elif type == "leave":
             lobby.removePlayer(secKey)
@@ -63,16 +59,8 @@ class OpenSauceConsumer(AsyncWebsocketConsumer):
 
         # Inform the other player if needed
         if shouldInformOthers:
-            await self.channel_layer.group_send(
-                self.lobby_group_name,
-                {
-                    "type": "update_game_state"
-                }
-            )
+            await self.channel_layer.group_send(self.lobby_group_name,{"type": "update_game_state"})
 
     async def update_game_state(self, event):
         lobby = Game.getInstance().getLobby(self.lobby_name)
-        await self.send(text_data=json.dumps({
-            "type": "game_state",
-            "state": lobby.getStatus()
-        }))
+        await self.send(text_data=json.dumps({"type": "game_state","state": lobby.getStatus()}))

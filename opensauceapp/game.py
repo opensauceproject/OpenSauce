@@ -36,7 +36,7 @@ class Game:
 
 class Lobby:
 
-    sauces = [("q1", "a1"), ("q2", "a2"), ("q3", "a3")]
+    sauces = [("q1", "1"), ("q2", "2"), ("q3", "3")]
 
     timeAvailableToAnswer = datetime.timedelta(seconds=15)
 
@@ -69,7 +69,8 @@ class Lobby:
         self.players[secKey] = Player(playerName)
 
     def removePlayer(self, secKey):
-        del self.players[secKey]
+        if secKey in self.players:
+            del self.players[secKey]
         # if the last player is remove the lobby is also removed
         if self.count() <= 0:
             Game.getInstance().removeLobby(self.name)

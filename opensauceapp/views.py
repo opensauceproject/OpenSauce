@@ -12,4 +12,4 @@ def index(request):
     return render(request, 'opensauceapp/index.html', context)
 
 def lobby(request, lobby_name):
-    return render(request, 'opensauceapp/lobby.html', {'lobby_name_json': mark_safe(json.dumps(lobby_name))})
+    return render(request, 'opensauceapp/lobby.html', {'lobby_name': lobby_name, 'lobby_name_json' : json.dumps(lobby_name)})

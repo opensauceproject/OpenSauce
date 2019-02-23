@@ -3,59 +3,137 @@
 
 {% block content %}
 <style>
+	html, body {
+        width:100%;
+        height:100%;
+    }
+    #leftContainer {
+        float:left;
+        width: 70%;
+        height: 100%;
+        margin:0;
+    }
+    #rightContainer {
+        float:right;
+        width: 30%;
+        height: 100%;
+        margin:0;
+    }
+    #header {
 
+    }
+
+    #currentQuestion {
+        height: 80%;
+        text-align: center;
+        vertical-align: middle;
+        line-height: 80%;
+        font-size: 50px;
+    }
+
+    #submitAnswer {
+        width: 100%;
+        margin: 20px;
+    }
+
+    #scoreBoard, #historyTable {
+        width:100%;
+    }
 </style>
+<div id="leftContainer">
+	<div id="header">
+		<div id="lobbyName">
+			{% autoescape on %}
+			{{lobby_name}}
+			{% endautoescape %}
+		</div>
+	</div>
 
-<div id="currentQuestion">
+	<div id="category">
 
-</div>
-<div id="scoreBoard-container">
-    <ul id="scoreBoard">
-    </ul>
-</div>
-<div id="timeRemaining">
+	</div>
+	<div id="timeRemaining">
 
+	</div>
+	<div id="currentQuestion">
+
+	</div>
+
+	<input id="submitAnswer" type="text" hidden>
 </div>
-<input id="joinButton" type="button" value="Rejoindre">
-<input id="pseudoField" type="text" placeholder="Pseudo">
-<input id="leaveButton" type="button" value="Quitter" hidden>
-<input id="submitAnswer" type="text" hidden>
+<div id="rightContainer">
+    <span id="whenDisconnected">
+        Nom : <input id="pseudoField" type="text" placeholder="john">
+    	<input id="joinButton" type="button" value="Rejoindre">
+    </span>
+    <span id="whenConnected" hidden>
+        Connecté en tant que : <span id="currentPseudo"></span>
+    	<input id="leaveButton" type="button" value="Quitter">
+    </span>
+	<div id="scoreBoard-container">
+		<h3>Classement</h3>
+		<table id="scoreBoard">
+		</table>
+	</div>
+	<div id="history-container">
+		<h3>Historique</h3>
+		<table id="historyTable">
+		</table>
+	</div>
+</div>
 
 <script>
-	let lobbyName = {{lobby_name_json}};
-    let currentTimeEnd;
+	let lobbyName = "{{lobby_name}}";
+    let history = [];
+	let currentTimeEnd;
 
-	let lobbySocket = new WebSocket("ws://" + window.location.host + "/ws/lobby/" + lobbyName + "/");
+	let lobbySocket = new WebSocket("ws://" + window.location.host + "/lobby/" + lobbyName + "/");
 
+    //Game
 	let scoreBoard = document.getElementById("scoreBoard");
+	let historyTable = document.getElementById("historyTable");
 	let currentQuestion = document.getElementById("currentQuestion");
 
-	let submitAnswer = document.getElementById("submitAnswer");
-	let joinButton = document.getElementById("joinButton");
-	let leaveButton = document.getElementById("leaveButton");
+    let submitAnswer = document.getElementById("submitAnswer");
 
-	joinButton.addEventListener("click", join);
+    // Login
+	let whenConnected = document.getElementById("whenConnected");
+	let currentPseudo = document.getElementById("currentPseudo");
+    let leaveButton = document.getElementById("leaveButton");
+
+	let whenDisconnected = document.getElementById("whenDisconnected");
+    let pseudoField = document.getElementById("pseudoField");
+	let joinButton = document.getElementById("joinButton");
+
 	leaveButton.addEventListener("click", leave);
+
+    joinButton.addEventListener("click", tryToJoin);
+    pseudoField.addEventListener("keydown", function(e) {if(e.keyCode === 13) tryToJoin();});
+
+	pseudoField.focus();
+
+    initScoreboard();
+    initHistoryTable();
+	updateLoginControls(false);
 
 	lobbySocket.onmessage = function(e) {
 		let data = JSON.parse(e.data);
-        console.log(data);
-        if(data.type == "game_state")
-        {
-            updateGameStatus(data.state);
-        }
+		console.log(data);
+		if (data.type == "game_state") {
+			updateGameStatus(data.state);
+		}
 	};
 
 	lobbySocket.onclose = function(e) {
 		console.error("Lobby socket closed unexpectedly");
 	};
 
-	submitAnswer.focus();
+
 	submitAnswer.addEventListener("keydown", function(e) {
-        let message = e.srcElement.value;
+		let message = e.srcElement.value;
 		if (e.keyCode === 13 && message.length > 0) {
 			sendAnswer(message);
-            e.srcElement.value = "";
+			e.srcElement.value = "";
 		}
 	});
 
@@ -66,53 +144,81 @@
 		}));
 	}
 
-	function join() {
-		updateUiControls(true);
-		lobbySocket.send(JSON.stringify({
-			"type": "join",
-			"pseudo": pseudoField.value
-		}));
+    function tryToJoin(e){
+        let pseudo = pseudoField.value;
+		if (pseudo.length > 0) {
+			join(pseudo);
+		}
+    }
+
+	function join(pseudo) {
+		updateLoginControls(true);
+		if (pseudoField.value.length > 0) {
+			lobbySocket.send(JSON.stringify({
+				"type": "join",
+				"pseudo": pseudo
+			}));
+		}
+        $("#currentPseudo").text(pseudo); //using jquery to escape the pseudo client side
+		submitAnswer.focus();
+		submitAnswer.value = "";
 	}
 
 	function leave() {
-		updateUiControls(false);
-        lobbySocket.send(JSON.stringify({
+		updateLoginControls(false);
+		lobbySocket.send(JSON.stringify({
 			"type": "leave"
 		}));
+		pseudoField.focus();
+		pseudoField.select();
 	}
 
-	function updateUiControls(isPlaying) {
-        pseudoField.hidden = isPlaying;
-		joinButton.hidden = isPlaying;
-		leaveButton.hidden = !isPlaying;
-        submitAnswer.hidden = !isPlaying;
+	function updateLoginControls(connected) {
+		whenConnected.hidden = !connected;
+		whenDisconnected.hidden = connected;
+		submitAnswer.hidden = !connected;
 	}
 
-    function updateGameStatus(data) {
-        updateScoreBoard(data["players"]);
-        updateTimeEnd(data["questionDateTimeEnd"]);
-        updateQuestion(data["currentQuestion"]);
-    }
+	function updateGameStatus(data) {
+		updateScoreBoard(data["players"]);
+		updateTimeEnd(data["questionDateTimeEnd"]);
+		updateQuestion(data["currentQuestion"]);
+	}
 
-    function updateTimeEnd(timeEnd)
-    {
-        currentTimeEnd = Date.parse(timeEnd);
-    }
+	function updateTimeEnd(timeEnd) {
+		currentTimeEnd = Date.parse(timeEnd);
+	}
 
-    function updateQuestion(question)
-    {
-        currentQuestion.innerHTML = question;
-    }
+	function updateQuestion(question) {
+		currentQuestion.innerHTML = question;
+	}
 
-    function updateScoreBoard(players) {
-        scoreBoard.innerHTML = '';
-        for(let i = 0; i < players.length; i++)
-        {
-            let player = players[i];
-            let playerLi = document.createElement("li");
-            playerLi.innerHTML = player["name"] + " : " + player.score + " (" + player.pointsThisRound + ")";
-            scoreBoard.appendChild(playerLi)
-        }
-    }
+	function initScoreboard() {
+		scoreBoard.innerHTML = '';
+		scoreBoard.appendChild(createRow(["Joueur", "Score total", "Score sauce"], "th"));
+	}
+
+    function initHistoryTable() {
+		historyTable.innerHTML = '';
+		historyTable.appendChild(createRow(["Réponse", "Premier", "Deuxième", "Troisième"], "th"));
+	}
+
+	function createRow(values, type = "td") {
+		let tr = document.createElement("tr");
+		for (let i = 0; i < values.length; i++) {
+			let td = document.createElement(type);
+			td.innerHTML = values[i];
+			tr.appendChild(td);
+		}
+		return tr;
+	}
+
+	function updateScoreBoard(players) {
+		initScoreboard();
+		for (let i = 0; i < players.length; i++) {
+			let player = players[i];
+			scoreBoard.appendChild(createRow([player["name"], player.score, player.pointsThisRound == -1 ? "" : "+" + player.pointsThisRound]));
+		}
+	}
 </script>
 {% endblock %}
