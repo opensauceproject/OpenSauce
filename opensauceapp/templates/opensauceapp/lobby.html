@@ -26,14 +26,18 @@
     #currentQuestion {
         height: 80%;
         text-align: center;
-        vertical-align: middle;
-        line-height: 80%;
         font-size: 50px;
     }
 
     #submitAnswer {
         width: 100%;
-        margin: 20px;
+        margin: 50px;
+        font-size: 2em;
+        text-align: center;
+        border-radius: 25px;
+        background-color:black;
+        color:white;
+        text-transform: uppercase;
     }
 
     #scoreBoard, #historyTable {
@@ -52,7 +56,7 @@
 	<div id="category">
 
 	</div>
-	<div id="timeRemaining">
+	<div id="remainingTime">
 
 	</div>
 	<div id="currentQuestion">
@@ -71,28 +75,30 @@
     	<input id="leaveButton" type="button" value="Quitter">
     </span>
 	<div id="scoreBoard-container">
-		<h3>Classement</h3>
-		<table id="scoreBoard">
+		<p class="h3">Classement</p>
+		<table id="scoreBoard" class="table">
 		</table>
 	</div>
 	<div id="history-container">
-		<h3>Historique</h3>
-		<table id="historyTable">
+		<p class="h3">Historique</p>
+		<table id="historyTable" class="table">
 		</table>
 	</div>
 </div>
 
 <script>
+    let lobbySocket;
+
 	let lobbyName = "{{lobby_name}}";
     let history = [];
 	let currentTimeEnd;
 
-	let lobbySocket = new WebSocket("ws://" + window.location.host + "/lobby/" + lobbyName + "/");
 
     //Game
 	let scoreBoard = document.getElementById("scoreBoard");
 	let historyTable = document.getElementById("historyTable");
 	let currentQuestion = document.getElementById("currentQuestion");
+	let remainingTime = document.getElementById("remainingTime");
 
     let submitAnswer = document.getElementById("submitAnswer");
 
@@ -112,12 +118,16 @@
 
 	pseudoField.focus();
 
+    tryToConnect();
     initScoreboard();
     initHistoryTable();
 	updateLoginControls(false);
 
+    window.setInterval(updateRemainingTime, 99);
+
 	lobbySocket.onmessage = function(e) {
 		let data = JSON.parse(e.data);
+		console.log("message");
 		console.log(data);
 		if (data.type == "game_state") {
 			updateGameStatus(data.state);
@@ -128,7 +138,6 @@
 		console.error("Lobby socket closed unexpectedly");
 	};
 
-
 	submitAnswer.addEventListener("keydown", function(e) {
 		let message = e.srcElement.value;
 		if (e.keyCode === 13 && message.length > 0) {
@@ -136,6 +145,10 @@
 			e.srcElement.value = "";
 		}
 	});
+
+    function tryToConnect() {
+        lobbySocket = new WebSocket("ws://" + window.location.host + "/lobby/" + lobbyName + "/");
+    }
 
 	function sendAnswer(answer) {
 		lobbySocket.send(JSON.stringify({
@@ -179,10 +192,35 @@
 		submitAnswer.hidden = !connected;
 	}
 
+    function updateRemainingTime() {
+        let t = currentTimeEnd - Date.now();
+        //format
+        let tsec = ("" + t / 1000).split(".");
+        let sec = tsec[0];
+        let mil = tsec[1];
+        if(t >= 0)
+        {
+            remainingTime.innerHTML = sec + "." + mil[0];
+            //submitAnswer.disabled = false;
+        }
+        else
+        {
+            //submitAnswer.disabled = true;
+        }
+    }
+
 	function updateGameStatus(data) {
 		updateScoreBoard(data["players"]);
 		updateTimeEnd(data["questionDateTimeEnd"]);
 		updateQuestion(data["currentQuestion"]);
+	}
+
+	function updateScoreBoard(players) {
+		initScoreboard();
+		for (let i = 0; i < players.length; i++) {
+			let player = players[i];
+			scoreBoard.appendChild(createRow([i+1, player["name"], player.score, player.pointsThisRound == -1 ? "" : "+" + player.pointsThisRound]));
+		}
 	}
 
 	function updateTimeEnd(timeEnd) {
@@ -195,7 +233,7 @@
 
 	function initScoreboard() {
 		scoreBoard.innerHTML = '';
-		scoreBoard.appendChild(createRow(["Joueur", "Score total", "Score sauce"], "th"));
+		scoreBoard.appendChild(createRow(["#", "Joueur", "Score total", "Score sauce"], "th"));
 	}
 
     function initHistoryTable() {
@@ -211,14 +249,6 @@
 			tr.appendChild(td);
 		}
 		return tr;
-	}
-
-	function updateScoreBoard(players) {
-		initScoreboard();
-		for (let i = 0; i < players.length; i++) {
-			let player = players[i];
-			scoreBoard.appendChild(createRow([player["name"], player.score, player.pointsThisRound == -1 ? "" : "+" + player.pointsThisRound]));
-		}
 	}
 </script>
 {% endblock %}
