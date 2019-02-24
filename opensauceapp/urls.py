@@ -7,5 +7,6 @@ from . import views
 urlpatterns = [
     path('', views.index, name='index'),
     path(r'lobby/<lobby_name>/', views.lobby, name='lobby'),
-    path(r'lobby/', RedirectView.as_view(url='/'), name='lobby'),
+    path(r'lobby/', RedirectView.as_view(url='/'), name='lobbyEmpty'),
+    path(r'lobbiesList/', views.lobbyList, name='lobbiesList'),
 ]

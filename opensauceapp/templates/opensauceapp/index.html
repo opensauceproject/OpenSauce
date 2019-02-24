@@ -5,41 +5,80 @@
 
 {% block content %}
 <div class="container">
-  <center>
-    <p class="opensaucetitle">
-      OpenSauce
-    </p>
-  </center>
-  <hr>
-  <div>
-    <p class="h2 opensauce">
-      Liste des salons publiques
-    </p>
-  </div>
-  <br><br><br><br><br><br><br><br><br><br><br>
-  <div>
-    <p class="h2 opensauce">
-      Création de salon
-    </p>
-  </div>
-  <div>
-    <form>
-    <div class="form-group">
-      <label for="inputLobbyName">Nom du salon</label>
-      <input type="text" class="form-control" id="inputLobbyName" aria-describedby="lobbyNameHelp" placeholder="SalonSympa">
-      <!--<small id="lobbyNameHelp" class="form-text text-muted">Le nom de votre salon</small>-->
-    </div>
-    <div class="form-group">
-      <label for="inputMaxPlayers">Nombre de joueurs maximum</label>
-      <input type=text id="spinner" placeholder="50"/>
-      <input type="password" class="form-control" id="inputMaxPlayers" placeholder="Password">
-    </div>
-    <div class="form-group form-check">
-      <input type="checkbox" class="form-check-input" id="exampleCheck1">
-      <label class="form-check-label" for="exampleCheck1">Check me out</label>
-    </div>
-    <button type="submit" class="btn btn-primary">Submit</button>
-  </form>
-  </div>
+	<center>
+		<p class="opensaucetitle">
+			OpenSauce
+		</p>
+	</center>
+	<hr>
+	<div>
+		<p class="h2 opensauce">
+			Liste des salons publiques
+		</p>
+		<a id="refreshLobbies" href="#refresh">Rafraichir</a><!--  -->
+		<div id="noLobbies" hidden>
+			Aucun salons disponibles
+		</div>
+		<ul id="lobbiesList">
+
+		</ul>
+	</div>
+	<div>
+		<p class="h2 opensauce">
+			Création de salon
+		</p>
+	</div>
+	<div>
+		<form>
+			<div class="form-group">
+				<label for="inputLobbyName">Nom du salon</label>
+				<input type="text" class="form-control" id="inputLobbyName" aria-describedby="lobbyNameHelp" placeholder="SalonSympa">
+				<!--<small id="lobbyNameHelp" class="form-text text-muted">Le nom de votre salon</small>-->
+			</div>
+			<div class="form-group">
+				<label for="inputMaxPlayers">Nombre de joueurs maximum</label>
+				<input type=text id="spinner" placeholder="50" />
+				<input type="password" class="form-control" id="inputMaxPlayers" placeholder="Password">
+			</div>
+			<div class="form-group form-check">
+				<input type="checkbox" class="form-check-input" id="exampleCheck1">
+				<label class="form-check-label" for="exampleCheck1">Check me out</label>
+			</div>
+			<button type="submit" class="btn btn-primary">Submit</button>
+		</form>
+	</div>
 </div>
+<script>
+	let lobbiesList = document.getElementById("lobbiesList");
+	let refreshLobbies = document.getElementById("refreshLobbies");
+	let noLobbies = document.getElementById("noLobbies");
+
+	refreshLobbies.addEventListener("click", updateLobbiesList);
+
+	updateLobbiesList();
+
+	function updateLobbiesList() {
+		fetch("{% url 'lobbiesList' %}")
+			.then(function(response) {
+				return response.json();
+			})
+			.then(function(json) {
+				lobbiesList.innerHTML = "";
+				if (json.list.length <= 0) {
+					noLobbies.hidden = false;
+				} else {
+					for (let i = 0; i < json.list.length; i++) {
+						let lobby = json.list[i];
+						let lobbyLi = document.createElement("li");
+						let lobbyA = document.createElement("a");
+                        lobbyA.href = "lobby/" + lobby["name"];
+						lobbyA.innerHTML = lobby["name"] + " (" + lobby["nbPlayers"] + " joueur" + (lobby["nbPlayers"]>1?"s":"") + ")";
+						lobbyLi.appendChild(lobbyA);
+						lobbiesList.appendChild(lobbyLi);
+					}
+					noLobbies.hidden = true;
+				}
+			});
+	}
+</script>
 {% endblock %}
