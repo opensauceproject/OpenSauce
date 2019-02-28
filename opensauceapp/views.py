@@ -14,6 +14,6 @@ def index(request):
 def lobby(request, lobby_name):
     return render(request, 'opensauceapp/lobby.html', {'lobby_name': lobby_name, 'lobby_name_json' : json.dumps(lobby_name)})
 
-def admin(request):
+def reports(request):
     context = {}
-    return render(request, 'opensauceapp/admin.html', context)
+    return render(request, 'opensauceapp/reports.html', context)
