@@ -124,6 +124,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ## Login succes redirection (default : accounts/profile)
 ## Redirect to admin/report page
 
+LOGIN_URL = '/login'
 LOGIN_REDIRECT_URL = '/reports'
 
 
