@@ -8,9 +8,14 @@ import json
 from asgiref.sync import async_to_sync
 
 
+# TODO :
+# - fix send when player join/leave/add/remove
+# -
+
 class Lobby:
     sauces = [("q1", "1"), ("q2", "2"), ("q3", "3")]
 
+    # States
     WAITING_FOR_PLAYERS = 0
     GAME_START_SOON = 1
     QUESTION = 2
@@ -21,6 +26,8 @@ class Lobby:
     timeoutWhenQuestion = datetime.timedelta(seconds=15)
     timeoutWhenAnswer = datetime.timedelta(seconds=3)
     timeoutWhenGameFinished = datetime.timedelta(seconds=5)
+
+    pointsGoal = 10
 
     minPlayers = 1
 
@@ -45,11 +52,17 @@ class Lobby:
     def count(self):
         return len(self.players)
 
+    def get_players(self):
+        return list(filter(lambda p: p.isPlaying, self.players.values()))
+
+    def get_spectators(self):
+        return list(filter(lambda p: not p.isPlaying, self.players.values()))
+
     def count_players(self):
-        return len(list(filter(lambda p: p.isPlaying, self.players.values())))
+        return len(self.get_players())
 
     def count_spectators(self):
-        return len(list(filter(lambda p: not p.isPlaying, self.players.values())))
+        return len(self.get_spectators())
 
     def update_and_send_state(self):
         self.update_state()
@@ -74,11 +87,18 @@ class Lobby:
         thread = Thread(target=self.answer_delay)
         thread.start()
 
+    def get_best_player(self):
+        return sorted(self.get_players(), key=lambda p: p.score)[0]
+
+
     def answer_delay(self):
         self.datetime = datetime.datetime.now() + Lobby.timeoutWhenAnswer
         sleep(Lobby.timeoutWhenAnswer.total_seconds())
-        self.next_round()
-        self.send_question()
+        if self.get_best_player().score >= Lobby.pointsGoal:
+            self.send_game_end()
+        else:
+            self.next_round()
+            self.send_question()
 
     def next_round(self):
         self.state = Lobby.QUESTION
@@ -94,7 +114,6 @@ class Lobby:
         thread = Thread(target=self.question_delay,
                         args=(self.questionID,))
         thread.start()
-
 
     def update_state(self):
         if Lobby.WAITING_FOR_PLAYERS == self.state:
@@ -183,7 +202,7 @@ class Lobby:
             self.send_scoreboard()
 
     def __str__(self):
-        s = "--" + self.name + ", status : " + str(self.state) +"\n"
+        s = "--" + self.name + ", status : " + str(self.state) + "\n"
         for name, player in self.players.items():
             s += "---- " + str(name) + " : " + str(player) + "\n"
         return s

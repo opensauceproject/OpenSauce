@@ -12,12 +12,14 @@ class OpenSauceConsumer(WebsocketConsumer):
         self.lobby_name = self.scope["url_route"]["kwargs"]["lobby_name"]
         # convert from byte to string the secret key of the socket
         # to have a unique id that represent the player
-        self.secKey = str(dict(self.scope["headers"])[b'sec-websocket-key'])[2:-1]
+        self.secKey = str(dict(self.scope["headers"])[
+                          b'sec-websocket-key'])[2:-1]
         Game.get_instance().get_lobby(self.lobby_name).player_add(self.secKey, self)
         print(Game.get_instance())
 
     def disconnect(self, close_code):
-        result = Game.get_instance().get_lobby(self.lobby_name).player_remove(self.secKey)
+        result = Game.get_instance().get_lobby(
+            self.lobby_name).player_remove(self.secKey)
         if result:
             Game.get_instance().remove_lobby(self.lobby_name)
         print(Game.get_instance())

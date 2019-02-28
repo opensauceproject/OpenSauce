@@ -49,7 +49,7 @@
 <div id="left_container">
 	<div id="header">
 		<div id="lobby_name">
-			{% autoescape on %}
+			Lobby : {% autoescape on %}
 			{{lobby_name}}
 			{% endautoescape %}
 		</div>
@@ -167,6 +167,9 @@
 			case "answer":
 				update_answer(data.answer);
 				break;
+			case "game_end":
+				update_game_end();
+				break;
 		}
 	};
 
@@ -231,9 +234,19 @@
 	function update_date_time() {
 		let t = datetime - Date.now();
 		//format
-		let tsec = parseInt(t / 1000);
-		date_time.innerHTML = tsec;
+		let tsec = parseInt(t / 1000) + 1;
+		if (tsec) {
+			if (tsec >= 0) {
+				date_time.innerHTML = tsec;
+			} else {
+				date_time.innerHTML = "Veuillez patienter...";
+			}
+		} else {
+			date_time.innerHTML = "";
+		}
 	}
+
+    // Update UI on messages
 
 	function update_game_status(data) {
 		update_time_end(data["questionDateTimeEnd"]);
@@ -243,19 +256,29 @@
 	function update_question(question) {
 		game_message.innerHTML = "";
 		current_question.innerHTML = question;
+		submit_answer.hidden = false;
+		submit_answer.focus();
 	}
 
-    function update_answer(answer) {
+	function update_answer(answer) {
 		game_message.innerHTML = "La réponse était : " + answer;
+		submit_answer.hidden = true;
 	}
 
 	function update_waiting_for_players(qte) {
 		game_message.innerHTML = "En attente de la connexion de " + qte + " joueurs";
+		submit_answer.hidden = true;
 	}
 
 	function update_game_starts_soon(qte) {
 		game_message.innerHTML = "La partie va bientôt commencer !";
+		submit_answer.hidden = true;
 	}
+
+    function update_game_end(){
+        game_message.innerHTML = "La partie est terminée !"
+		submit_answer.hidden = true;
+    }
 
 	// Tables
 

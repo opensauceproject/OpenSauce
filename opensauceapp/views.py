@@ -10,21 +10,23 @@ from .Game import Game
 
 from .models import Sauce, Category
 
+
 def index(request):
     context = {}
     return render(request, 'opensauceapp/index.html', context)
 
+
 def lobby(request, lobby_name):
-    return render(request, 'opensauceapp/lobby.html', {'lobby_name': lobby_name, 'lobby_name_json' : json.dumps(lobby_name)})
+    return render(request, 'opensauceapp/lobby.html', {'lobby_name': lobby_name, 'lobby_name_json': json.dumps(lobby_name)})
 
 
 def lobbyList(request):
-    data = {"list" : []}
+    data = {"list": []}
     lobbies = Game.getInstance().getLobbyList()
     for lobby in lobbies.values():
         l = {
-            "name" : lobby.name,
-            "nbPlayers" : lobby.count()
+            "name": lobby.name,
+            "nbPlayers": lobby.count()
         }
         data["list"].append(l)
 
