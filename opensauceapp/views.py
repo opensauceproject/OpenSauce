@@ -5,7 +5,8 @@ from django.urls import reverse_lazy
 from django.http import JsonResponse
 from django.utils.safestring import mark_safe
 import json
-from .game import *
+
+from .Game import Game
 
 from .models import Sauce, Category
 

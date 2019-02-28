@@ -7,29 +7,31 @@
         width:100%;
         height:100%;
     }
-    #leftContainer {
+
+    #left_container {
         float:left;
         width: 70%;
         height: 100%;
         margin:0;
     }
-    #rightContainer {
+    #right_container {
         float:right;
         width: 30%;
         height: 100%;
         margin:0;
     }
+
     #header {
 
     }
 
-    #currentQuestion {
+    #current_question {
         height: 80%;
         text-align: center;
         font-size: 50px;
     }
 
-    #submitAnswer {
+    #submit_answer {
         width: 100%;
         margin: 50px;
         font-size: 2em;
@@ -40,239 +42,260 @@
         text-transform: uppercase;
     }
 
-    #scoreBoard, #historyTable {
+    .scoreboard_table {
         width:100%;
     }
 </style>
-<div id="leftContainer">
+<div id="left_container">
 	<div id="header">
-		<div id="lobbyName">
+		<div id="lobby_name">
 			{% autoescape on %}
 			{{lobby_name}}
 			{% endautoescape %}
+		</div>
+		<div id="game_message">
 		</div>
 	</div>
 
 	<div id="category">
 
 	</div>
-	<div id="remainingTime">
+	<div id="date_time">
 
 	</div>
-	<div id="currentQuestion">
+	<div id="current_question">
 
 	</div>
 
-	<input id="submitAnswer" type="text" hidden>
+	<input id="submit_answer" type="text" hidden>
 </div>
-<div id="rightContainer">
-    <span id="whenDisconnected">
-        Nom : <input id="pseudoField" type="text" placeholder="john">
-    	<input id="joinButton" type="button" value="Rejoindre">
-    </span>
-    <span id="whenConnected" hidden>
-        Connecté en tant que : <span id="currentPseudo"></span>
-    	<input id="leaveButton" type="button" value="Quitter">
-    </span>
-	<div id="players-container">
+<div id="right_container">
+	<span id="when_disconnected">
+		Nom : <input id="pseudo_field" type="text" placeholder="john">
+		<input id="join_button" type="button" value="Rejoindre">
+	</span>
+	<span id="when_connected" hidden>
+		Connecté en tant que : <span id="current_pseudo"></span>
+		<input id="leave_button" type="button" value="Quitter">
+	</span>
+	<div id="players_table-container">
 		<p class="h3">Joueurs</p>
-		<table id="players" class="table">
+		<table id="players_table" class="table scoreboard_table">
 		</table>
 	</div>
-	<div id="spectators-container">
+	<div id="spectators_table-container">
 		<p class="h3">Spectateurs</p>
-		<table id="spectators" class="table">
+		<table id="spectators_table" class="table scoreboard_table">
 		</table>
 	</div>
-	<div id="history-container">
+	<div id="history_table-container">
 		<p class="h3">Historique</p>
-		<table id="historyTable" class="table">
+		<table id="history_table" class="table scoreboard_table">
 		</table>
 	</div>
 </div>
 
 <script>
-    let lobbySocket;
+	let lobby_socket;
 
-	let lobbyName = "{{lobby_name}}";
-    let history = [];
-	let currentTimeEnd;
+	let lobby_name = "{{lobby_name}}";
+	let history = [];
+	let datetime;
 
+	let game_message = document.getElementById("game_message");
 
-    //Tables
-	let players = document.getElementById("players");
-	let spectators = document.getElementById("spectators");
-	let historyTable = document.getElementById("historyTable");
+	//Tables
+	let players_table = document.getElementById("players_table");
+	let spectators_table = document.getElementById("spectators_table");
+	let history_table = document.getElementById("history_table");
 
 	// Game
-	let currentQuestion = document.getElementById("currentQuestion");
-	let remainingTime = document.getElementById("remainingTime");
-    let submitAnswer = document.getElementById("submitAnswer");
+	let current_question = document.getElementById("current_question");
+	let date_time = document.getElementById("date_time");
+	let submit_answer = document.getElementById("submit_answer");
 
-    // Login
-	let whenConnected = document.getElementById("whenConnected");
-	let currentPseudo = document.getElementById("currentPseudo");
-    let leaveButton = document.getElementById("leaveButton");
+	// Login
+	let when_connected = document.getElementById("when_connected");
+	let current_pseudo = document.getElementById("current_pseudo");
+	let leave_button = document.getElementById("leave_button");
 
-	let whenDisconnected = document.getElementById("whenDisconnected");
-    let pseudoField = document.getElementById("pseudoField");
-	let joinButton = document.getElementById("joinButton");
+	let when_disconnected = document.getElementById("when_disconnected");
+	let pseudo_field = document.getElementById("pseudo_field");
+	let join_button = document.getElementById("join_button");
 
-	leaveButton.addEventListener("click", leave);
+	leave_button.addEventListener("click", leave);
 
-    joinButton.addEventListener("click", tryToJoin);
-    pseudoField.addEventListener("keydown", function(e) {if(e.keyCode === 13) tryToJoin();});
+	join_button.addEventListener("click", try_to_join);
+	pseudo_field.addEventListener("keydown", function(e) {
+		if (e.keyCode === 13) try_to_join();
+	});
 
-	pseudoField.focus();
+	pseudo_field.focus();
 
-    tryToConnect();
-    initPlayers();
-    initSpectators();
-    initHistoryTable();
-	updateLoginControls(false);
+	try_to_connect();
+	init_players_table();
+	init_spectators_table();
+	init_history_table();
+	update_login_controls(false);
 
-    window.setInterval(updateRemainingTime, 99);
+	window.setInterval(update_date_time, 99);
 
-	lobbySocket.onmessage = function(e) {
-		let data = JSON.parse(e.data);
-		console.log("message");
-		console.log(data);
-		// if (data.type == "state") {
-		// 	updateGameStatus(data.state);
-		// }
-		if (data.type == "scoreboard") {
-			updatePlayers(data.scoreboard.players);
-			updateSpectators(data.scoreboard.spectators);
+	lobby_socket.onmessage = function(e) {
+		let message = JSON.parse(e.data);
+		console.log(message);
+
+		let data = message.data;
+		datetime = Date.parse(data.datetime);
+		switch (message._type) {
+			case "state":
+				update_game_status(data.state);
+				break;
+			case "scoreboard":
+				update_players_table(data.players);
+				update_spectators_table(data.spectators);
+				update_history_table(data.history);
+				break;
+			case "waiting_for_players":
+				update_waiting_for_players(data.qte);
+				break;
+			case "game_starts_soon":
+				update_game_starts_soon();
+				break;
+			case "question":
+				update_question(data.question);
+				break;
+			case "answer":
+				update_answer(data.answer);
+				break;
 		}
 	};
 
-	lobbySocket.onclose = function(e) {
+	lobby_socket.onclose = function(e) {
 		console.error("Lobby socket closed unexpectedly");
 	};
 
-	submitAnswer.addEventListener("keydown", function(e) {
+	submit_answer.addEventListener("keydown", function(e) {
 		let message = e.srcElement.value;
 		if (e.keyCode === 13 && message.length > 0) {
-			sendAnswer(message);
+			send_answer(message);
 			e.srcElement.value = "";
 		}
 	});
 
-    function tryToConnect() {
-        lobbySocket = new WebSocket("ws://" + window.location.host + "/lobby/" + lobbyName + "/");
-    }
+	function try_to_connect() {
+		lobby_socket = new WebSocket("ws://" + window.location.host + "/lobby/" + lobby_name + "/");
+	}
 
-	function sendAnswer(answer) {
-		lobbySocket.send(JSON.stringify({
+	function send_answer(answer) {
+		lobby_socket.send(JSON.stringify({
 			"type": "submit",
 			"answer": answer,
 		}));
 	}
 
-    function tryToJoin(e){
-        let pseudo = pseudoField.value;
+	function try_to_join(e) {
+		let pseudo = pseudo_field.value;
 		if (pseudo.length > 0) {
 			join(pseudo);
 		}
-    }
+	}
 
 	function join(pseudo) {
-		updateLoginControls(true);
-		if (pseudoField.value.length > 0) {
-			lobbySocket.send(JSON.stringify({
+		update_login_controls(true);
+		if (pseudo_field.value.length > 0) {
+			lobby_socket.send(JSON.stringify({
 				"type": "join",
 				"pseudo": pseudo
 			}));
 		}
-        $("#currentPseudo").text(pseudo); //using jquery to escape the pseudo client side
-		submitAnswer.focus();
-		submitAnswer.value = "";
+		$("#currentPseudo").text(pseudo); //using jquery to escape the pseudo client side
+		submit_answer.focus();
+		submit_answer.value = "";
 	}
 
 	function leave() {
-		updateLoginControls(false);
-		lobbySocket.send(JSON.stringify({
+		update_login_controls(false);
+		lobby_socket.send(JSON.stringify({
 			"type": "leave"
 		}));
-		pseudoField.focus();
-		pseudoField.select();
+		pseudo_field.focus();
+		pseudo_field.select();
 	}
 
-	function updateLoginControls(connected) {
-		whenConnected.hidden = !connected;
-		whenDisconnected.hidden = connected;
-		submitAnswer.hidden = !connected;
+	function update_login_controls(connected) {
+		when_connected.hidden = !connected;
+		when_disconnected.hidden = connected;
+		submit_answer.hidden = !connected;
 	}
 
-    function updateRemainingTime() {
-        let t = currentTimeEnd - Date.now();
-        //format
-        let tsec = ("" + t / 1000).split(".");
-        let sec = tsec[0];
-        let mil = tsec[1];
-        if(t >= 0)
-        {
-            remainingTime.innerHTML = sec + "." + mil[0];
-            //submitAnswer.disabled = false;
-        }
-        else
-        {
-            //submitAnswer.disabled = true;
-        }
-    }
-
-	function updateGameStatus(data) {
-		updateTimeEnd(data["questionDateTimeEnd"]);
-		updateQuestion(data["currentQuestion"]);
+	function update_date_time() {
+		let t = datetime - Date.now();
+		//format
+		let tsec = parseInt(t / 1000);
+		date_time.innerHTML = tsec;
 	}
 
-	function updatePlayers(p) {
-		initPlayers();
+	function update_game_status(data) {
+		update_time_end(data["questionDateTimeEnd"]);
+		update_question(data["currentQuestion"]);
+	}
+
+	function update_question(question) {
+		game_message.innerHTML = "";
+		current_question.innerHTML = question;
+	}
+
+    function update_answer(answer) {
+		game_message.innerHTML = "La réponse était : " + answer;
+	}
+
+	function update_waiting_for_players(qte) {
+		game_message.innerHTML = "En attente de la connexion de " + qte + " joueurs";
+	}
+
+	function update_game_starts_soon(qte) {
+		game_message.innerHTML = "La partie va bientôt commencer !";
+	}
+
+	// Tables
+
+	function init_players_table() {
+		players_table.innerHTML = '';
+		players_table.appendChild(Tools.create_row(["#", "Joueur", "Score total", "Score sauce"], "th"));
+	}
+
+	function init_spectators_table() {
+		spectators_table.innerHTML = '';
+		spectators_table.appendChild(Tools.create_row(["Nom"], "th"));
+	}
+
+	function init_history_table() {
+		history_table.innerHTML = '';
+		history_table.appendChild(Tools.create_row(["Réponse", "Premier", "Deuxième", "Troisième"], "th"));
+	}
+
+	function update_players_table(p) {
+		init_players_table();
 		for (let i = 0; i < p.length; i++) {
-			let player = p[i];
-			players.appendChild(createRow([i+1, player["name"], player.score, player.pointsThisRound == -1 ? "" : "+" + player.pointsThisRound]));
+			let row = p[i];
+			players_table.appendChild(Tools.create_row([i + 1, row["name"], row.score, row.points_this_round == -1 ? "" : "+" + row.points_this_round]));
 		}
 	}
 
-	function updateSpectators(s) {
-		initSpectators();
+	function update_spectators_table(s) {
+		init_spectators_table();
 		for (let i = 0; i < s.length; i++) {
-			let spectator = s[i];
-			spectators.appendChild(createRow([i+1, spectator["name"]]));
+			let row = s[i];
+			spectators_table.appendChild(Tools.create_row([row["name"]]));
 		}
 	}
 
-	function updateTimeEnd(timeEnd) {
-		currentTimeEnd = Date.parse(timeEnd);
-	}
-
-	function updateQuestion(question) {
-		currentQuestion.innerHTML = question;
-	}
-
-	function initPlayers() {
-		players.innerHTML = '';
-		players.appendChild(createRow(["#", "Joueur", "Score total", "Score sauce"], "th"));
-	}
-
-	function initSpectators() {
-		spectators.innerHTML = '';
-		spectators.appendChild(createRow(["#", "Nom"], "th"));
-	}
-
-    function initHistoryTable() {
-		historyTable.innerHTML = '';
-		historyTable.appendChild(createRow(["Réponse", "Premier", "Deuxième", "Troisième"], "th"));
-	}
-
-	function createRow(values, type = "td") {
-		let tr = document.createElement("tr");
-		for (let i = 0; i < values.length; i++) {
-			let td = document.createElement(type);
-			td.innerHTML = values[i];
-			tr.appendChild(td);
+	function update_history_table(h) {
+		init_history_table();
+		for (let i = 0; i < h.length; i++) {
+			let row = h[i];
+			history_table.appendChild(Tools.create_row([i + 1, row["name"]]));
 		}
-		return tr;
 	}
 </script>
 {% endblock %}
