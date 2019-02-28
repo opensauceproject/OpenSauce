@@ -1,8 +1,10 @@
 class Player:
+    cpt = 0
     def __init__(self, socket):
         self.socket = socket
         self.isPlaying = False
-        self.name = "Anonyme"
+        self.name = "Anonyme " + str(Player.cpt)
+        Player.cpt += 1
         self.score = 0
         # -1 : not found yet
         self.points_this_round = None

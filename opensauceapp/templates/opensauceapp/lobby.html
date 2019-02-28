@@ -10,17 +10,23 @@
 
     #left_container {
         float:left;
-        width: 70%;
+        width: 67%;
         height: 100%;
         margin:0;
+        background-color:#FFFDF2;
     }
     #right_container {
         float:right;
-        width: 30%;
-        height: 100%;
-        margin:0;
+        width: 33%;
+        height: calc(100%);
+        padding: 30px;
+        background-color:#393E46;
+        color:#FFFDF2;
     }
 
+    #connexion{
+        padding-bottom:30px;
+    }
     #header {
 
     }
@@ -32,12 +38,12 @@
     }
 
     #submit_answer {
-        width: 100%;
+        width: calc(100% - 100px);
         margin: 50px;
         font-size: 2em;
         text-align: center;
         border-radius: 25px;
-        background-color:black;
+        background-color:#393E46;
         color:white;
         text-transform: uppercase;
     }
@@ -60,9 +66,7 @@
 	<div id="category">
 
 	</div>
-	<div id="date_time">
-
-	</div>
+	<div>Temps restant : <span id="date_time">0</span> sec.</div>
 	<div id="current_question">
 
 	</div>
@@ -70,25 +74,33 @@
 	<input id="submit_answer" type="text" hidden>
 </div>
 <div id="right_container">
-	<span id="when_disconnected">
-		Nom : <input id="pseudo_field" type="text" placeholder="john">
-		<input id="join_button" type="button" value="Rejoindre">
-	</span>
-	<span id="when_connected" hidden>
-		Connecté en tant que : <span id="current_pseudo"></span>
-		<input id="leave_button" type="button" value="Quitter">
-	</span>
-	<div id="players_table-container">
+	<div id="connexion">
+		<div id="when_disconnected" class="input-group">
+			<div class="input-group-prepend">
+				<span class="input-group-text">Pseudo</span>
+			</div>
+			<input id="pseudo_field" type="text" class="form-control">
+			<input id="join_button" type="button" value="Rejoindre" class="btn">
+		</div>
+		<div id="when_connected" class="input-group" hidden>
+			<div class="input-group-prepend">
+				<span class="input-group-text">Pseudo</span>
+			</div>
+			<input id="current_pseudo" type="text" class="form-control" disabled>
+			<input id="leave_button" type="button" value="Quitter" class="btn">
+		</div>
+	</div>
+	<div id="players_table_container">
 		<p class="h3">Joueurs</p>
 		<table id="players_table" class="table scoreboard_table">
 		</table>
 	</div>
-	<div id="spectators_table-container">
+	<div id="spectators_table_container">
 		<p class="h3">Spectateurs</p>
 		<table id="spectators_table" class="table scoreboard_table">
 		</table>
 	</div>
-	<div id="history_table-container">
+	<div id="history_table_container">
 		<p class="h3">Historique</p>
 		<table id="history_table" class="table scoreboard_table">
 		</table>
@@ -105,8 +117,11 @@
 	let game_message = document.getElementById("game_message");
 
 	//Tables
+	let players_table_container = document.getElementById("players_table_container");
 	let players_table = document.getElementById("players_table");
+	let spectators_table_container = document.getElementById("spectators_table_container");
 	let spectators_table = document.getElementById("spectators_table");
+	let history_table_container = document.getElementById("history_table_container");
 	let history_table = document.getElementById("history_table");
 
 	// Game
@@ -146,7 +161,7 @@
 
 		let data = message.data;
 		datetime = Date.parse(data.datetime);
-		switch (message._type) {
+		switch (message.type) {
 			case "state":
 				update_game_status(data.state);
 				break;
@@ -211,7 +226,7 @@
 				"pseudo": pseudo
 			}));
 		}
-		$("#currentPseudo").text(pseudo); //using jquery to escape the pseudo client side
+		current_pseudo.value = pseudo; //using jquery to escape the pseudo client side
 		submit_answer.focus();
 		submit_answer.value = "";
 	}
@@ -246,7 +261,7 @@
 		}
 	}
 
-    // Update UI on messages
+	// Update UI on messages
 
 	function update_game_status(data) {
 		update_time_end(data["questionDateTimeEnd"]);
@@ -275,16 +290,16 @@
 		submit_answer.hidden = true;
 	}
 
-    function update_game_end(){
-        game_message.innerHTML = "La partie est terminée !"
+	function update_game_end() {
+		game_message.innerHTML = "La partie est terminée !"
 		submit_answer.hidden = true;
-    }
+	}
 
 	// Tables
 
 	function init_players_table() {
 		players_table.innerHTML = '';
-		players_table.appendChild(Tools.create_row(["#", "Joueur", "Score total", "Score sauce"], "th"));
+		players_table.appendChild(Tools.create_row(["#", "Nom", "Score total", "Score sauce"], "th"));
 	}
 
 	function init_spectators_table() {
@@ -294,7 +309,7 @@
 
 	function init_history_table() {
 		history_table.innerHTML = '';
-		history_table.appendChild(Tools.create_row(["Réponse", "Premier", "Deuxième", "Troisième"], "th"));
+		history_table.appendChild(Tools.create_row(["Réponse", "Premier (+5)", "Deuxième (+3)", "Troisième (+2)"], "th"));
 	}
 
 	function update_players_table(p) {
@@ -317,7 +332,14 @@
 		init_history_table();
 		for (let i = 0; i < h.length; i++) {
 			let row = h[i];
-			history_table.appendChild(Tools.create_row([i + 1, row["name"]]));
+			players = []
+			for (let j = 0; j < 3; j++) {
+				if (j < row["players"].length)
+					players.push(row["players"][j]);
+				else
+					players.push("-");
+			}
+			history_table.appendChild(Tools.create_row([row["answer"], ...players]));
 		}
 	}
 </script>

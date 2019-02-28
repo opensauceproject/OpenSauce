@@ -24,10 +24,10 @@ class Lobby:
 
     timeoutWhenGameStarting = datetime.timedelta(seconds=1)
     timeoutWhenQuestion = datetime.timedelta(seconds=15)
-    timeoutWhenAnswer = datetime.timedelta(seconds=3)
+    timeoutWhenAnswer = datetime.timedelta(seconds=0)
     timeoutWhenGameFinished = datetime.timedelta(seconds=5)
 
-    pointsGoal = 10
+    pointsGoal = 100
 
     minPlayers = 1
 
@@ -82,19 +82,24 @@ class Lobby:
             self.answer()
 
     def answer(self):
+        self.history.append((self.currentSauce, self.playerThatFound))
         self.questionID += 1
         self.send_answer()
         thread = Thread(target=self.answer_delay)
         thread.start()
 
     def get_best_player(self):
-        return sorted(self.get_players(), key=lambda p: p.score)[0]
-
+        playerSorted = sorted(self.get_players(), key=lambda p: p.score)
+        if len(playerSorted) <= 0:
+            return False
+        else:
+            return playerSorted[0]
 
     def answer_delay(self):
         self.datetime = datetime.datetime.now() + Lobby.timeoutWhenAnswer
         sleep(Lobby.timeoutWhenAnswer.total_seconds())
-        if self.get_best_player().score >= Lobby.pointsGoal:
+        best_player = self.get_best_player()
+        if best_player and best_player.score >= Lobby.pointsGoal:
             self.send_game_end()
         else:
             self.next_round()
@@ -126,7 +131,7 @@ class Lobby:
         elif Lobby.QUESTION == self.state:
             if len(self.playerThatFound) >= self.count_players():
                 self.state = Lobby.ANSWER
-                self.datetime = datetime.datetime.now() + Lobby.timeoutWhenChangingRound
+                self.datetime = datetime.datetime.now() + Lobby.timeoutWhenQuestion
         elif Lobby.ANSWER == self.state:
             pass
         elif Lobby.GAME_END == self.state:
@@ -224,10 +229,17 @@ class Lobby:
         # sorted by name
         scoreboard["spectators"] = list(
             sorted(spectators, key=lambda x: x["name"]))
-        scoreboard["history"] = self.history
+        scoreboard["history"] = []
+        for sauce, players in self.history[::-1]:
+            d = {}
+            d["answer"] = sauce[0]
+            d["players"] = []
+            for p in players:
+                d["players"].append(p.name)
+            scoreboard["history"].append(d)
         scoreboard["datetime"] = self.datetime.isoformat()
-        self.send_to_every_players(
-            {"_type": "scoreboard", "data": scoreboard})
+        self.broadcast(
+            {"type": "scoreboard", "data": scoreboard})
 
     def send_waiting_for_players(self):
         print("send waiting for players")
@@ -235,16 +247,16 @@ class Lobby:
         waiting_for_players = {}
         waiting_for_players["qte"] = Lobby.minPlayers - self.count_players()
         waiting_for_players["datetime"] = self.datetime.isoformat()
-        self.send_to_every_players(
-            {"_type": "waiting_for_players", "data": waiting_for_players})
+        self.broadcast(
+            {"type": "waiting_for_players", "data": waiting_for_players})
 
     def send_game_starts_soon(self):
         print("send game starts soon")
         self.state = Lobby.GAME_START_SOON
         game_starts_soon = {}
         game_starts_soon["datetime"] = self.datetime.isoformat()
-        self.send_to_every_players(
-            {"_type": "game_starts_soon", "data": game_starts_soon})
+        self.broadcast(
+            {"type": "game_starts_soon", "data": game_starts_soon})
 
     def send_question(self):
         print("send question")
@@ -252,7 +264,7 @@ class Lobby:
         question = {}
         question["question"] = self.currentSauce[0]
         question["datetime"] = self.datetime.isoformat()
-        self.send_to_every_players({"_type": "question", "data": question})
+        self.broadcast({"type": "question", "data": question})
 
     def send_answer(self):
         print("send answer")
@@ -260,16 +272,16 @@ class Lobby:
         answer = {}
         answer["answer"] = self.currentSauce[1]
         answer["datetime"] = self.datetime.isoformat()
-        data = {"_type": "answer", "data": answer}
-        self.send_to_every_players(data)
+        data = {"type": "answer", "data": answer}
+        self.broadcast(data)
 
     def send_game_end(self):
         print("send game end")
         self.state = Lobby.GAME_END
         game_end = {}
         game_end["datetime"] = self.datetime.isoformat()
-        self.send_to_every_players({"_type": "game_end", "data": game_end})
+        self.broadcast({"type": "game_end", "data": game_end})
 
-    def send_to_every_players(self, data):
+    def broadcast(self, data):
         for player in self.players.values():
             player.socket.send(text_data=json.dumps(data))

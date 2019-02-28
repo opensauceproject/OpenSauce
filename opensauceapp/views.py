@@ -20,13 +20,15 @@ def lobby(request, lobby_name):
     return render(request, 'opensauceapp/lobby.html', {'lobby_name': lobby_name, 'lobby_name_json': json.dumps(lobby_name)})
 
 
-def lobbyList(request):
+def lobbies_list(request):
     data = {"list": []}
-    lobbies = Game.getInstance().getLobbyList()
+    lobbies = Game.get_instance().get_lobbies_list()
     for lobby in lobbies.values():
         l = {
             "name": lobby.name,
-            "nbPlayers": lobby.count()
+            "total": lobby.count(),
+            "players": lobby.count_players(),
+            "spectators": lobby.count_spectators()
         }
         data["list"].append(l)
 

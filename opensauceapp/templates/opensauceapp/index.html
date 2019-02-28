@@ -15,7 +15,7 @@
 		<p class="h2 opensauce">
 			Liste des salons publiques
 		</p>
-		<a id="refreshLobbies" href="#refresh">Rafraichir</a><!--  -->
+		<a id="refreshLobbies" href="#">Rafraichir</a><!--  -->
 		<div id="noLobbies" hidden>
 			Aucun salons disponibles
 		</div>
@@ -58,21 +58,25 @@
 	updateLobbiesList();
 
 	function updateLobbiesList() {
-		fetch("{% url 'lobbiesList' %}")
+		fetch("{% url 'lobbies_list' %}")
 			.then(function(response) {
 				return response.json();
 			})
 			.then(function(json) {
-				lobbiesList.innerHTML = "";
-				if (json.list.length <= 0) {
-					noLobbies.hidden = false;
-				} else {
-					for (let i = 0; i < json.list.length; i++) {
-						let lobby = json.list[i];
-						let lobbyLi = document.createElement("li");
-						let lobbyA = document.createElement("a");
-                        lobbyA.href = "lobby/" + lobby["name"];
-						lobbyA.innerHTML = lobby["name"] + " (" + lobby["nbPlayers"] + " joueur" + (lobby["nbPlayers"]>1?"s":"") + ")";
+					lobbiesList.innerHTML = "";
+					if (json.list.length <= 0) {
+						noLobbies.hidden = false;
+					} else {
+						for (let i = 0; i < json.list.length; i++) {
+							let lobby = json.list[i];
+							let lobbyLi = document.createElement("li");
+							let lobbyA = document.createElement("a");
+							lobbyA.href = "lobby/" + lobby["name"];
+                            lobbyA.innerHTML = lobby["name"] + " (";
+                            lobbyA.innerHTML += lobby["players"] + " joueur" + (lobby["players"] > 1 ? "s" : "");
+                            lobbyA.innerHTML += " / ";
+                            lobbyA.innerHTML += lobby["spectators"] + " spectateur" + (lobby["spectators"] > 1 ? "s" : "");
+                            lobbyA.innerHTML += ")";
 						lobbyLi.appendChild(lobbyA);
 						lobbiesList.appendChild(lobbyLi);
 					}
