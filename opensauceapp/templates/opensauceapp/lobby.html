@@ -74,9 +74,14 @@
         Connecté en tant que : <span id="currentPseudo"></span>
     	<input id="leaveButton" type="button" value="Quitter">
     </span>
-	<div id="scoreBoard-container">
-		<p class="h3">Classement</p>
-		<table id="scoreBoard" class="table">
+	<div id="players-container">
+		<p class="h3">Joueurs</p>
+		<table id="players" class="table">
+		</table>
+	</div>
+	<div id="spectators-container">
+		<p class="h3">Spectateurs</p>
+		<table id="spectators" class="table">
 		</table>
 	</div>
 	<div id="history-container">
@@ -94,12 +99,14 @@
 	let currentTimeEnd;
 
 
-    //Game
-	let scoreBoard = document.getElementById("scoreBoard");
+    //Tables
+	let players = document.getElementById("players");
+	let spectators = document.getElementById("spectators");
 	let historyTable = document.getElementById("historyTable");
+
+	// Game
 	let currentQuestion = document.getElementById("currentQuestion");
 	let remainingTime = document.getElementById("remainingTime");
-
     let submitAnswer = document.getElementById("submitAnswer");
 
     // Login
@@ -119,7 +126,8 @@
 	pseudoField.focus();
 
     tryToConnect();
-    initScoreboard();
+    initPlayers();
+    initSpectators();
     initHistoryTable();
 	updateLoginControls(false);
 
@@ -129,8 +137,12 @@
 		let data = JSON.parse(e.data);
 		console.log("message");
 		console.log(data);
-		if (data.type == "game_state") {
-			updateGameStatus(data.state);
+		// if (data.type == "state") {
+		// 	updateGameStatus(data.state);
+		// }
+		if (data.type == "scoreboard") {
+			updatePlayers(data.scoreboard.players);
+			updateSpectators(data.scoreboard.spectators);
 		}
 	};
 
@@ -210,16 +222,23 @@
     }
 
 	function updateGameStatus(data) {
-		updateScoreBoard(data["players"]);
 		updateTimeEnd(data["questionDateTimeEnd"]);
 		updateQuestion(data["currentQuestion"]);
 	}
 
-	function updateScoreBoard(players) {
-		initScoreboard();
-		for (let i = 0; i < players.length; i++) {
-			let player = players[i];
-			scoreBoard.appendChild(createRow([i+1, player["name"], player.score, player.pointsThisRound == -1 ? "" : "+" + player.pointsThisRound]));
+	function updatePlayers(p) {
+		initPlayers();
+		for (let i = 0; i < p.length; i++) {
+			let player = p[i];
+			players.appendChild(createRow([i+1, player["name"], player.score, player.pointsThisRound == -1 ? "" : "+" + player.pointsThisRound]));
+		}
+	}
+
+	function updateSpectators(s) {
+		initSpectators();
+		for (let i = 0; i < s.length; i++) {
+			let spectator = s[i];
+			spectators.appendChild(createRow([i+1, spectator["name"]]));
 		}
 	}
 
@@ -231,9 +250,14 @@
 		currentQuestion.innerHTML = question;
 	}
 
-	function initScoreboard() {
-		scoreBoard.innerHTML = '';
-		scoreBoard.appendChild(createRow(["#", "Joueur", "Score total", "Score sauce"], "th"));
+	function initPlayers() {
+		players.innerHTML = '';
+		players.appendChild(createRow(["#", "Joueur", "Score total", "Score sauce"], "th"));
+	}
+
+	function initSpectators() {
+		spectators.innerHTML = '';
+		spectators.appendChild(createRow(["#", "Nom"], "th"));
 	}
 
     function initHistoryTable() {

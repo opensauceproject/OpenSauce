@@ -61,12 +61,10 @@ class Lobby:
         self.nextRound()
 
     def playerAdd(self, secKey, socket):
-        print("player add")
         self.players[secKey] = Player(socket)
         self.sendUpdate()
 
     def playerRemove(self, secKey):
-        print("player remove")
         if secKey in self.players:
             del self.players[secKey]
         # if the last player is remove the lobby is also removed
@@ -83,6 +81,7 @@ class Lobby:
         player.isPlaying = True
         player.name = playerName
         self.sendUpdate()
+        self.sendScoreboard()
 
     def playerLeave(self, secKey):
         print("player leave")
@@ -130,8 +129,8 @@ class Lobby:
         self.playerThatFound = []
         # set new end time
         self.questionDateTimeEnd = datetime.datetime.now() + Lobby.timeAvailableToAnswer
-        # thread = Thread(target=self.giveAnswerAfterDelay, args=(self.questionID,))
-        # thread.start()
+        thread = Thread(target=self.giveAnswerAfterDelay, args=(self.questionID,))
+        thread.start()
 
     def __str__(self):
         s = "--" + self.name + "\n"
@@ -147,7 +146,12 @@ class Lobby:
 
     def sendUpdate(self):
         print("send update")
-        data = {"type": "game_state", "state": self.getStatus()}
+        data = {"type": "state", "state": self.getStatus()}
+        self.sendToEveryPlayers(data)
+
+    def sendScoreboard(self):
+        print("send update")
+        data = {"type": "scoreboard", "scoreboard": self.getScoreboard()}
         self.sendToEveryPlayers(data)
 
     def sendAnswer(self):
@@ -159,6 +163,20 @@ class Lobby:
         for player in self.players.values():
             player.socket.send(text_data=json.dumps(data))
 
+    def getScoreboard(self):
+        status = {}
+        players = []
+        spectators = []
+        for player in self.players.values():
+            if player.isPlaying:
+                players.append(player.getStatus())
+            else:
+                spectators.append(player.getStatus())
+        # sorted by score
+        status["players"] = list(sorted(players, key=lambda x: -x["score"]))
+        # sorted by name
+        status["spectators"] = list(sorted(spectators, key=lambda x: x.name))
+        return status
 
     def getStatus(self):
         status = {}
