@@ -17,9 +17,9 @@ class Lobby:
     ANSWER = 3
     GAME_END = 4
 
-    timeAvailableToAnswer = datetime.timedelta(seconds=15)
     timeoutWhenGameStarting = datetime.timedelta(seconds=1)
-    timeoutWhenChangingRound = datetime.timedelta(seconds=3)
+    timeoutWhenQuestion = datetime.timedelta(seconds=15)
+    timeoutWhenAnswer = datetime.timedelta(seconds=3)
     timeoutWhenGameFinished = datetime.timedelta(seconds=5)
 
     minPlayers = 1
@@ -61,21 +61,39 @@ class Lobby:
         self.next_round()
         self.send_question()
 
+    def question_delay(self, questionID):
+        self.datetime = datetime.datetime.now() + Lobby.timeoutWhenQuestion
+        sleep(Lobby.timeoutWhenQuestion.total_seconds())
+        # is it still the same round ?
+        if questionID == self.questionID:
+            self.answer()
+
+    def answer(self):
+        self.questionID += 1
+        self.send_answer()
+        thread = Thread(target=self.answer_delay)
+        thread.start()
+
+    def answer_delay(self):
+        self.datetime = datetime.datetime.now() + Lobby.timeoutWhenAnswer
+        sleep(Lobby.timeoutWhenAnswer.total_seconds())
+        self.next_round()
+        self.send_question()
+
     def next_round(self):
         self.state = Lobby.QUESTION
         # reset players
         for player in self.players.values():
             player.reset_round()
+        self.send_scoreboard()
         # set new sauce
-        self.questionID += 1
         self.currentSauce = random.choice(Lobby.sauces)
         # reset play that found
         self.playerThatFound = []
         # set new end time
-        self.datetime = datetime.datetime.now() + Lobby.timeAvailableToAnswer
-        # thread = Thread(target=self.give_answer_after_delay,
-        #                 args=(self.questionID,))
-        # thread.start()
+        thread = Thread(target=self.question_delay,
+                        args=(self.questionID,))
+        thread.start()
 
 
     def update_state(self):
@@ -98,16 +116,18 @@ class Lobby:
             raise "Unhandled state"
 
     def send_current_state(self):
-        if self.state == Lobby.WAITING_FOR_PLAYERS:
+        if Lobby.WAITING_FOR_PLAYERS == self.state:
             self.send_waiting_for_players()
-        elif self.state == Lobby.GAME_START_SOON:
+        elif Lobby.GAME_START_SOON == self.state:
             self.send_game_starts_soon()
         elif self.state == Lobby.QUESTION:
             self.send_question()
-        elif self.state == Lobby.ANSWER:
+        elif Lobby.ANSWER == self.state:
             self.send_answer()
-        elif self.state == Lobby.GAME_END:
+        elif Lobby.GAME_END == self.state:
             self.send_game_end()
+        else:
+            raise "Unhandled state"
 
     def player_add(self, secKey, socket):
         self.players[secKey] = Player(socket)
@@ -146,11 +166,6 @@ class Lobby:
         self.playerThatFound.append(player)
         player.add_points(Lobby.pointsRepartition[index])
 
-    def update_question_state(self):
-        if len(self.playerThatFound) >= self.count_players():
-            self.state = Lobby.ANSWER
-            self.update_and_send_state()
-
     def player_submit(self, secKey, answer):
         # Can submit now...
         if Lobby.QUESTION != self.state:
@@ -159,10 +174,12 @@ class Lobby:
         if not player.can_earn_points():
             return
 
+        # TODO : Check less restrictive
         if answer == self.currentSauce[1]:
             # right answer
             self.add_player_points(player)
-            self.update_question_state()
+            if len(self.playerThatFound) >= self.count_players():
+                self.answer()
             self.send_scoreboard()
 
     def __str__(self):
@@ -170,12 +187,6 @@ class Lobby:
         for name, player in self.players.items():
             s += "---- " + str(name) + " : " + str(player) + "\n"
         return s
-
-    def give_answer_after_delay(self, questionID):
-        sleep(Lobby.timeAvailableToAnswer.total_seconds())
-        # is it still the same round ?
-        if questionID == self.questionID:
-            self.send_answer()
 
     def send_scoreboard(self):
         print("send scoreboard")
@@ -201,6 +212,7 @@ class Lobby:
 
     def send_waiting_for_players(self):
         print("send waiting for players")
+        self.state = Lobby.WAITING_FOR_PLAYERS
         waiting_for_players = {}
         waiting_for_players["qte"] = Lobby.minPlayers - self.count_players()
         waiting_for_players["datetime"] = self.datetime.isoformat()
@@ -209,6 +221,7 @@ class Lobby:
 
     def send_game_starts_soon(self):
         print("send game starts soon")
+        self.state = Lobby.GAME_START_SOON
         game_starts_soon = {}
         game_starts_soon["datetime"] = self.datetime.isoformat()
         self.send_to_every_players(
@@ -216,6 +229,7 @@ class Lobby:
 
     def send_question(self):
         print("send question")
+        self.state = Lobby.QUESTION
         question = {}
         question["question"] = self.currentSauce[0]
         question["datetime"] = self.datetime.isoformat()
@@ -223,14 +237,16 @@ class Lobby:
 
     def send_answer(self):
         print("send answer")
+        self.state = Lobby.ANSWER
         answer = {}
         answer["answer"] = self.currentSauce[1]
         answer["datetime"] = self.datetime.isoformat()
-        data = {"_type": "answer", "answer": answer}
+        data = {"_type": "answer", "data": answer}
         self.send_to_every_players(data)
 
     def send_game_end(self):
         print("send game end")
+        self.state = Lobby.GAME_END
         game_end = {}
         game_end["datetime"] = self.datetime.isoformat()
         self.send_to_every_players({"_type": "game_end", "data": game_end})
