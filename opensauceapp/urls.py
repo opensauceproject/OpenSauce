@@ -12,6 +12,6 @@ urlpatterns = [
     path(r'reports/', views.reports, name='reports'),
 
     # Auth. System
-    path('login/', reg_views.LoginView.as_view(), name='login'),
-    path('logout/', reg_views.LogoutView.as_view(), name='logout'),
+    path(r'login/', reg_views.LoginView.as_view(), name='login'),
+    path(r'logout/', reg_views.LogoutView.as_view(), name='logout'),
 ]
