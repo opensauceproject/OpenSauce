@@ -124,9 +124,10 @@ AUTH_PASSWORD_VALIDATORS = [
 ## Login succes redirection (default : accounts/profile)
 ## Redirect to admin/report page
 
-LOGIN_URL = '/login'
-LOGIN_REDIRECT_URL = '/reports'
-
+LOGIN_URL = '/login/'
+LOGOUT_URL = '/logout/'
+LOGIN_REDIRECT_URL = '/reports/'
+LOGOUT_REDIRECT_URL = '/'
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.1/topics/i18n/
