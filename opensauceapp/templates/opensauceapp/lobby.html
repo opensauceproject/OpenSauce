@@ -4,57 +4,79 @@
 {% block content %}
 <style>
 	html, body {
-        width:100%;
-        height:100%;
-        margin:0;
-        padding:0;
-    }
+		width:100%;
+		height:100%;
+		margin:0;
+		padding:0;
+	}
 
-    #left_container {
-        float:left;
-        width: calc(100% - 600px);
-        height: 100%;
-        margin:0;
-        background-color:#FFFDF2;
-    }
-    #right_container {
-        float:right;
-        width: 600px;
-        height: calc(100%);
-        padding: 30px;
-        background-color:#393E46;
-        color:#FFFDF2;
-    }
+	#left_container {
+		float:left;
+		width: calc(100% - 600px);
+		height: 100%;
+		margin:0;
+		padding: 30px;
+	}
+	#right_container {
+		float:right;
+		width: 600px;
+		height: 100%;
+		padding: 30px 30px 0px 30px;
+		overflow:auto;
+	}
 
-    #connexion{
-        padding-bottom:30px;
-    }
+	#connexion{
+		padding:30px 0px;
+	}
 
-    #current_question {
-        height: 80%;
-        font-size: 50px;
-    }
+	#current_question {
+        user-select: none;
+		height: 80%;
+		width:100%;
+        display:table;
+	}
 
-    #submit_answer {
-        width: calc(100% - 100px);
-        margin: 50px;
-        font-size: 2em;
-        text-align: center;
-        border-radius: 25px;
-        background-color:#393E46;
-        color:white;
-        text-transform: uppercase;
-    }
+	#question_text {
+		text-align:center;
+		font-size: 50px;
+		width:100%;
+		height:100%;
+        display: table-cell;
+        vertical-align: middle;
+
+	}
+
+	#question_image {
+		width:100%;
+		height:100%;
+		background-position: center;
+		background-repeat: no-repeat;
+		background-size: contain;
+	}
+
+	#submit_answer {
+		width: calc(100% - 100px);
+		margin: 50px;
+		font-size: 2em;
+		text-align: center;
+		border-radius: 25px;
+		background-color:#393E46;
+		color:white;
+		text-transform: uppercase;
+	}
 
 </style>
 <div id="left_container">
-	<div id="game_message" class="w-100 text-center"></div>
-	<div id="category"></div>
-	<div class="w-100 text-center">Temps restant : <span id="date_time">0</span> sec.</div>
-	<div id="current_question" class="center"></div>
+	<div id="game_message" class="w-100 text-center" hidden></div>
+	<div id="date_time_container" class="w-100 text-center" hidden>Temps restant : <span id="date_time">0</span> sec.</div>
+	<div id="category_container" hidden>Catégorie : <span id="category"></span></div>
+	<div id="current_question" class="center">
+		<div id="question_text" hidden></div>
+		<div id="question_image" hidden></div>
+	</div>
 	<input id="submit_answer" type="text" hidden>
 </div>
-<div id="right_container">
+<div id="right_container" class="bg-dark text-white">
 	<div class="h3">
 		Salon : {% autoescape on %}
 		{{lobby_name}}
@@ -87,12 +109,12 @@
 	</div>
 	<div id="spectators_table_container">
 		<p class="h3">Spectateurs</p>
-		<table id="spectators_table" class="table w-100">
+		<table id="spectators_table" class="table table-sm w-100">
 		</table>
 	</div>
 	<div id="history_table_container">
 		<p class="h3">Historique</p>
-		<table id="history_table" class="table w-100">
+		<table id="history_table" class="table table-sm w-100">
 		</table>
 	</div>
 </div>
@@ -116,7 +138,12 @@
 
 	// Game
 	let current_question = document.getElementById("current_question");
+	let question_text = document.getElementById("question_text");
+	let question_image = document.getElementById("question_image");
+	let category = document.getElementById("category");
+	let category_container = document.getElementById("category_container");
 	let date_time = document.getElementById("date_time");
+	let date_time_container = document.getElementById("date_time_container");
 	let submit_answer = document.getElementById("submit_answer");
 
 	// Login
@@ -152,9 +179,6 @@
 		let data = message.data;
 		datetime = Date.parse(data.datetime);
 		switch (message.type) {
-			case "state":
-				update_game_status(data.state);
-				break;
 			case "scoreboard":
 				update_players_table(data.players);
 				update_spectators_table(data.spectators);
@@ -167,7 +191,7 @@
 				update_game_starts_soon();
 				break;
 			case "question":
-				update_question(data.question);
+				update_question(data);
 				break;
 			case "answer":
 				update_answer(data.answer);
@@ -216,7 +240,7 @@
 				"pseudo": pseudo
 			}));
 		}
-		current_pseudo.value = pseudo; //using jquery to escape the pseudo client side
+		current_pseudo.value = pseudo;
 		submit_answer.focus();
 		submit_answer.value = "";
 	}
@@ -252,49 +276,72 @@
 	}
 
 	// Update UI on messages
-
-	function update_game_status(data) {
-		update_time_end(data["questionDateTimeEnd"]);
-		update_question(data["currentQuestion"]);
-	}
-
 	function update_question(question) {
 		game_message.innerHTML = "";
-		current_question.innerHTML = question;
+		question_text.innerHTML = "";
+		question_image.style = "";
+		if (question["type"] == "text") {
+			question_text.hidden = false;
+			question_image.hidden = true;
+			question_text.innerHTML = question["question"];
+		} else if (question["type"] == "image") {
+			question_text.hidden = true;
+			question_image.hidden = false;
+			question_image.style = "background-image : url('" + question["question"] + "')";
+		}
+		category.innerHTML = question["category"];
+
+        date_time_container.hidden = false;
+        game_message.hidden = true;
+		category_container.hidden = false;
 		submit_answer.hidden = false;
+		category_container.hidden = false;
 		submit_answer.focus();
 	}
 
 	function update_answer(answer) {
 		game_message.innerHTML = "La réponse était : " + answer;
+		game_message.hidden = false;
 		submit_answer.hidden = true;
+		category_container.hidden = true;
+		category_container.hidden = true;
+		date_time_container.hidden = true;
 	}
 
 	function update_waiting_for_players(qte) {
 		game_message.innerHTML = "En attente de la connexion de " + qte + " joueurs";
+		game_message.hidden = false;
 		submit_answer.hidden = true;
+		category_container.hidden = true;
+		date_time_container.hidden = true;
 	}
 
 	function update_game_starts_soon(qte) {
 		game_message.innerHTML = "La partie va bientôt commencer !";
+		game_message.hidden = false;
 		submit_answer.hidden = true;
+		category_container.hidden = true;
+		date_time_container.hidden = false;
 	}
 
 	function update_game_end() {
 		game_message.innerHTML = "La partie est terminée !"
+		game_message.hidden = false;
 		submit_answer.hidden = true;
+		category_container.hidden = true;
+		date_time_container.hidden = true;
 	}
 
 	// Tables
 
 	function init_players_table() {
 		players_table.innerHTML = '';
-		players_table.appendChild(Tools.create_row(["", "#", "Nom", "Score total", "Score sauce"], "th"));
+		players_table.appendChild(Tools.create_row(["#", "Nom", "Score", ""], "th"));
 	}
 
 	function init_spectators_table() {
 		spectators_table.innerHTML = '';
-		spectators_table.appendChild(Tools.create_row(["", "Nom"], "th"));
+		spectators_table.appendChild(Tools.create_row(["Nom", ""], "th"));
 	}
 
 	function init_history_table() {
@@ -306,7 +353,11 @@
 		init_players_table();
 		for (let i = 0; i < p.length; i++) {
 			let row = p[i];
-			players_table.appendChild(Tools.create_row([getRights(row), i + 1, row["name"], row.score, row.points_this_round == -1 ? "" : "+" + row.points_this_round]));
+			let bonus = (row.points_this_round == 0 ? "" : " + " + row.points_this_round);
+			let classes = [];
+			if (bonus != "")
+				classes.push("bg-success");
+			players_table.appendChild(Tools.create_row([i + 1, row["name"], row.score + bonus, getRights(row)], "td", classes));
 		}
 	}
 
@@ -314,19 +365,18 @@
 		init_spectators_table();
 		for (let i = 0; i < s.length; i++) {
 			let row = s[i];
-			spectators_table.appendChild(Tools.create_row([getRights(row), row["name"]]));
+			spectators_table.appendChild(Tools.create_row([row["name"], getRights(row)]));
 		}
 	}
 
-    function getRights(player)
-    {
-        let rights = "";
-        if(player.isOwner)
-            rights += "isOwner";
-        if(player.isAdmin)
-            rights += "isAdmin";
-        return rights;
-    }
+	function getRights(player) {
+		let rights = "";
+		if (player.isOwner)
+			rights += "isOwner";
+		if (player.isAdmin)
+			rights += "isAdmin";
+		return rights;
+	}
 
 	function update_history_table(h) {
 		init_history_table();

@@ -13,7 +13,23 @@ from asgiref.sync import async_to_sync
 # -
 
 class Lobby:
-    sauces = [("q1", "1"), ("q2", "2"), ("q3", "3")]
+    sauces = [
+        {"question": "La réponse de cette super question de débug est tout simplement la touche UN du clavier !",
+         "answer": "1",
+         "category": "games",
+         "type": "text"
+         },
+        {"question": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/4QBmRXhpZgAATU0AKgAAAAgABAEaAAUAAAABAAAAPgEbAAUAAAABAAAARgEoAAMAAAABAAIAAAExAAIAAAAQAAAATgAAAAAAAABgAAAAAQAAAGAAAAABcGFpbnQubmV0IDQuMS41AP/bAEMAGhITFxMQGhcVFx0bGh8nQConIyMnTzg8L0BdUmJhXFJaWWd0lH5nbYxvWVqBr4KMmZ6mp6ZkfLbDtKHBlKOmn//bAEMBGx0dJyInTCoqTJ9qWmqfn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn//AABEIAGQAZAMBIgACEQEDEQH/xAAfAAABBQEBAQEBAQAAAAAAAAAAAQIDBAUGBwgJCgv/xAC1EAACAQMDAgQDBQUEBAAAAX0BAgMABBEFEiExQQYTUWEHInEUMoGRoQgjQrHBFVLR8CQzYnKCCQoWFxgZGiUmJygpKjQ1Njc4OTpDREVGR0hJSlNUVVZXWFlaY2RlZmdoaWpzdHV2d3h5eoOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4eLj5OXm5+jp6vHy8/T19vf4+fr/xAAfAQADAQEBAQEBAQEBAAAAAAAAAQIDBAUGBwgJCgv/xAC1EQACAQIEBAMEBwUEBAABAncAAQIDEQQFITEGEkFRB2FxEyIygQgUQpGhscEJIzNS8BVictEKFiQ04SXxFxgZGiYnKCkqNTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqCg4SFhoeIiYqSk5SVlpeYmZqio6Slpqeoqaqys7S1tre4ubrCw8TFxsfIycrS09TV1tfY2dri4+Tl5ufo6ery8/T19vf4+fr/2gAMAwEAAhEDEQA/AOnooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiimTbvJfZ9/adv1oAp3+s2ennbNJuk/wCeacn/AOtWNL4vO79zaDHq7/0FZthoV7qLb2BijJ5kk6n6DvW5F4TslX97JNI3rkAUAVYvF53fvrQY9Uf/ABrdsNStdRQtbyZI+8h4YfhWFqPhVUhaSxkdmUZ8t+c/Q1z9pdS2V0k8JIZD+Y9KAPSKKZBKs8EcqfddQw/Gn0AFFFFABRRRQAUUUUAFFFFABRRRQAV51qaqmqXSoMKJWAH416BdXCWttJPIcLGuTXnYEl7d4UbpJn/UmgDu9FBGj2uf+eYq9UdvEILeOFekahR+AqSgAooooAKKKKACiiigAooooAKKK5rxFruwNZ2b/N0kkHb2HvQBV8TasLqX7JA2Yoz87D+Jv8BVnwrpRUfb5l5IxECPzaqGgaK1/KJ51ItkP/fZ9PpXaABVAUAAcADtQAtFFFABRRRQAUUUUAFFFFABRRVPVppINLuZIiQ6ocEdvegDJ8Q675Aa0tG/e9Hcfw+w96yNE0d9Tm3yZW3Q/M394+grKJycnk1oQa5qFvCkUM4SNBgKI14/SgDvI40ijWONQqKMADsKdXCf8JHqn/P1/wCQ1/wp3/CSap/z8D/v2v8AhQB3NFYXhrVLrUDcLcsH2bSGCgYzn0+lbtABRRRQAUUUUAFFFFABSEBlKsAQRgg96WigCt/Ztj/z5W//AH6X/Cj+zbH/AJ8rb/v0v+FWaKAKv9m2P/Plbf8Afpf8KP7Nsf8Anytv+/S/4VaooAjht4bcEQQxxA9Qihc/lUlFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFAH/2Q==",
+         "answer": "2",
+         "category": "games",
+         "type": "image"
+         },
+        {"question": "Question 3 : donc on réponds par la touche 3, simple non ?",
+         "answer": "3",
+         "category": "tv",
+         "type": "text"
+         },
+    ]
 
     # States
     WAITING_FOR_PLAYERS = 0
@@ -24,7 +40,7 @@ class Lobby:
 
     timeoutWhenGameStarting = datetime.timedelta(seconds=1)
     timeoutWhenQuestion = datetime.timedelta(seconds=15)
-    timeoutWhenAnswer = datetime.timedelta(seconds=0)
+    timeoutWhenAnswer = datetime.timedelta(seconds=2)
     timeoutWhenGameFinished = datetime.timedelta(seconds=5)
 
     pointsGoal = 100
@@ -202,7 +218,7 @@ class Lobby:
             return
 
         # TODO : Check less restrictive
-        if answer == self.currentSauce[1]:
+        if answer == self.currentSauce["answer"]:
             # right answer
             self.add_player_points(player)
             if len(self.playerThatFound) >= self.count_players():
@@ -239,7 +255,7 @@ class Lobby:
         scoreboard["history"] = []
         for sauce, players in self.history[::-1]:
             d = {}
-            d["answer"] = sauce[0]
+            d["answer"] = sauce["answer"]
             d["players"] = []
             for p in players:
                 d["players"].append(p.name)
@@ -269,7 +285,9 @@ class Lobby:
         print("send question")
         self.state = Lobby.QUESTION
         question = {}
-        question["question"] = self.currentSauce[0]
+        question["question"] = self.currentSauce["question"]
+        question["type"] = self.currentSauce["type"]
+        question["category"] = self.currentSauce["category"]
         question["datetime"] = self.datetime.isoformat()
         self.broadcast({"type": "question", "data": question})
 
@@ -277,7 +295,7 @@ class Lobby:
         print("send answer")
         self.state = Lobby.ANSWER
         answer = {}
-        answer["answer"] = self.currentSauce[1]
+        answer["answer"] = self.currentSauce["answer"]
         answer["datetime"] = self.datetime.isoformat()
         data = {"type": "answer", "data": answer}
         self.broadcast(data)

@@ -9,19 +9,19 @@ class Player:
         Player.cpt += 1
         self.score = 0
         # -1 : not found yet
-        self.points_this_round = None
+        self.points_this_round = 0
         self.reset_round()
 
     def can_earn_points(self):
-        return self.points_this_round < 0
+        return self.points_this_round <= 0
 
     def reset_round(self):
-        self.points_this_round = -1
+        self.score += self.points_this_round
+        self.points_this_round = 0
 
     def add_points(self, points):
         if self.can_earn_points():
             self.points_this_round = points
-            self.score += points
 
     def __str__(self):
         s = ""
