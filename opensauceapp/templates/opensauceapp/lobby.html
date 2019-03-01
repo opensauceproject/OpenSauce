@@ -4,25 +4,25 @@
 {% block content %}
 <style>
 	html, body {
-		width:100%;
-		height:100%;
-		margin:0;
-		padding:0;
+		width: 100%;
+		height: 100%;
+		margin: 0;
+		padding: 0;
 	}
 
 	#left_container {
-		float:left;
+		float: left;
 		width: calc(100% - 600px);
 		height: 100%;
-		margin:0;
+		margin: 0;
 		padding: 30px;
 	}
 	#right_container {
-		float:right;
+		float: right;
 		width: 600px;
 		height: 100%;
 		padding: 30px 30px 0px 30px;
-		overflow:auto;
+		overflow: auto;
 	}
 
 	#connexion{
@@ -32,23 +32,22 @@
 	#current_question {
         user-select: none;
 		height: 80%;
-		width:100%;
-        display:table;
+		width: 100%;
+        display: table;
 	}
 
 	#question_text {
-		text-align:center;
+		text-align: center;
 		font-size: 50px;
-		width:100%;
-		height:100%;
+		width: 100%;
+		height: 100%;
         display: table-cell;
         vertical-align: middle;
-
 	}
 
 	#question_image {
-		width:100%;
-		height:100%;
+		width: 100%;
+		height: 100%;
 		background-position: center;
 		background-repeat: no-repeat;
 		background-size: contain;
@@ -60,8 +59,8 @@
 		font-size: 2em;
 		text-align: center;
 		border-radius: 25px;
-		background-color:#393E46;
-		color:white;
+		background-color: #393E46;
+		color: white;
 		text-transform: uppercase;
 	}
 
@@ -76,13 +75,14 @@
 	</div>
 	<input id="submit_answer" type="text" hidden>
 </div>
+
 <div id="right_container" class="bg-dark text-white">
 	<div class="h3">
-		Salon : {% autoescape on %}
-		{{lobby_name}}
-		{% endautoescape %}
+		<a href="{% url 'index' %}"><i class="fas fa-home"></i></a>
+		{% autoescape on %}{{lobby_name}}{% endautoescape %}
 	</div>
 	<div id="connexion">
+		<div class="h3">Connexion</div>
 		<div id="when_disconnected" class="input-group">
 			<div class="input-group-prepend">
 				<span class="input-group-text">Pseudo</span>
@@ -291,8 +291,8 @@
 		}
 		category.innerHTML = question["category"];
 
-        date_time_container.hidden = false;
-        game_message.hidden = true;
+		date_time_container.hidden = false;
+		game_message.hidden = true;
 		category_container.hidden = false;
 		submit_answer.hidden = false;
 		category_container.hidden = false;
