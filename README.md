@@ -1,6 +1,6 @@
   <p align="center">
-    <a href="https://github.com/HE-Arc/OpenSauce/blob/master/res/img/OpenSauce_logo.png">
-      <img src="https://github.com/HE-Arc/OpenSauce/blob/master/res/img/OpenSauce_logo.png" width=500>
+    <a href="https://github.com/HE-Arc/OpenSauce/blob/master/opensauceapp/static/ressources/img/OpenSauce_logo.png">
+      <img src="https://github.com/HE-Arc/OpenSauce/blob/master/opensauceapp/static/ressources/img/OpenSauce_logo.png" width=500>
     </a>
   </p>
 

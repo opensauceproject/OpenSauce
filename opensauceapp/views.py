@@ -4,6 +4,7 @@ from django.views import generic, View
 from django.urls import reverse_lazy
 from django.http import JsonResponse
 from django.utils.safestring import mark_safe
+from django.contrib.auth.decorators import login_required
 import json
 
 from .game.Game import Game
@@ -33,3 +34,9 @@ def lobbies_list(request):
         data["list"].append(l)
 
     return JsonResponse(data)
+
+
+@login_required
+def reports(request):
+    context = {}
+    return render(request, 'opensauceapp/reports.html', context)

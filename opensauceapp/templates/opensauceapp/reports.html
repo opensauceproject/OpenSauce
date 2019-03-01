@@ -1,0 +1,42 @@
+{% extends 'opensauceapp/base.html' %}
+{% block title %}
+Administration Page
+{% endblock %}
+
+{% load static %}
+
+{% block content %}
+<div class="container">
+  <center>
+    <p class="opensaucetitle">
+      OpenSauce
+    </p>
+  </center>
+  <hr>
+  <div>
+    <p class="h2 opensauce">
+      Liste des signalements
+
+      <div class="card">
+        <div class="card-header">
+          Signalement #XXXX
+        </div>
+        <div class="card-body">
+          <div class="card-text flexcontainer">
+            <div class="left-flexitems">
+              <p>Quote : Je vous disais que j'étais victime des colifichets et qu'il faudrait qu'on commence à me considérer en tant que tel.</p>
+              <p>Réponse : Kaamelott</p>
+            </div>
+            <div class="right-flexitems">
+              <p>Date : 27.02.2019</p>
+              <p>Heure : 19:00</p>
+            </div>
+          </div>
+          <a href="#" class="btn btn-primary">Ignorer</a>
+          <a href="#" class="btn btn-primary">Supprimer</a>
+        </div>
+      </div>
+    </p>
+  </div>
+</div>
+{% endblock %}
