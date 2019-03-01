@@ -1,44 +1,59 @@
 {% extends "../opensauceapp/base.html" %}
 
 {% block content %}
+<style>
+  .hcenter_element
+  {
+    margin: auto;
+  }
 
-<div class="container">
-  {% if form.errors %}
-    <p>Your username and password didn't match. Please try again.</p>
-  {% endif %}
+  .login
+  {
+    margin: auto;
+    margin-top: 5%;
+    width: 400px;
+    height: 200px;
+  }
+</style>
 
-  {% if next %}
-    {% if user.is_authenticated %}
-      <p>Your account doesn't have access to this page. To proceed,
-      please login with an account that has access.</p>
-    {% else %}
-      <p>Please login to see this page.</p>
-    {% endif %}
-  {% endif %}
-
-  <form method="post" action="{% url 'login' %}">
-  {% csrf_token %}
+<div class="container login">
   <div class="card">
     <div class="card-header">
       Admin login
     </div>
     <div class="card-body d-flex align-items-center justify-content-center">
-      <table>
-        <tr>
-          <td>{{ form.username.label_tag }}</td>
-          <td>{{ form.username }}</td>
-        </tr>
-        <tr>
-          <td>{{ form.password.label_tag }}</td>
-          <td>{{ form.password }}</td>
-        </tr>
-        <tr>
-          <td><input type="submit" value="login" /></td>
-          <td><input type="hidden" name="next" value="{{ next }}" /></td>
-        </tr>
-      </table>
+      <form method="post" action="{% url 'login' %}">
+      {% csrf_token %}
+        <table>
+          {% if form.errors %}
+            <tr><p class="alert alert-primary">Your username and password didn't match. Please try again.</p></tr>
+          {% endif %}
+
+          {% if next %}
+            {% if user.is_authenticated %}
+              <tr><p class="alert alert-primary">Your account doesn't have access to this page. To proceed,
+              please login with an account that has access.</p></tr>
+            {% else %}
+              <tr><p class="alert alert-primary">Please login to see this page.</p></tr>
+            {% endif %}
+          {% endif %}
+
+          <tr>
+            <td>{{ form.username.label_tag }}</td>
+            <td>{{ form.username }}</td>
+          </tr>
+          <tr>
+            <td>{{ form.password.label_tag }}</td>
+            <td>{{ form.password }}</td>
+          </tr>
+          <tr>
+            <td><input type="submit" value="login" /></td>
+            <td><input type="hidden" name="next" value="{{ next }}" /></td>
+          </tr>
+        </table>
+      </form>
     </div>
   </div>
-  </form>
+
 </div>
 {% endblock %}
