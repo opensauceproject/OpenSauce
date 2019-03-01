@@ -154,7 +154,10 @@ class Lobby:
             raise "Unhandled state"
 
     def player_add(self, secKey, socket):
-        self.players[secKey] = Player(socket)
+        player = Player(socket)
+        if len(self.players) < 1:
+            player.isOwner = True
+        self.players[secKey] = player
         self.send_scoreboard()
         self.update_and_send_state()
 
@@ -214,6 +217,8 @@ class Lobby:
 
     def send_scoreboard(self):
         print("send scoreboard")
+
+        # Players and spectators
         scoreboard = {}
         players = []
         spectators = []
@@ -229,6 +234,8 @@ class Lobby:
         # sorted by name
         scoreboard["spectators"] = list(
             sorted(spectators, key=lambda x: x["name"]))
+
+        # Handle history
         scoreboard["history"] = []
         for sauce, players in self.history[::-1]:
             d = {}

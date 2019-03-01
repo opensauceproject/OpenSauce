@@ -3,6 +3,8 @@ class Player:
     def __init__(self, socket):
         self.socket = socket
         self.isPlaying = False
+        self.isAdmin = False
+        self.isOwner = False
         self.name = "Anonyme " + str(Player.cpt)
         Player.cpt += 1
         self.score = 0
@@ -34,6 +36,9 @@ class Player:
     def get_status(self):
         status = {}
         status["name"] = self.name
+        status["isAdmin"] = self.isAdmin
+        status["isOwner"] = self.isOwner
+        status["isPlaying"] = self.isPlaying
         status["score"] = self.score
         status["points_this_round"] = self.points_this_round
         return status

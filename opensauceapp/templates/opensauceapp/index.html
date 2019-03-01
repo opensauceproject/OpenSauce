@@ -6,45 +6,27 @@
 {% block content %}
 <div class="container">
 	<center>
-		<p class="opensaucetitle">
-			OpenSauce
-		</p>
+		<p class="opensaucetitle">OpenSauce</p>
 	</center>
 	<hr>
 	<div>
-		<p class="h2 opensauce">
-			Liste des salons publiques
-		</p>
-		<a id="refreshLobbies" href="#">Rafraichir</a><!--  -->
-		<div id="noLobbies" hidden>
-			Aucun salons disponibles
-		</div>
-		<ul id="lobbiesList">
-
-		</ul>
+		<p class="h2 opensauce">Liste des salons publiques</p>
+		<a id="refreshLobbies" href="#">Rafraichir</a>
+		<div id="noLobbies" hidden>Aucun salons disponibles</div>
+		<ul id="lobbiesList"></ul>
 	</div>
 	<div>
-		<p class="h2 opensauce">
-			Création de salon
-		</p>
-	</div>
-	<div>
+		<p class="h2 opensauce">Création de salon</p>
 		<form>
-			<div class="form-group">
-				<label for="inputLobbyName">Nom du salon</label>
-				<input type="text" class="form-control" id="inputLobbyName" aria-describedby="lobbyNameHelp" placeholder="SalonSympa">
-				<!--<small id="lobbyNameHelp" class="form-text text-muted">Le nom de votre salon</small>-->
+			<div class="input-group">
+				<div class="input-group-prepend">
+					<span class="input-group-text">Nom du salon</span>
+				</div>
+				<input id="input_lobby_name" type="text" class="form-control">
+				<div class="input-group-append">
+					<button id="create_lobby_button" type="submit" class="btn btn-primary">Créer</button>
+				</div>
 			</div>
-			<div class="form-group">
-				<label for="inputMaxPlayers">Nombre de joueurs maximum</label>
-				<input type=text id="spinner" placeholder="50" />
-				<input type="password" class="form-control" id="inputMaxPlayers" placeholder="Password">
-			</div>
-			<div class="form-group form-check">
-				<input type="checkbox" class="form-check-input" id="exampleCheck1">
-				<label class="form-check-label" for="exampleCheck1">Check me out</label>
-			</div>
-			<button type="submit" class="btn btn-primary">Submit</button>
 		</form>
 	</div>
 </div>
@@ -52,10 +34,17 @@
 	let lobbiesList = document.getElementById("lobbiesList");
 	let refreshLobbies = document.getElementById("refreshLobbies");
 	let noLobbies = document.getElementById("noLobbies");
+	let create_lobby_button = document.getElementById("create_lobby_button");
+	let input_lobby_name = document.getElementById("input_lobby_name");
 
 	refreshLobbies.addEventListener("click", updateLobbiesList);
+	create_lobby_button.addEventListener("click", createLobby);
 
 	updateLobbiesList();
+
+	function createLobby() {
+		window.location.replace("lobby/" + input_lobby_name.value);
+	}
 
 	function updateLobbiesList() {
 		fetch("{% url 'lobbies_list' %}")
@@ -63,20 +52,20 @@
 				return response.json();
 			})
 			.then(function(json) {
-					lobbiesList.innerHTML = "";
-					if (json.list.length <= 0) {
-						noLobbies.hidden = false;
-					} else {
-						for (let i = 0; i < json.list.length; i++) {
-							let lobby = json.list[i];
-							let lobbyLi = document.createElement("li");
-							let lobbyA = document.createElement("a");
-							lobbyA.href = "lobby/" + lobby["name"];
-                            lobbyA.innerHTML = lobby["name"] + " (";
-                            lobbyA.innerHTML += lobby["players"] + " joueur" + (lobby["players"] > 1 ? "s" : "");
-                            lobbyA.innerHTML += " / ";
-                            lobbyA.innerHTML += lobby["spectators"] + " spectateur" + (lobby["spectators"] > 1 ? "s" : "");
-                            lobbyA.innerHTML += ")";
+				lobbiesList.innerHTML = "";
+				if (json.list.length <= 0) {
+					noLobbies.hidden = false;
+				} else {
+					for (let i = 0; i < json.list.length; i++) {
+						let lobby = json.list[i];
+						let lobbyLi = document.createElement("li");
+						let lobbyA = document.createElement("a");
+						lobbyA.href = "lobby/" + lobby["name"];
+						lobbyA.innerHTML = lobby["name"] + " (";
+						lobbyA.innerHTML += lobby["players"] + " joueur" + (lobby["players"] > 1 ? "s" : "");
+						lobbyA.innerHTML += " / ";
+						lobbyA.innerHTML += lobby["spectators"] + " spectateur" + (lobby["spectators"] > 1 ? "s" : "");
+						lobbyA.innerHTML += ")";
 						lobbyLi.appendChild(lobbyA);
 						lobbiesList.appendChild(lobbyLi);
 					}

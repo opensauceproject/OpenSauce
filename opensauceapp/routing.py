@@ -1,7 +1,7 @@
 from django.conf.urls import url
 
-from . import consumers
+from .game.OpenSauceConsumer import OpenSauceConsumer
 
 websocket_urlpatterns = [
-    url(r'lobby/(?P<lobby_name>[^/]+)/', consumers.OpenSauceConsumer),
+    url(r'lobby/(?P<lobby_name>[^/]+)/', OpenSauceConsumer),
 ]

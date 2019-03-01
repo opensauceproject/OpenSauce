@@ -6,18 +6,20 @@
 	html, body {
         width:100%;
         height:100%;
+        margin:0;
+        padding:0;
     }
 
     #left_container {
         float:left;
-        width: 67%;
+        width: calc(100% - 600px);
         height: 100%;
         margin:0;
         background-color:#FFFDF2;
     }
     #right_container {
         float:right;
-        width: 33%;
+        width: 600px;
         height: calc(100%);
         padding: 30px;
         background-color:#393E46;
@@ -27,13 +29,9 @@
     #connexion{
         padding-bottom:30px;
     }
-    #header {
-
-    }
 
     #current_question {
         height: 80%;
-        text-align: center;
         font-size: 50px;
     }
 
@@ -48,61 +46,53 @@
         text-transform: uppercase;
     }
 
-    .scoreboard_table {
-        width:100%;
-    }
 </style>
 <div id="left_container">
-	<div id="header">
-		<div id="lobby_name">
-			Lobby : {% autoescape on %}
-			{{lobby_name}}
-			{% endautoescape %}
-		</div>
-		<div id="game_message">
-		</div>
-	</div>
-
-	<div id="category">
-
-	</div>
-	<div>Temps restant : <span id="date_time">0</span> sec.</div>
-	<div id="current_question">
-
-	</div>
-
+	<div id="game_message" class="w-100 text-center"></div>
+	<div id="category"></div>
+	<div class="w-100 text-center">Temps restant : <span id="date_time">0</span> sec.</div>
+	<div id="current_question" class="center"></div>
 	<input id="submit_answer" type="text" hidden>
 </div>
 <div id="right_container">
+	<div class="h3">
+		Salon : {% autoescape on %}
+		{{lobby_name}}
+		{% endautoescape %}
+	</div>
 	<div id="connexion">
 		<div id="when_disconnected" class="input-group">
 			<div class="input-group-prepend">
 				<span class="input-group-text">Pseudo</span>
 			</div>
-			<input id="pseudo_field" type="text" class="form-control">
-			<input id="join_button" type="button" value="Rejoindre" class="btn">
+			<input id="pseudo_field" class="form-control" type="text">
+			<div class="input-group-append">
+				<input id="join_button" class="btn btn-success" type="button" value="Rejoindre">
+			</div>
 		</div>
 		<div id="when_connected" class="input-group" hidden>
 			<div class="input-group-prepend">
 				<span class="input-group-text">Pseudo</span>
 			</div>
-			<input id="current_pseudo" type="text" class="form-control" disabled>
-			<input id="leave_button" type="button" value="Quitter" class="btn">
+			<input id="current_pseudo" class="form-control" type="text" disabled>
+			<div class="input-group-append">
+				<input id="leave_button" class="btn btn-danger" type="button" value="Quitter">
+			</div>
 		</div>
 	</div>
 	<div id="players_table_container">
 		<p class="h3">Joueurs</p>
-		<table id="players_table" class="table scoreboard_table">
+		<table id="players_table" class="table w-100">
 		</table>
 	</div>
 	<div id="spectators_table_container">
 		<p class="h3">Spectateurs</p>
-		<table id="spectators_table" class="table scoreboard_table">
+		<table id="spectators_table" class="table w-100">
 		</table>
 	</div>
 	<div id="history_table_container">
 		<p class="h3">Historique</p>
-		<table id="history_table" class="table scoreboard_table">
+		<table id="history_table" class="table w-100">
 		</table>
 	</div>
 </div>
@@ -299,12 +289,12 @@
 
 	function init_players_table() {
 		players_table.innerHTML = '';
-		players_table.appendChild(Tools.create_row(["#", "Nom", "Score total", "Score sauce"], "th"));
+		players_table.appendChild(Tools.create_row(["", "#", "Nom", "Score total", "Score sauce"], "th"));
 	}
 
 	function init_spectators_table() {
 		spectators_table.innerHTML = '';
-		spectators_table.appendChild(Tools.create_row(["Nom"], "th"));
+		spectators_table.appendChild(Tools.create_row(["", "Nom"], "th"));
 	}
 
 	function init_history_table() {
@@ -316,7 +306,7 @@
 		init_players_table();
 		for (let i = 0; i < p.length; i++) {
 			let row = p[i];
-			players_table.appendChild(Tools.create_row([i + 1, row["name"], row.score, row.points_this_round == -1 ? "" : "+" + row.points_this_round]));
+			players_table.appendChild(Tools.create_row([getRights(row), i + 1, row["name"], row.score, row.points_this_round == -1 ? "" : "+" + row.points_this_round]));
 		}
 	}
 
@@ -324,9 +314,19 @@
 		init_spectators_table();
 		for (let i = 0; i < s.length; i++) {
 			let row = s[i];
-			spectators_table.appendChild(Tools.create_row([row["name"]]));
+			spectators_table.appendChild(Tools.create_row([getRights(row), row["name"]]));
 		}
 	}
+
+    function getRights(player)
+    {
+        let rights = "";
+        if(player.isOwner)
+            rights += "isOwner";
+        if(player.isAdmin)
+            rights += "isAdmin";
+        return rights;
+    }
 
 	function update_history_table(h) {
 		init_history_table();

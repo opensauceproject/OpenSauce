@@ -6,7 +6,7 @@ from django.http import JsonResponse
 from django.utils.safestring import mark_safe
 import json
 
-from .Game import Game
+from .game.Game import Game
 
 from .models import Sauce, Category
 

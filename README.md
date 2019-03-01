@@ -4,5 +4,4 @@
     </a>
   </p>
 
-
 OpenSauce is an online party game inspired by [PopSauce](http://popsauce.sparklinlabs.com/) implementing categories and that is not meant to crash.
