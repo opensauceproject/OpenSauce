@@ -66,54 +66,55 @@
 
 </style>
 <div id="left_container">
-	<div id="game_message" class="w-100 text-center" hidden></div>
-	<div id="date_time_container" class="w-100 text-center" hidden>Temps restant : <span id="date_time">0</span> sec.</div>
-	<div id="category_container" hidden>Catégorie : <span id="category"></span></div>
+	<span style="float:left; position:absolute;" class="opensaucetitle-small">OpenSauce</span>
+	<!--<span style="float:right"><a class="btn btn-danger" href="#" role="button"><i class="fas fa-exclamation"></i></a></span>-->
+	<div id="game_message" class="w-100 text-center h2" hidden></div>
+	<div id="date_time_container" class="w-100 text-center h2" hidden>Time left : <span id="date_time">0</span> s.</div>
+	<div id="category_container" hidden>Category : <span id="category"></span></div>
 	<div id="current_question" class="center">
 		<div id="question_text" hidden></div>
 		<div id="question_image" hidden></div>
 	</div>
 	<input id="submit_answer" type="text" hidden>
 </div>
-
 <div id="right_container" class="bg-dark text-white">
 	<div class="h3">
-		<a href="{% url 'index' %}"><i class="fas fa-home"></i></a>
 		{% autoescape on %}{{lobby_name}}{% endautoescape %}
+		<span style="float:right"><a class="btn btn-primary" href="{% url 'index' %}" role="button"><i class="fas fa-home"></i></a></span>
 	</div>
 	<div id="connexion">
-		<div class="h3">Connexion</div>
+		<div class="h3">Log in</div>
 		<div id="when_disconnected" class="input-group">
 			<div class="input-group-prepend">
-				<span class="input-group-text">Pseudo</span>
+				<span class="input-group-text">Nickname</span>
 			</div>
 			<input id="pseudo_field" class="form-control" type="text">
 			<div class="input-group-append">
-				<input id="join_button" class="btn btn-success" type="button" value="Rejoindre">
+				<input id="join_button" class="btn btn-success" type="button" value="Join">
 			</div>
 		</div>
 		<div id="when_connected" class="input-group" hidden>
 			<div class="input-group-prepend">
-				<span class="input-group-text">Pseudo</span>
+				<span class="input-group-text">Nickname</span>
 			</div>
 			<input id="current_pseudo" class="form-control" type="text" disabled>
 			<div class="input-group-append">
-				<input id="leave_button" class="btn btn-danger" type="button" value="Quitter">
+				<input id="leave_button" class="btn btn-danger" type="button" value="Leave">
 			</div>
 		</div>
 	</div>
 	<div id="players_table_container">
-		<p class="h3">Joueurs</p>
+		<p class="h3">Players</p>
 		<table id="players_table" class="table w-100">
 		</table>
 	</div>
 	<div id="spectators_table_container">
-		<p class="h3">Spectateurs</p>
+		<p class="h3">Spectators</p>
 		<table id="spectators_table" class="table table-sm w-100">
 		</table>
 	</div>
 	<div id="history_table_container">
-		<p class="h3">Historique</p>
+		<p class="h3">History</p>
 		<table id="history_table" class="table table-sm w-100">
 		</table>
 	</div>
@@ -268,7 +269,7 @@
 			if (tsec >= 0) {
 				date_time.innerHTML = tsec;
 			} else {
-				date_time.innerHTML = "Veuillez patienter...";
+				date_time.innerHTML = "Please wait...";
 			}
 		} else {
 			date_time.innerHTML = "";
@@ -300,7 +301,7 @@
 	}
 
 	function update_answer(answer) {
-		game_message.innerHTML = "La réponse était : " + answer;
+		game_message.innerHTML = "The answer was : " + answer;
 		game_message.hidden = false;
 		submit_answer.hidden = true;
 		category_container.hidden = true;
@@ -309,7 +310,7 @@
 	}
 
 	function update_waiting_for_players(qte) {
-		game_message.innerHTML = "En attente de la connexion de " + qte + " joueurs";
+		game_message.innerHTML = "Waiting for " + qte + " players";
 		game_message.hidden = false;
 		submit_answer.hidden = true;
 		category_container.hidden = true;
@@ -317,7 +318,7 @@
 	}
 
 	function update_game_starts_soon(qte) {
-		game_message.innerHTML = "La partie va bientôt commencer !";
+		game_message.innerHTML = "The game is about to begin !";
 		game_message.hidden = false;
 		submit_answer.hidden = true;
 		category_container.hidden = true;
@@ -325,7 +326,7 @@
 	}
 
 	function update_game_end() {
-		game_message.innerHTML = "La partie est terminée !"
+		game_message.innerHTML = "The game has ended !"
 		game_message.hidden = false;
 		submit_answer.hidden = true;
 		category_container.hidden = true;
@@ -336,17 +337,17 @@
 
 	function init_players_table() {
 		players_table.innerHTML = '';
-		players_table.appendChild(Tools.create_row(["#", "Nom", "Score", ""], "th"));
+		players_table.appendChild(Tools.create_row(["#", "Name", "Score", ""], "th"));
 	}
 
 	function init_spectators_table() {
 		spectators_table.innerHTML = '';
-		spectators_table.appendChild(Tools.create_row(["Nom", ""], "th"));
+		spectators_table.appendChild(Tools.create_row(["Name", ""], "th"));
 	}
 
 	function init_history_table() {
 		history_table.innerHTML = '';
-		history_table.appendChild(Tools.create_row(["Réponse", "Premier (+5)", "Deuxième (+3)", "Troisième (+2)"], "th"));
+		history_table.appendChild(Tools.create_row(["Answer", "1<sup>st</sup> <span class=\"badge badge-light\">+5</span>", "2<sup>nd</sup> <span class=\"badge badge-light\">+3</span>", "3<sup>rd</sup> <span class=\"badge badge-light\">+2</span>", " "], "th"));
 	}
 
 	function update_players_table(p) {
@@ -389,7 +390,7 @@
 				else
 					players.push("-");
 			}
-			history_table.appendChild(Tools.create_row([row["answer"], ...players]));
+			history_table.appendChild(Tools.create_row([row["answer"] + "<a style=\"float:right\" href=\"#\" ><span class=\"badge badge-danger\"><i class=\"fas fa-exclamation\"></i></span</a>", ...players]));
 		}
 	}
 </script>
