@@ -7,8 +7,8 @@ Ajout d'une Sauce
 
 {% block content %}
 <div class="container">
-    <h2 class="center">Ajouter une sauce</h2>
-    <form>
+    <h1 class="d-flex justify-content-center p-3">Ajouter une Sauce</h1>
+    <form id="form">
         <ul class="nav nav-tabs justify-content-center">
             <li class="nav-item">
                 <a id="image_menu" class="nav-link active" href="#">Image</a>
@@ -19,43 +19,52 @@ Ajout d'une Sauce
         </ul>
         <div>
             <div class="form-group">
-                <label for="formGroupExampleInput">Catégorie</label>
-                <select id="input_categories" class="custom-select">
+                <label for="input_categories">Catégorie</label>
+                <select id="input_categories" class="custom-select form-control">
                     <option selected></option>
                     <option>Catégorie 1</option>
                 </select>
+                <div class="invalid-feedback">
+                    Veuillez choisir une catégorie...
+                </div>
             </div>
             <div class="image-only form-group">
-                <label for="formGroupExampleInput">Image</label>
+                <label for="input_load_image">Image</label>
                 <div class="custom-file">
                     <input id="input_load_image" type="file" class="custom-file-input">
                     <label id="image_path" class="custom-file-label" for="inputGroupFile01">Choisir un fichier</label>
+                    <div class="invalid-feedback">
+                        Veuillez choisir une image...
+                    </div>
                 </div>
                 <div id="sauce_image_container" class="text-center p-3" hidden>
                     <img id="sauce_image" class="img-fluid rounded">
                 </div>
             </div>
             <div class="quote-only form-group" hidden>
-                <label for="formGroupExampleInput">Citation</label>
-                <input type="text" class="form-control">
+                <label for="sauce_quote">Citation</label>
+                <input id="input_quote" type="text" class="form-control">
             </div>
             <div class="form-group">
-                <label for="formGroupExampleInput">Réponse</label>
-                <input type="text" class="form-control">
+                <label for="sauce_answer">Réponse</label>
+                <input id="input_answer" type="text" class="form-control">
             </div>
             <div class="form-group">
-                <label for="formGroupExampleInput">Difficulté</label>
+                <label for="difficulty_easy">Difficulté</label>
                 <ul class="nav nav-pills nav-fill">
                     <li class="nav-item">
-                        <a id="difficulty_easy" class="nav-link cursor-pointer">Facile</a>
+                        <a id="input_difficulty_easy" class="nav-link cursor-pointer">Facile</a>
                     </li>
                     <li class="nav-item">
-                        <a id="difficulty_medium" class="nav-link cursor-pointer">Moyen</a>
+                        <a id="input_difficulty_medium" class="nav-link cursor-pointer">Moyen</a>
                     </li>
                     <li class="nav-item">
-                        <a id="difficulty_hard" class="nav-link cursor-pointer">Difficile</a>
+                        <a id="input_difficulty_hard" class="nav-link cursor-pointer">Difficile</a>
                     </li>
                 </ul>
+                <small class="form-text text-muted">
+                    TODO : Explain the difficulties
+                </small>
             </div>
             <button id="send_button" class="btn btn-primary">Envoyer</button>
         </div>
@@ -63,11 +72,12 @@ Ajout d'une Sauce
 </div>
 
 <script>
+    let form = document.getElementById('form');
     let image_menu = document.getElementById("image_menu");
     let quote_menu = document.getElementById("quote_menu");
-    let difficulty_easy = document.getElementById("difficulty_easy");
-    let difficulty_medium = document.getElementById("difficulty_medium");
-    let difficulty_hard = document.getElementById("difficulty_hard");
+    let input_difficulty_easy = document.getElementById("input_difficulty_easy");
+    let input_difficulty_medium = document.getElementById("input_difficulty_medium");
+    let input_difficulty_hard = document.getElementById("input_difficulty_hard");
     let send_button = document.getElementById("send_button");
     let input_load_image = document.getElementById("input_load_image");
     let sauce_image_container = document.getElementById("sauce_image_container");
@@ -76,9 +86,9 @@ Ajout d'une Sauce
 
     image_menu.addEventListener("click", show_image_tab);
     quote_menu.addEventListener("click", show_quote_tab);
-    difficulty_easy.addEventListener("click", set_difficulty_easy);
-    difficulty_medium.addEventListener("click", set_difficulty_medium);
-    difficulty_hard.addEventListener("click", set_difficulty_difficult);
+    input_difficulty_easy.addEventListener("click", set_difficulty_easy);
+    input_difficulty_medium.addEventListener("click", set_difficulty_medium);
+    input_difficulty_hard.addEventListener("click", set_difficulty_difficult);
     send_button.addEventListener("click", send);
     input_load_image.addEventListener("change", update_image);
 
@@ -93,17 +103,20 @@ Ajout d'une Sauce
 
     function update_image(e) {
         //https://stackoverflow.com/questions/3814231/loading-an-image-to-a-img-from-input-file/16153675
-        let selectedFile = e.target.files[0];
-        let reader = new FileReader();
-        sauce_image_container.hidden = false;
+        if (e.target.files.length > 0) {
+            let selected_file = e.target.files[0];
+            let reader = new FileReader();
+            sauce_image_container.hidden = false;
 
-        image_path.innerHTML = selectedFile.name;
+            image_path.innerHTML = selected_file.name;
 
-        reader.addEventListener("load", function(e) {
-            sauce_image.src = e.target.result;
-        });
+            reader.addEventListener("load", function(e) {
+                sauce_image.src = e.target.result;
+                sauce_question = e.target.result;
+            });
 
-        reader.readAsDataURL(selectedFile);
+            reader.readAsDataURL(selected_file);
+        }
     }
 
     function show_image_tab() {
@@ -111,6 +124,8 @@ Ajout d'une Sauce
         Tools.set_class_hidden("quote-only", true);
         image_menu.classList.add("active");
         quote_menu.classList.remove("active");
+        sauce_type = "image";
+        sauce_question = "";
     }
 
     function show_quote_tab() {
@@ -118,44 +133,76 @@ Ajout d'une Sauce
         Tools.set_class_hidden("quote-only", false);
         image_menu.classList.remove("active");
         quote_menu.classList.add("active");
+        sauce_type = "quote";
+        sauce_question = "";
     }
 
     function clear_difficulites() {
-        difficulty_easy.classList.remove("bg-success");
-        difficulty_medium.classList.remove("bg-warning");
-        difficulty_hard.classList.remove("bg-danger");
-        difficulty_easy.classList.add("text-success");
-        difficulty_medium.classList.add("text-warning");
-        difficulty_hard.classList.add("text-danger");
+        input_difficulty_easy.classList.remove("bg-success");
+        input_difficulty_medium.classList.remove("bg-warning");
+        input_difficulty_hard.classList.remove("bg-danger");
+        input_difficulty_easy.classList.add("text-success");
+        input_difficulty_medium.classList.add("text-warning");
+        input_difficulty_hard.classList.add("text-danger");
         sauce_difficulty = 0;
     }
 
     function set_difficulty_easy() {
         clear_difficulites();
-        difficulty_easy.classList.add("bg-success");
-        difficulty_easy.classList.add("text-white");
-        difficulty_easy.classList.remove("text-success");
+        input_difficulty_easy.classList.add("bg-success");
+        input_difficulty_easy.classList.add("text-white");
+        input_difficulty_easy.classList.remove("text-success");
         sauce_difficulty = 1;
     }
 
     function set_difficulty_medium() {
         clear_difficulites();
-        difficulty_medium.classList.add("bg-warning");
-        difficulty_medium.classList.add("text-white");
-        difficulty_medium.classList.remove("text-warning");
+        input_difficulty_medium.classList.add("bg-warning");
+        input_difficulty_medium.classList.add("text-white");
+        input_difficulty_medium.classList.remove("text-warning");
         sauce_difficulty = 2;
     }
 
     function set_difficulty_difficult() {
         clear_difficulites();
-        difficulty_hard.classList.add("bg-danger");
-        difficulty_hard.classList.add("text-white");
-        difficulty_hard.classList.remove("text-danger");
+        input_difficulty_hard.classList.add("bg-danger");
+        input_difficulty_hard.classList.add("text-white");
+        input_difficulty_hard.classList.remove("text-danger");
         sauce_difficulty = 3;
     }
 
-    function send() {
+    function validate() {
+        let state = true;
+        //category
+        if (input_categories.value == "") {
+            state = false;
+            input_categories.classList.add("is-invalid");
+            input_categories.classList.remove("is-valid");
+        } else {
+            input_categories.classList.remove("is-invalid");
+            input_categories.classList.add("is-valid");
+        }
 
+
+        if (sauce_question == "") {
+            state = false;
+            input_load_image.classList.add("is-invalid");
+            input_load_image.classList.remove("is-valid");
+        } else {
+            input_load_image.classList.remove("is-invalid");
+            input_load_image.classList.add("is-valid");
+        }
+
+        // if(input_load_image.)
+
+
+        return state;
+    }
+
+    function send() {
+        if (validate()) {
+
+        }
     }
 </script>
 {% endblock %}
