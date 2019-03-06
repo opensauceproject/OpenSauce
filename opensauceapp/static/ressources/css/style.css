@@ -40,3 +40,7 @@
 body {
   background-color: #FFFFFF;
 }
+
+.cursor-pointer {
+    cursor: pointer;
+}

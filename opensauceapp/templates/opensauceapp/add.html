@@ -7,65 +7,155 @@ Ajout d'une Sauce
 
 {% block content %}
 <div class="container">
-    <h2 class="center">Ajout d'une sauce</h2>
-    <ul class="nav nav-tabs justify-content-center">
-        <li class="nav-item">
-            <a id="image_menu" class="nav-link active" href="#">Image</a>
-        </li>
-        <li class="nav-item">
-            <a id="quote_menu" class="nav-link" href="#">Citation</a>
-        </li>
-    </ul>
-    <div id="image_tab" hidden>
-        <div class="input-group mb-3">
-            <div class="input-group-prepend">
-                <label class="input-group-text" for="inputGroupSelect01">Catégorie</label>
+    <h2 class="center">Ajouter une sauce</h2>
+    <form>
+        <ul class="nav nav-tabs justify-content-center">
+            <li class="nav-item">
+                <a id="image_menu" class="nav-link active" href="#">Image</a>
+            </li>
+            <li class="nav-item">
+                <a id="quote_menu" class="nav-link" href="#">Citation</a>
+            </li>
+        </ul>
+        <div>
+            <div class="form-group">
+                <label for="formGroupExampleInput">Catégorie</label>
+                <select id="input_categories" class="custom-select">
+                    <option selected></option>
+                    <option>Catégorie 1</option>
+                </select>
             </div>
-            <select class="custom-select" id="inputGroupSelect01">
-                <option selected></option>
-                <option>Catégorie 1</option>
-            </select>
+            <div class="image-only form-group">
+                <label for="formGroupExampleInput">Image</label>
+                <div class="custom-file">
+                    <input id="input_load_image" type="file" class="custom-file-input">
+                    <label id="image_path" class="custom-file-label" for="inputGroupFile01">Choisir un fichier</label>
+                </div>
+                <div id="sauce_image_container" class="text-center p-3" hidden>
+                    <img id="sauce_image" class="img-fluid rounded">
+                </div>
+            </div>
+            <div class="quote-only form-group" hidden>
+                <label for="formGroupExampleInput">Citation</label>
+                <input type="text" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="formGroupExampleInput">Réponse</label>
+                <input type="text" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="formGroupExampleInput">Difficulté</label>
+                <ul class="nav nav-pills nav-fill">
+                    <li class="nav-item">
+                        <a id="difficulty_easy" class="nav-link cursor-pointer">Facile</a>
+                    </li>
+                    <li class="nav-item">
+                        <a id="difficulty_medium" class="nav-link cursor-pointer">Moyen</a>
+                    </li>
+                    <li class="nav-item">
+                        <a id="difficulty_hard" class="nav-link cursor-pointer">Difficile</a>
+                    </li>
+                </ul>
+            </div>
+            <button id="send_button" class="btn btn-primary">Envoyer</button>
         </div>
-        <div class="input-group mb-3">
-            <div class="input-group-prepend">
-                <span class="input-group-text">Téléverser</span>
-            </div>
-            <div class="custom-file">
-                <input type="file" class="custom-file-input" id="inputGroupFile01">
-                <label class="custom-file-label" for="inputGroupFile01">Choisir un fichier</label>
-            </div>
-        </div>
-        <div class="input-group mb-3">
-            <div class="input-group-prepend">
-                <span class="input-group-text" id="basic-addon1">Réponse</span>
-            </div>
-            <input type="text" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1">
-        </div>
-    </div>
-    <div id="quote_tab" hidden>
-
-    </div>
+    </form>
 </div>
 
 <script>
     let image_menu = document.getElementById("image_menu");
     let quote_menu = document.getElementById("quote_menu");
-    let image_tab = document.getElementById("image_tab");
-    let quote_tab = document.getElementById("quote_tab");
+    let difficulty_easy = document.getElementById("difficulty_easy");
+    let difficulty_medium = document.getElementById("difficulty_medium");
+    let difficulty_hard = document.getElementById("difficulty_hard");
+    let send_button = document.getElementById("send_button");
+    let input_load_image = document.getElementById("input_load_image");
+    let sauce_image_container = document.getElementById("sauce_image_container");
+    let sauce_image = document.getElementById("sauce_image");
+    let image_path = document.getElementById("image_path");
 
     image_menu.addEventListener("click", show_image_tab);
     quote_menu.addEventListener("click", show_quote_tab);
+    difficulty_easy.addEventListener("click", set_difficulty_easy);
+    difficulty_medium.addEventListener("click", set_difficulty_medium);
+    difficulty_hard.addEventListener("click", set_difficulty_difficult);
+    send_button.addEventListener("click", send);
+    input_load_image.addEventListener("change", update_image);
+
+    let sauce_type;
+    let sauce_category;
+    let sauce_question;
+    let sauce_answer;
+    let sauce_difficulty;
 
     show_image_tab();
+    clear_difficulites();
+
+    function update_image(e) {
+        //https://stackoverflow.com/questions/3814231/loading-an-image-to-a-img-from-input-file/16153675
+        let selectedFile = e.target.files[0];
+        let reader = new FileReader();
+        sauce_image_container.hidden = false;
+
+        image_path.innerHTML = selectedFile.name;
+
+        reader.addEventListener("load", function(e) {
+            sauce_image.src = e.target.result;
+        });
+
+        reader.readAsDataURL(selectedFile);
+    }
 
     function show_image_tab() {
-        image_tab.hidden = false;
-        quote_tab.hidden = true;
+        Tools.set_class_hidden("image-only", false);
+        Tools.set_class_hidden("quote-only", true);
+        image_menu.classList.add("active");
+        quote_menu.classList.remove("active");
     }
 
     function show_quote_tab() {
-        image_tab.hidden = true;
-        quote_tab.hidden = false;
+        Tools.set_class_hidden("image-only", true);
+        Tools.set_class_hidden("quote-only", false);
+        image_menu.classList.remove("active");
+        quote_menu.classList.add("active");
+    }
+
+    function clear_difficulites() {
+        difficulty_easy.classList.remove("bg-success");
+        difficulty_medium.classList.remove("bg-warning");
+        difficulty_hard.classList.remove("bg-danger");
+        difficulty_easy.classList.add("text-success");
+        difficulty_medium.classList.add("text-warning");
+        difficulty_hard.classList.add("text-danger");
+        sauce_difficulty = 0;
+    }
+
+    function set_difficulty_easy() {
+        clear_difficulites();
+        difficulty_easy.classList.add("bg-success");
+        difficulty_easy.classList.add("text-white");
+        difficulty_easy.classList.remove("text-success");
+        sauce_difficulty = 1;
+    }
+
+    function set_difficulty_medium() {
+        clear_difficulites();
+        difficulty_medium.classList.add("bg-warning");
+        difficulty_medium.classList.add("text-white");
+        difficulty_medium.classList.remove("text-warning");
+        sauce_difficulty = 2;
+    }
+
+    function set_difficulty_difficult() {
+        clear_difficulites();
+        difficulty_hard.classList.add("bg-danger");
+        difficulty_hard.classList.add("text-white");
+        difficulty_hard.classList.remove("text-danger");
+        sauce_difficulty = 3;
+    }
+
+    function send() {
+
     }
 </script>
 {% endblock %}

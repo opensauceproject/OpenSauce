@@ -11,4 +11,11 @@ class Tools {
 		}
 		return tr;
 	}
+
+	static set_class_hidden(cls, bool) {
+		let image_only = document.getElementsByClassName(cls);
+		for (let i = 0; i < image_only.length; i++) {
+			image_only[i].hidden = bool;
+		}
+	}
 }
