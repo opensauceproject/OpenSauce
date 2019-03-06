@@ -5,6 +5,7 @@ from django.urls import reverse_lazy
 from django.http import JsonResponse
 from django.utils.safestring import mark_safe
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.cache import never_cache
 import json
 
 from .game.Game import Game
@@ -36,6 +37,7 @@ def lobbies_list(request):
     return JsonResponse(data)
 
 
+@never_cache
 @login_required
 def reports(request):
     context = {}
