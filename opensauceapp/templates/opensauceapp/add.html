@@ -8,7 +8,7 @@ Ajout d'une Sauce
 {% block content %}
 <div class="container">
     <h1 class="d-flex justify-content-center p-3">Ajouter une Sauce</h1>
-    <form id="form">
+    <form>
         <ul class="nav nav-tabs justify-content-center">
             <li class="nav-item">
                 <a id="image_menu" class="nav-link active" href="#">Image</a>
@@ -44,14 +44,20 @@ Ajout d'une Sauce
             <div class="quote-only form-group" hidden>
                 <label for="sauce_quote">Citation</label>
                 <input id="input_quote" type="text" class="form-control">
+                <div class="invalid-feedback">
+                    Veuillez saisir une citation...
+                </div>
             </div>
             <div class="form-group">
                 <label for="sauce_answer">Réponse</label>
                 <input id="input_answer" type="text" class="form-control">
+                <div class="invalid-feedback">
+                    Veuillez saisir une réponse...
+                </div>
             </div>
             <div class="form-group">
                 <label for="difficulty_easy">Difficulté</label>
-                <ul class="nav nav-pills nav-fill">
+                <ul id="input_difficulty" class="nav nav-pills nav-fill">
                     <li class="nav-item">
                         <a id="input_difficulty_easy" class="nav-link cursor-pointer">Facile</a>
                     </li>
@@ -62,6 +68,9 @@ Ajout d'une Sauce
                         <a id="input_difficulty_hard" class="nav-link cursor-pointer">Difficile</a>
                     </li>
                 </ul>
+                <div class="invalid-feedback">
+                    Veuillez choisir une difficulté...
+                </div>
                 <small class="form-text text-muted">
                     TODO : Explain the difficulties
                 </small>
@@ -72,12 +81,12 @@ Ajout d'une Sauce
 </div>
 
 <script>
-    let form = document.getElementById('form');
     let image_menu = document.getElementById("image_menu");
     let quote_menu = document.getElementById("quote_menu");
     let input_difficulty_easy = document.getElementById("input_difficulty_easy");
     let input_difficulty_medium = document.getElementById("input_difficulty_medium");
     let input_difficulty_hard = document.getElementById("input_difficulty_hard");
+    let input_difficulty = document.getElementById("input_difficulty");
     let send_button = document.getElementById("send_button");
     let input_load_image = document.getElementById("input_load_image");
     let sauce_image_container = document.getElementById("sauce_image_container");
@@ -172,37 +181,32 @@ Ajout d'une Sauce
     }
 
     function validate() {
-        let state = true;
-        //category
-        if (input_categories.value == "") {
-            state = false;
-            input_categories.classList.add("is-invalid");
-            input_categories.classList.remove("is-valid");
-        } else {
-            input_categories.classList.remove("is-invalid");
-            input_categories.classList.add("is-valid");
-        }
+        let isInvalid = false;
 
+        isInvalid |= update_valide_class(input_categories, input_categories.value != "");
+        isInvalid |= update_valide_class(input_load_image, sauce_question != "");
+        isInvalid |= update_valide_class(input_answer, input_answer.value != "");
+        isInvalid |= update_valide_class(input_difficulty, sauce_difficulty != 0);
 
-        if (sauce_question == "") {
-            state = false;
-            input_load_image.classList.add("is-invalid");
-            input_load_image.classList.remove("is-valid");
-        } else {
-            input_load_image.classList.remove("is-invalid");
-            input_load_image.classList.add("is-valid");
-        }
-
-        // if(input_load_image.)
-
-
-        return state;
+        return !isInvalid; //return true if valid
     }
 
-    function send() {
+    function update_valide_class(input, condition) {
+        if (condition) {
+            input.classList.add("is-valid");
+            input.classList.remove("is-invalid");
+        } else {
+            input.classList.add("is-invalid");
+            input.classList.remove("is-valid");
+        }
+        return condition;
+    }
+
+    function send(e) {
         if (validate()) {
 
         }
+        // TODO : cancel redirectio
     }
 </script>
 {% endblock %}
