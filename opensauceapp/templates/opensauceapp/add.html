@@ -6,207 +6,265 @@ Ajout d'une Sauce
 {% load static %}
 
 {% block content %}
+
+<style>
+	#feedback_image {
+    max-height: 520px;
+}
+</style>
+
 <div class="container">
-    <h1 class="d-flex justify-content-center p-3">Ajouter une Sauce</h1>
-    <form>
-        <ul class="nav nav-tabs justify-content-center">
-            <li class="nav-item">
-                <a id="image_menu" class="nav-link active" href="#">Image</a>
-            </li>
-            <li class="nav-item">
-                <a id="quote_menu" class="nav-link" href="#">Citation</a>
-            </li>
-        </ul>
-        <div>
-            <div class="form-group">
-                <label for="input_categories">Catégorie</label>
-                <select id="input_categories" class="custom-select form-control">
-                    <option selected></option>
-                    <option>Catégorie 1</option>
-                </select>
-                <div class="invalid-feedback">
-                    Veuillez choisir une catégorie...
-                </div>
-            </div>
-            <div class="image-only form-group">
-                <label for="input_load_image">Image</label>
-                <div class="custom-file">
-                    <input id="input_load_image" type="file" class="custom-file-input">
-                    <label id="image_path" class="custom-file-label" for="inputGroupFile01">Choisir un fichier</label>
-                    <div class="invalid-feedback">
-                        Veuillez choisir une image...
-                    </div>
-                </div>
-                <div id="sauce_image_container" class="text-center p-3" hidden>
-                    <img id="sauce_image" class="img-fluid rounded">
-                </div>
-            </div>
-            <div class="quote-only form-group" hidden>
-                <label for="sauce_quote">Citation</label>
-                <input id="input_quote" type="text" class="form-control">
-                <div class="invalid-feedback">
-                    Veuillez saisir une citation...
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="sauce_answer">Réponse</label>
-                <input id="input_answer" type="text" class="form-control">
-                <div class="invalid-feedback">
-                    Veuillez saisir une réponse...
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="difficulty_easy">Difficulté</label>
-                <ul id="input_difficulty" class="nav nav-pills nav-fill">
-                    <li class="nav-item">
-                        <a id="input_difficulty_easy" class="nav-link cursor-pointer">Facile</a>
-                    </li>
-                    <li class="nav-item">
-                        <a id="input_difficulty_medium" class="nav-link cursor-pointer">Moyen</a>
-                    </li>
-                    <li class="nav-item">
-                        <a id="input_difficulty_hard" class="nav-link cursor-pointer">Difficile</a>
-                    </li>
-                </ul>
-                <div class="invalid-feedback">
-                    Veuillez choisir une difficulté...
-                </div>
-                <small class="form-text text-muted">
-                    TODO : Explain the difficulties
-                </small>
-            </div>
-            <button id="send_button" class="btn btn-primary">Envoyer</button>
-        </div>
-    </form>
+	<h1 class="d-flex justify-content-center p-3">Ajouter une Sauce</h1>
+    {% csrf_token %}
+	<form>
+		<ul class="nav nav-tabs justify-content-center">
+			<li class="nav-item">
+				<a id="image_menu" class="nav-link active" href="#">Image</a>
+			</li>
+			<li class="nav-item">
+				<a id="quote_menu" class="nav-link" href="#">Citation</a>
+			</li>
+		</ul>
+		<div>
+			<div class="form-group">
+				<label for="input_categories">Catégorie</label>
+				<select id="input_categories" class="custom-select form-control">
+					<option selected></option>
+					<option>Catégorie 1</option>
+				</select>
+				<div class="invalid-feedback">
+					Veuillez choisir une catégorie...
+				</div>
+			</div>
+			<div class="image-only form-group">
+				<label for="input_load_image">Image</label>
+				<div class="custom-file">
+					<input id="input_load_image" type="file" class="custom-file-input">
+					<label id="input_image_path" class="custom-file-label">Choisir un fichier</label>
+					<div class="invalid-feedback">
+						Veuillez choisir une image...
+					</div>
+				</div>
+				<div id="feedback_image_container" class="text-center p-3" hidden>
+					<img id="feedback_image" class="img-fluid rounded">
+				</div>
+			</div>
+			<div class="quote-only form-group" hidden>
+				<label for="sauce_quote">Citation</label>
+				<input id="input_quote" type="text" class="form-control">
+				<div class="invalid-feedback">
+					Veuillez saisir une citation...
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="sauce_answer">Réponse</label>
+				<input id="input_answer" type="text" class="form-control">
+				<div class="invalid-feedback">
+					Veuillez saisir une réponse...
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="difficulty_easy">Difficulté</label>
+				<ul id="input_difficulty" class="nav nav-pills nav-fill form-control">
+					<li class="nav-item">
+						<a id="input_difficulty_easy" class="nav-link cursor-pointer">Facile</a>
+					</li>
+					<li class="nav-item">
+						<a id="input_difficulty_medium" class="nav-link cursor-pointer">Moyen</a>
+					</li>
+					<li class="nav-item">
+						<a id="input_difficulty_hard" class="nav-link cursor-pointer">Difficile</a>
+					</li>
+				</ul>
+				<div class="invalid-feedback">
+					Veuillez choisir une difficulté...
+				</div>
+				<small class="form-text text-muted">
+					TODO : Explain the difficulties
+				</small>
+			</div>
+			{# <button id="send_button" class="btn btn-primary">Envoyer</button> #}
+			<div id="send_button">Envoyer</div>
+		</div>
+	</form>
 </div>
 
 <script>
-    let image_menu = document.getElementById("image_menu");
-    let quote_menu = document.getElementById("quote_menu");
-    let input_difficulty_easy = document.getElementById("input_difficulty_easy");
-    let input_difficulty_medium = document.getElementById("input_difficulty_medium");
-    let input_difficulty_hard = document.getElementById("input_difficulty_hard");
-    let input_difficulty = document.getElementById("input_difficulty");
-    let send_button = document.getElementById("send_button");
-    let input_load_image = document.getElementById("input_load_image");
-    let sauce_image_container = document.getElementById("sauce_image_container");
-    let sauce_image = document.getElementById("sauce_image");
-    let image_path = document.getElementById("image_path");
+	const SAUCE_TYPE = {
+		IMAGE: 0,
+		QUOTE: 1
+	};
 
-    image_menu.addEventListener("click", show_image_tab);
-    quote_menu.addEventListener("click", show_quote_tab);
-    input_difficulty_easy.addEventListener("click", set_difficulty_easy);
-    input_difficulty_medium.addEventListener("click", set_difficulty_medium);
-    input_difficulty_hard.addEventListener("click", set_difficulty_difficult);
-    send_button.addEventListener("click", send);
-    input_load_image.addEventListener("change", update_image);
+	const DIFFICULTY = {
+		NONE: 0,
+		EASY: 1,
+		MEDIUM: 2,
+		HARD: 3
+	};
 
-    let sauce_type;
-    let sauce_category;
-    let sauce_question;
-    let sauce_answer;
-    let sauce_difficulty;
+	let image_menu = document.getElementById("image_menu");
+	let quote_menu = document.getElementById("quote_menu");
 
-    show_image_tab();
-    clear_difficulites();
+	let input_load_image = document.getElementById("input_load_image");
+	let input_image_path = document.getElementById("input_image_path");
+	let feedback_image_container = document.getElementById("feedback_image_container");
+	let feedback_image = document.getElementById("feedback_image");
 
-    function update_image(e) {
-        //https://stackoverflow.com/questions/3814231/loading-an-image-to-a-img-from-input-file/16153675
-        if (e.target.files.length > 0) {
-            let selected_file = e.target.files[0];
-            let reader = new FileReader();
-            sauce_image_container.hidden = false;
+	let input_difficulty = document.getElementById("input_difficulty");
+	let input_difficulty_easy = document.getElementById("input_difficulty_easy");
+	let input_difficulty_medium = document.getElementById("input_difficulty_medium");
+	let input_difficulty_hard = document.getElementById("input_difficulty_hard");
 
-            image_path.innerHTML = selected_file.name;
 
-            reader.addEventListener("load", function(e) {
-                sauce_image.src = e.target.result;
-                sauce_question = e.target.result;
-            });
+	let send_button = document.getElementById("send_button");
 
-            reader.readAsDataURL(selected_file);
-        }
-    }
+	image_menu.addEventListener("click", show_image_tab);
+	quote_menu.addEventListener("click", show_quote_tab);
 
-    function show_image_tab() {
-        Tools.set_class_hidden("image-only", false);
-        Tools.set_class_hidden("quote-only", true);
-        image_menu.classList.add("active");
-        quote_menu.classList.remove("active");
-        sauce_type = "image";
-        sauce_question = "";
-    }
+	input_load_image.addEventListener("change", update_image);
 
-    function show_quote_tab() {
-        Tools.set_class_hidden("image-only", true);
-        Tools.set_class_hidden("quote-only", false);
-        image_menu.classList.remove("active");
-        quote_menu.classList.add("active");
-        sauce_type = "quote";
-        sauce_question = "";
-    }
+	input_difficulty_easy.addEventListener("click", set_difficulty_easy);
+	input_difficulty_medium.addEventListener("click", set_difficulty_medium);
+	input_difficulty_hard.addEventListener("click", set_difficulty_difficult);
 
-    function clear_difficulites() {
-        input_difficulty_easy.classList.remove("bg-success");
-        input_difficulty_medium.classList.remove("bg-warning");
-        input_difficulty_hard.classList.remove("bg-danger");
-        input_difficulty_easy.classList.add("text-success");
-        input_difficulty_medium.classList.add("text-warning");
-        input_difficulty_hard.classList.add("text-danger");
-        sauce_difficulty = 0;
-    }
+	send_button.addEventListener("click", send);
 
-    function set_difficulty_easy() {
-        clear_difficulites();
-        input_difficulty_easy.classList.add("bg-success");
-        input_difficulty_easy.classList.add("text-white");
-        input_difficulty_easy.classList.remove("text-success");
-        sauce_difficulty = 1;
-    }
+	let sauce_type;
+	let sauce_category;
+	let sauce_image;
+	let sauce_quote;
+	let sauce_answer;
+	let sauce_difficulty;
 
-    function set_difficulty_medium() {
-        clear_difficulites();
-        input_difficulty_medium.classList.add("bg-warning");
-        input_difficulty_medium.classList.add("text-white");
-        input_difficulty_medium.classList.remove("text-warning");
-        sauce_difficulty = 2;
-    }
+	show_image_tab();
+	clear_difficulites();
 
-    function set_difficulty_difficult() {
-        clear_difficulites();
-        input_difficulty_hard.classList.add("bg-danger");
-        input_difficulty_hard.classList.add("text-white");
-        input_difficulty_hard.classList.remove("text-danger");
-        sauce_difficulty = 3;
-    }
+	function update_image(e) {
+		//https://stackoverflow.com/questions/3814231/loading-an-image-to-a-img-from-input-file/16153675
+		if (e.target.files.length > 0) {
+			let selected_file = e.target.files[0];
+			let reader = new FileReader();
+			feedback_image_container.hidden = false;
 
-    function validate() {
-        let isInvalid = false;
+			input_image_path.innerHTML = selected_file.name;
 
-        isInvalid |= update_valide_class(input_categories, input_categories.value != "");
-        isInvalid |= update_valide_class(input_load_image, sauce_question != "");
-        isInvalid |= update_valide_class(input_answer, input_answer.value != "");
-        isInvalid |= update_valide_class(input_difficulty, sauce_difficulty != 0);
+			reader.addEventListener("load", function(e) {
+				feedback_image.src = e.target.result;
+				sauce_image = e.target.result;
+			});
 
-        return !isInvalid; //return true if valid
-    }
+			reader.readAsDataURL(selected_file);
+		}
+	}
 
-    function update_valide_class(input, condition) {
-        if (condition) {
-            input.classList.add("is-valid");
-            input.classList.remove("is-invalid");
-        } else {
-            input.classList.add("is-invalid");
-            input.classList.remove("is-valid");
-        }
-        return condition;
-    }
+	function show_image_tab() {
+		sauce_type = SAUCE_TYPE.IMAGE;
+		Tools.set_class_hidden("image-only", false);
+		Tools.set_class_hidden("quote-only", true);
+		image_menu.classList.add("active");
+		quote_menu.classList.remove("active");
+	}
 
-    function send(e) {
-        if (validate()) {
+	function show_quote_tab() {
+		sauce_type = SAUCE_TYPE.QUOTE;
+		Tools.set_class_hidden("image-only", true);
+		Tools.set_class_hidden("quote-only", false);
+		image_menu.classList.remove("active");
+		quote_menu.classList.add("active");
+	}
 
-        }
-        // TODO : cancel redirectio
-    }
+	function clear_difficulites() {
+		sauce_difficulty = DIFFICULTY.NONE;
+		input_difficulty_easy.classList.remove("bg-success");
+		input_difficulty_medium.classList.remove("bg-warning");
+		input_difficulty_hard.classList.remove("bg-danger");
+		input_difficulty_easy.classList.add("text-success");
+		input_difficulty_medium.classList.add("text-warning");
+		input_difficulty_hard.classList.add("text-danger");
+	}
+
+	function set_difficulty_easy() {
+		clear_difficulites();
+		sauce_difficulty = DIFFICULTY.EASY;
+		input_difficulty_easy.classList.add("bg-success");
+		input_difficulty_easy.classList.add("text-white");
+		input_difficulty_easy.classList.remove("text-success");
+	}
+
+	function set_difficulty_medium() {
+		clear_difficulites();
+		sauce_difficulty = DIFFICULTY.MEDIUM;
+		input_difficulty_medium.classList.add("bg-warning");
+		input_difficulty_medium.classList.add("text-white");
+		input_difficulty_medium.classList.remove("text-warning");
+	}
+
+	function set_difficulty_difficult() {
+		clear_difficulites();
+		sauce_difficulty = DIFFICULTY.HARD;
+		input_difficulty_hard.classList.add("bg-danger");
+		input_difficulty_hard.classList.add("text-white");
+		input_difficulty_hard.classList.remove("text-danger");
+	}
+
+	function validate() {
+		let isInvalid = false;
+
+		isInvalid |= Tools.update_invalide_class(input_categories, input_categories.value == "");
+		if (sauce_type == SAUCE_TYPE.IMAGE) {
+			isInvalid |= Tools.update_invalide_class(input_load_image, sauce_image == "" || sauce_image == undefined);
+		} else if (sauce_type == SAUCE_TYPE.QUOTE) {
+			isInvalid |= Tools.update_invalide_class(input_quote, input_quote.value == "");
+		}
+		isInvalid |= Tools.update_invalide_class(input_answer, input_answer.value == "");
+		isInvalid |= Tools.update_invalide_class(input_difficulty, sauce_difficulty == 0);
+		return !isInvalid;
+	}
+
+	function post_data(url = ``, data = {}) {
+		//https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
+		// Default options are marked with *
+        console.log(data);
+		return fetch(url, {
+				method: "POST", // *GET, POST, PUT, DELETE, etc.
+				mode: "cors", // no-cors, cors, *same-origin
+				cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+				credentials: "same-origin", // include, *same-origin, omit
+				headers: {
+					"Content-Type": "application/json",
+					// "Content-Type": "application/x-www-form-urlencoded",
+				},
+				redirect: "follow", // manual, *follow, error
+				referrer: "no-referrer", // no-referrer, *client
+				body: JSON.stringify(data), // body data type must match "Content-Type" header
+			})
+			.then(response => response.json()); // parses response to JSON
+	}
+
+	function send(e) {
+		if (validate()) {
+			console.log("send");
+            data = {};
+            if(sauce_type == SAUCE_TYPE.IMAGE)
+            {
+                data["type"] = "image";
+                data["image"] = sauce_image;
+            }
+            else if(sauce_type == SAUCE_TYPE.QUOTE)
+            {
+                data["type"] = "quote";
+                data["image"] = input_quote.value;
+            }
+            data["answer"] = input_answer.value;
+            data["difficulty"] = sauce_difficulty;
+			post_data(`/add/`, data)
+				.then(data => console.log(JSON.stringify(data))) // JSON-string from `response.json()` call
+				.catch(error => console.error(error));
+		} else {
+			e.preventDefault();
+			console.log("cancel");
+		}
+        console.log(e);
+	}
 </script>
 {% endblock %}

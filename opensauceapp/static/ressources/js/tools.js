@@ -18,4 +18,15 @@ class Tools {
 			image_only[i].hidden = bool;
 		}
 	}
+
+    static update_invalide_class(input, condition) {
+		if (condition) {
+			input.classList.add("is-invalid");
+			input.classList.remove("is-valid");
+		} else {
+			input.classList.add("is-valid");
+			input.classList.remove("is-invalid");
+		}
+		return condition;
+	}
 }

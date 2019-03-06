@@ -6,6 +6,7 @@ from django.http import JsonResponse
 from django.utils.safestring import mark_safe
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import never_cache
+from django.views.decorators.csrf import csrf_exempt
 import json
 
 from .game.Game import Game
@@ -15,11 +16,11 @@ from .models import Sauce, Category
 
 def index(request):
     context = {}
-    return render(request, 'opensauceapp/index.html', context)
+    return render(request, "opensauceapp/index.html", context)
 
 
 def lobby(request, lobby_name):
-    return render(request, 'opensauceapp/lobby.html', {'lobby_name': lobby_name, 'lobby_name_json': json.dumps(lobby_name)})
+    return render(request, "opensauceapp/lobby.html", {"lobby_name": lobby_name, "lobby_name_json": json.dumps(lobby_name)})
 
 
 def lobbies_list(request):
@@ -41,9 +42,14 @@ def lobbies_list(request):
 @login_required
 def reports(request):
     context = {}
-    return render(request, 'opensauceapp/reports.html', context)
+    return render(request, "opensauceapp/reports.html", context)
 
-
+@csrf_exempt
 def add(request):
-    context = {}
-    return render(request, 'opensauceapp/add.html', context)
+    if request.method == "GET":
+        context = {}
+        return render(request, "opensauceapp/add.html", context)
+    elif request.method == "POST":
+        data = json.loads(request.body)
+        print(data)
+        return JsonResponse({})
