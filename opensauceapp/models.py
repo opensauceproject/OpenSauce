@@ -15,11 +15,19 @@ class BaseModel(models.Model):
             return self.name
 '''
 
-class Sauce(models.Model):
-    citation=models.CharField(max_length=200)
-
 class Category(models.Model):
+    id=models.AutoField(primary_key=True)
     name=models.CharField(max_length=200)
     description=models.TextField()
     def __str__(self):
         return self.name
+
+class Sauce(models.Model):
+    id=models.AutoField(primary_key=True)
+    question=models.CharField(max_length=200)
+    answer=models.CharField(max_length=200)
+    category=models.ForeignKey(Category, on_delete=models.CASCADE)
+    difficulty=models.IntegerField()
+    media_type=models.IntegerField()
+
+

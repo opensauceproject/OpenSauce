@@ -1,0 +1,26 @@
+[
+    {   "question"  : "C'est pas faux.",
+        "answer"    : "Kaamelott",
+        "category"  : 1,
+        "difficulty": 1,
+        "media_type": 0
+    },
+    {   "question"  : "T'es tendue Natacha.",
+        "answer"    : "Dikkenek",
+        "category"  : 1,
+        "difficulty": 1,
+        "media_type": 0
+    },
+    {   "question"  : "Salut à tous les gamers, c'est ...",
+        "answer"    : "WaRTeK",
+        "category"  : 4,
+        "difficulty": 1,
+        "media_type": 0
+    },
+    {   "question"  : "Pas de pierre, pas de palais. Pas de palais, ... pas de palais.",
+        "answer"    : "Astérix et Obélix : Mission Cléopatre",
+        "category"  : 4,
+        "difficulty": 1,
+        "media_type": 0
+    }
+]
