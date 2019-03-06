@@ -1,0 +1,71 @@
+{% extends 'opensauceapp/base.html' %}
+{% block title %}
+Ajout d'une Sauce
+{% endblock %}
+
+{% load static %}
+
+{% block content %}
+<div class="container">
+    <h2 class="center">Ajout d'une sauce</h2>
+    <ul class="nav nav-tabs justify-content-center">
+        <li class="nav-item">
+            <a id="image_menu" class="nav-link active" href="#">Image</a>
+        </li>
+        <li class="nav-item">
+            <a id="quote_menu" class="nav-link" href="#">Citation</a>
+        </li>
+    </ul>
+    <div id="image_tab" hidden>
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <label class="input-group-text" for="inputGroupSelect01">Catégorie</label>
+            </div>
+            <select class="custom-select" id="inputGroupSelect01">
+                <option selected></option>
+                <option>Catégorie 1</option>
+            </select>
+        </div>
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text">Téléverser</span>
+            </div>
+            <div class="custom-file">
+                <input type="file" class="custom-file-input" id="inputGroupFile01">
+                <label class="custom-file-label" for="inputGroupFile01">Choisir un fichier</label>
+            </div>
+        </div>
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="basic-addon1">Réponse</span>
+            </div>
+            <input type="text" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1">
+        </div>
+    </div>
+    <div id="quote_tab" hidden>
+
+    </div>
+</div>
+
+<script>
+    let image_menu = document.getElementById("image_menu");
+    let quote_menu = document.getElementById("quote_menu");
+    let image_tab = document.getElementById("image_tab");
+    let quote_tab = document.getElementById("quote_tab");
+
+    image_menu.addEventListener("click", show_image_tab);
+    quote_menu.addEventListener("click", show_quote_tab);
+
+    show_image_tab();
+
+    function show_image_tab() {
+        image_tab.hidden = false;
+        quote_tab.hidden = true;
+    }
+
+    function show_quote_tab() {
+        image_tab.hidden = true;
+        quote_tab.hidden = false;
+    }
+</script>
+{% endblock %}

@@ -42,3 +42,8 @@ def lobbies_list(request):
 def reports(request):
     context = {}
     return render(request, 'opensauceapp/reports.html', context)
+
+
+def add(request):
+    context = {}
+    return render(request, 'opensauceapp/add.html', context)
