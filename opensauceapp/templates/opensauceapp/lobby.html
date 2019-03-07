@@ -80,7 +80,11 @@
 <div id="right_container" class="bg-dark text-white">
 	<div class="h3">
 		{% autoescape on %}{{lobby_name}}{% endautoescape %}
-		<span style="float:right"><a class="btn btn-primary" href="{% url 'index' %}" role="button"><i class="fas fa-home"></i></a></span>
+		<button class="btn btn-light" onclick="copyToClipboard('{{lobby_name}}');"><i class="far fa-copy"></i></button>
+		<span style="float:right">
+			
+			<a class="btn btn-light" href="{% url 'index' %}" role="button" data-content="And here's some amazing content. It's very engaging. Right?"><i class="fas fa-home"></i></a>
+		</span>
 	</div>
 	<div id="connexion">
 		<div class="h3">Log in</div>
@@ -103,22 +107,26 @@
 			</div>
 		</div>
 	</div>
+	<hr style="background-color:white;">
 	<div id="players_table_container">
-		<p class="h3">Players</p>
-		<table id="players_table" class="table w-100">
+		<p class="h3">Players <span style="float:right"><i class="fas fa-running"></i></i></span></p>
+		<table id="players_table" class="table table-borderless w-100">
 		</table>
 	</div>
+	<hr style="background-color:white;">
 	<div id="spectators_table_container">
-		<p class="h3">Spectators</p>
-		<table id="spectators_table" class="table table-sm w-100">
+		<p class="h3">Spectators <span style="float:right"><i class="fas fa-eye"></i></span></p>
+		<table id="spectators_table" class="table table-sm table-borderless w-100">
 		</table>
 	</div>
+	<hr style="background-color:white;">
 	<div id="history_table_container">
-		<p class="h3">History</p>
-		<table id="history_table" class="table table-sm w-100">
+		<p class="h3">History <span style="float:right"><i class="fas fa-history"></i></span></p>
+		<table id="history_table" class="table table-sm table-borderless w-100">
 		</table>
 	</div>
 </div>
+
 
 <script>
 	let lobby_socket;
@@ -392,6 +400,18 @@
 			}
 			history_table.appendChild(Tools.create_row([row["answer"] + "<a style=\"float:right\" href=\"#\" ><span class=\"badge badge-danger\"><i class=\"fas fa-exclamation\"></i></span</a>", ...players]));
 		}
+	}
+
+	function copyToClipboard(lobbyName) {
+		console.log(lobbyName);
+		var dummy = document.createElement('input'),
+		text = window.location.href;
+
+		document.body.appendChild(dummy);
+		dummy.value = text;
+		dummy.select();
+		document.execCommand('copy');
+		document.body.removeChild(dummy);
 	}
 </script>
 {% endblock %}

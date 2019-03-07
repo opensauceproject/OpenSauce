@@ -5,48 +5,71 @@
 
 {% block content %}
 <div class="container">
-	<center>
-		<p class="opensaucetitle">OpenSauce</p>
-	</center>
+	<p class="text-center opensaucetitle">OpenSauce</p>
 	<br>
-	<div>
-		<p class="h2 opensauce">Public lobbies 
-			<span style="float:right;">
-			<a role="button" id="refreshLobbies" href="#" class="btn btn-dark">
-				<!-- TODO Ajax to refresh lobbies list and not entire page-->
-				<i class="fas fa-sync-alt"></i>
-			</a>
-			</span>
+	<div class="row">
+		<p class="wrapper mx-auto text-center w-100">
+			OpenSauce is an online party game inspired by PopSauce implementing categories and that is not meant to crash.<br><br>
 		</p>
-		<br>
-		<div id="noLobbies"hidden>
-			<div class="alert alert-dark" role="alert">
-					There is currently no active lobby ! Feel free to create one.
-			</div>
-		</div>
-		<div class="list-group" id="lobbiesList"></div>
 	</div>
-	<br>
-	<div>
-		<br>
-		<p class="h2 opensauce">Create a lobby</p>
-		<br>
-		<div class="input-group">
-			<div class="input-group-prepend">
-				<span class="input-group-text">Lobby name</span>
-			</div>
-			<input id="input_lobby_name" type="text" class="form-control">
-			<div class="input-group-append">
-				<a href="#" id="create_lobby_button" role="button" class="btn btn-dark"><span>Create</span></a>
-			</div>
-		</div>
-	</div>
-	<div class="footer center">
-				<div class="btn-group" role="group" aria-label="Basic example">
-					<a role="button" href="#" class="btn btn-dark"><i class="fab fa-github"></i> Fork us on GitHub</button>
-					<a role="button" href="https://discord.gg/zXFjYaz" class="btn btn-light"><i class="fab fa-discord"></i> Join our Discord</button>
-					<a role="button" href="https://twitter.com/OpenSauceApp" class="btn btn-primary"><i class="fab fa-twitter-square"></i> Follow us on Twitter</a>
+	<hr>
+	<div class="row">
+		<div class="col-md-8 col-sm-12">
+			<div>
+				<p class="h4 opensauce">Public lobbies 
+					<span style="float:right;">
+					<a role="button" id="refreshLobbies" href="#" class="btn btn-dark">
+						<!-- TODO Ajax to refresh lobbies list and not entire page-->
+						<i class="fas fa-sync-alt"></i>
+					</a>
+					</span>
+				</p>
+				<br>
+				<div id="noLobbies"hidden>
+					<div class="alert alert-dark" role="alert">
+							There is currently no active lobby ! Feel free to create one.
+					</div>
 				</div>
+				<div class="list-group" id="lobbiesList"></div>
+			</div>
+			<br>
+			<div>
+				<br>
+				<p class="h4 opensauce">Create a lobby</p>
+				<br>
+				<div class="input-group">
+					<div class="input-group-prepend">
+						<span class="input-group-text">Lobby name</span>
+					</div>
+					<input id="input_lobby_name" type="text" class="form-control">
+					<div class="input-group-append">
+						<a href="#" id="create_lobby_button" role="button" class="btn btn-dark"><span>Create</span></a>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-4 col-sm-12">
+			<p class="h4 opensauce">Find players on <a role="button" href="https://discord.gg/zXFjYaz" class="btn btn-outline-dark btn-sm"><i class="fab fa-discord"></i> Discord</a></small>
+			<br><br>
+			<iframe class="center" src="https://canary.discordapp.com/widget?id=552925373235462381&theme=light" width="100%" height="500" allowtransparency="true" frameborder="0"></iframe>
+			</p>
+		</div>
+	</div>
+	<hr>
+	<div class="row">
+		<div class="col-md-3 col-sm-12">
+		</div>
+		<div class="col-md-6 col-sm-12">
+			<div class="btn-group" role="group" aria-label="Basic example">
+				<a role="button" href="#" class="btn btn-outline-dark"><i class="fab fa-github"></i> Fork us on GitHub</a>
+				<!--<a role="button" href="#" class="btn btn-outline-dark blue"><i class="fab fa-facebook-f"></i> Like our Facebook page</a>-->
+				<a role="button" href="https://discord.gg/zXFjYaz" class="btn btn-dark"><i class="fab fa-discord"></i> Join us on Discord</a>
+				<a role="button" href="https://twitter.com/OpenSauceApp" class="btn btn-primary"><i class="fab fa-twitter-square"></i> Follow us on Twitter</a>
+			</div>
+		</div>
+		<div class="col-md-3 col-sm-12">
+		
+		</div>
 	</div>
 </div>
 <script>

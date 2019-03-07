@@ -19,6 +19,12 @@
   font-weight: bold;
 }
 
+.opensaucetext {
+  font-family: 'DTLProkyonST';
+  font-size: 12px;
+  font-weight: normal;
+}
+
 .opensauce {
     font-family: 'DTLProkyonST';
 }
@@ -48,8 +54,7 @@ body {
 }
 
 .footer {
-  position: fixed;
-  height: 100px;
+  position: absolute;
+  height: 50px;
   bottom: 0;
-  width: 100%;
 }
