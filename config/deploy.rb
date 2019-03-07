@@ -20,10 +20,10 @@ after 'deploy:updating', 'python:create_venv'
 namespace :python do
 
     def venv_path
-        File.join(shared_path, 'env’)
+        File.join(shared_path, "env")
     end
 
-    desc 'Create venv’
+    desc "Create venv"
     task :create_venv do
         on roles([:app, :web]) do |h|
 	    execute "python3.6 -m venv #{venv_path}"
