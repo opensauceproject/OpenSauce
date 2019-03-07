@@ -5,6 +5,7 @@ set :application, "OpenSauce"
 set :repo_url, "git@github.com:HE-Arc/OpenSauce.git"
 
 after 'deploy:publishing', 'uwsgi:restart'
+after 'deploy:updating', 'python:create_venv'
 
 namespace :uwsgi do
     desc "Restart application"
@@ -14,8 +15,6 @@ namespace :uwsgi do
 	   end
     end
 end
-
-after 'deploy:updating', 'python:create_venv'
 
 namespace :python do
 
