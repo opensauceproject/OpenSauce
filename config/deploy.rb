@@ -4,6 +4,17 @@ lock "~> 3.11.0"
 set :application, "OpenSauce"
 set :repo_url, "git@github.com:HE-Arc/OpenSauce.git"
 
+after 'deploy:publishing', 'uwsgi:restart'
+
+namespace :uwsgi do
+    desc "Restart application"
+    task :restart do
+        on roles(:web) do |h|
+	        execute :sudo, "sv reload uwsgi"
+	   end
+    end
+end
+
 # Default branch is :master
 # ask :branch, `git rev-parse --abbrev-ref HEAD`.chomp
 
