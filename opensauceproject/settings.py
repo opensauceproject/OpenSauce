@@ -79,6 +79,13 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'opensauceproject.wsgi.application'
 
+
+#FIXTURE DIR
+
+#FIXTURE_DIRS = (
+#    '/fixtures/'
+#)
+
 # Redis
 ASGI_APPLICATION = "opensauceproject.routing.application"
 CHANNEL_LAYERS = {

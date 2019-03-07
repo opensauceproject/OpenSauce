@@ -13,6 +13,12 @@
     font-weight: bold;
 }
 
+.opensaucetitle-small {
+  font-family: 'DTLProkyonST';
+  font-size: 30px;
+  font-weight: bold;
+}
+
 .opensauce {
     font-family: 'DTLProkyonST';
 }
@@ -43,4 +49,11 @@ body {
 
 .cursor-pointer {
     cursor: pointer;
+}
+
+.footer {
+  position: fixed;
+  height: 100px;
+  bottom: 0;
+  width: 100%;
 }
