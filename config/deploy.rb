@@ -1,8 +1,36 @@
 # config valid for current version and patch releases of Capistrano
 lock "~> 3.11.0"
 
-set :application, "my_app_name"
-set :repo_url, "git@example.com:me/my_repo.git"
+set :application, "OpenSauce"
+set :repo_url, "git@github.com:HE-Arc/OpenSauce.git"
+
+after 'deploy:publishing', 'uwsgi:restart'
+after 'deploy:updating', 'python:create_venv'
+
+namespace :uwsgi do
+    desc "Restart application"
+    task :restart do
+        on roles(:web) do |h|
+	        execute :sudo, "sv reload uwsgi"
+	   end
+    end
+end
+
+namespace :python do
+
+    def venv_path
+        File.join(shared_path, "venv")
+    end
+
+    desc "Create venv"
+    task :create_venv do
+        on roles([:app, :web]) do |h|
+	    execute "python -m venv #{venv_path}"
+        execute "source #{venv_path}/bin/activate"
+	    execute "python -m pip install -r #{release_path}/requirements.txt"
+        end
+    end
+end
 
 # Default branch is :master
 # ask :branch, `git rev-parse --abbrev-ref HEAD`.chomp

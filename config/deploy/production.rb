@@ -1,3 +1,8 @@
+server "opensauce.srvz-webapp.he-arc.ch", user: "poweruser", roles: %w{app db web}, port: 2278
+set :deploy_to, "/var/www/#{fetch(:application)}"
+
+# ssh -p 2278 poweruser@opensauce.srvz-webapp.he-arc.ch
+
 # server-based syntax
 # ======================
 # Defines a single server with a list of roles and multiple properties.
