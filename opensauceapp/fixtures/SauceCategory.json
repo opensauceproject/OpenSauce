@@ -1,0 +1,49 @@
+[{
+        "model": "opensauceapp.saucecategory",
+        "fields": {
+            "name": "TV Series and Films"
+        }
+    },
+    {
+        "model": "opensauceapp.saucecategory",
+        "fields": {
+            "name": "Animes and Mangas"
+        }
+    },
+    {
+        "model": "opensauceapp.saucecategory",
+        "fields": {
+            "name": "Brands"
+        }
+    },
+    {
+        "model": "opensauceapp.saucecategory",
+        "fields": {
+            "name": "Internet references"
+        }
+    },
+    {
+        "model": "opensauceapp.saucecategory",
+        "fields": {
+            "name": "Music"
+        }
+    },
+    {
+        "model": "opensauceapp.saucecategory",
+        "fields": {
+            "name": "People"
+        }
+    },
+    {
+        "model": "opensauceapp.saucecategory",
+        "fields": {
+            "name": "Video games"
+        }
+    },
+    {
+        "model": "opensauceapp.saucecategory",
+        "fields": {
+            "name": "Flags"
+        }
+    }
+]
