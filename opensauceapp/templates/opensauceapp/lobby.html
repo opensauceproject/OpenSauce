@@ -32,22 +32,16 @@
 	#current_question {
         user-select: none;
 		height: 80%;
-		width: 100%;
         display: table;
 	}
 
 	#question_text {
-		text-align: center;
 		font-size: 50px;
-		width: 100%;
-		height: 100%;
         display: table-cell;
         vertical-align: middle;
 	}
 
 	#question_image {
-		width: 100%;
-		height: 100%;
 		background-position: center;
 		background-repeat: no-repeat;
 		background-size: contain;
@@ -66,26 +60,31 @@
 
 </style>
 <div id="left_container">
-	<span style="float:left; position:absolute;" class="opensaucetitle-small">OpenSauce</span>
-	<!--<span style="float:right"><a class="btn btn-danger" href="#" role="button"><i class="fas fa-exclamation"></i></a></span>-->
+	<a class="position-absolute float-right opensaucetitle-small" href="{% url 'index' %}">OpenSauce</a>
 	<div id="game_message" class="w-100 text-center h2" hidden></div>
 	<div id="date_time_container" class="w-100 text-center h2" hidden>Time left : <span id="date_time">0</span> s.</div>
 	<div id="category_container" hidden>Category : <span id="category"></span></div>
-	<div id="current_question" class="center">
-		<div id="question_text" hidden></div>
-		<div id="question_image" hidden></div>
+	<div id="current_question" class="w-100 text-center">
+		<div id="question_text" class="w-100 h-100 text-center" hidden></div>
+		<div id="question_image" class="w-100 h-100" hidden></div>
 	</div>
 	<input id="submit_answer" type="text" hidden>
 </div>
 <div id="right_container" class="bg-dark text-white">
-	<div class="h3">
-		{% autoescape on %}{{lobby_name}}{% endautoescape %}
-		<button class="btn btn-light" onclick="copyToClipboard('{{lobby_name}}');"><i class="far fa-copy"></i></button>
-		<span style="float:right">
-			
-			<a class="btn btn-light" href="{% url 'index' %}" role="button" data-content="And here's some amazing content. It's very engaging. Right?"><i class="fas fa-home"></i></a>
-		</span>
+	<div>
+		<h3>
+			{% autoescape on %}{{lobby_name}}{% endautoescape %}
+		</h3>
+		<div class="input-group">
+			<input id="copy_to_clipboard_url_input" class="form-control" type="input" disabled>
+			<div class="input-group-append">
+				<button id="copy_to_clipboard_url_button" class="btn btn-light">
+					<i class="far fa-copy"></i>
+				</button>
+			</div>
+		</div>
 	</div>
+
 	<div id="connexion">
 		<div class="h3">Log in</div>
 		<div id="when_disconnected" class="input-group">
@@ -107,21 +106,23 @@
 			</div>
 		</div>
 	</div>
-	<hr style="background-color:white;">
+	<hr class="bg-white">
 	<div id="players_table_container">
-		<p class="h3">Players <span style="float:right"><i class="fas fa-running"></i></i></span></p>
+		<p class="h3">Players
+			<i class="float-right fas fa-gamepad"></i>
+		</p>
 		<table id="players_table" class="table table-borderless w-100">
 		</table>
 	</div>
-	<hr style="background-color:white;">
+	<hr class="bg-white">
 	<div id="spectators_table_container">
-		<p class="h3">Spectators <span style="float:right"><i class="fas fa-eye"></i></span></p>
+		<p class="h3">Spectators <i class="float-right fas fa-eye"></i></p>
 		<table id="spectators_table" class="table table-sm table-borderless w-100">
 		</table>
 	</div>
-	<hr style="background-color:white;">
+	<hr class="bg-white">
 	<div id="history_table_container">
-		<p class="h3">History <span style="float:right"><i class="fas fa-history"></i></span></p>
+		<p class="h3">History <i class="float-right fas fa-history"></i></p>
 		<table id="history_table" class="table table-sm table-borderless w-100">
 		</table>
 	</div>
@@ -136,6 +137,10 @@
 	let datetime;
 
 	let game_message = document.getElementById("game_message");
+
+	//Misc
+	let copy_to_clipboard_url_input = document.getElementById("copy_to_clipboard_url_input");
+	let copy_to_clipboard_url_button = document.getElementById("copy_to_clipboard_url_button");
 
 	//Tables
 	let players_table_container = document.getElementById("players_table_container");
@@ -165,6 +170,7 @@
 	let join_button = document.getElementById("join_button");
 
 	leave_button.addEventListener("click", leave);
+	copy_to_clipboard_url_button.addEventListener("click", copy_to_clipboard_url);
 
 	join_button.addEventListener("click", try_to_join);
 	pseudo_field.addEventListener("keydown", function(e) {
@@ -179,6 +185,8 @@
 	init_history_table();
 	update_login_controls(false);
 
+	copy_to_clipboard_url_input.value = window.location.href;
+
 	window.setInterval(update_date_time, 99);
 
 	lobby_socket.onmessage = function(e) {
@@ -186,7 +194,8 @@
 		console.log(message);
 
 		let data = message.data;
-		datetime = Date.parse(data.datetime);
+		datetime = new Date(data.datetime * 1000);
+
 		switch (message.type) {
 			case "scoreboard":
 				update_players_table(data.players);
@@ -272,7 +281,9 @@
 	function update_date_time() {
 		let t = datetime - Date.now();
 		//format
+
 		let tsec = parseInt(t / 1000) + 1;
+		// console.log(tsec);
 		if (tsec) {
 			if (tsec >= 0) {
 				date_time.innerHTML = tsec;
@@ -355,7 +366,8 @@
 
 	function init_history_table() {
 		history_table.innerHTML = '';
-		history_table.appendChild(Tools.create_row(["Answer", "1<sup>st</sup> <span class=\"badge badge-light\">+5</span>", "2<sup>nd</sup> <span class=\"badge badge-light\">+3</span>", "3<sup>rd</sup> <span class=\"badge badge-light\">+2</span>", " "], "th"));
+		history_table.appendChild(Tools.create_row(["Answer", "1<sup>st</sup> <span class=\"badge badge-light\">+5</span>", "2<sup>nd</sup> <span class=\"badge badge-light\">+3</span>", "3<sup>rd</sup> <span class=\"badge badge-light\">+2</span>", " "],
+			"th"));
 	}
 
 	function update_players_table(p) {
@@ -398,17 +410,29 @@
 				else
 					players.push("-");
 			}
-			history_table.appendChild(Tools.create_row([row["answer"] + "<a style=\"float:right\" href=\"#\" ><span class=\"badge badge-danger\"><i class=\"fas fa-exclamation\"></i></span</a>", ...players]));
+			let link_report = document.createElement("a");
+			link_report.classList.add("float-right");
+			link_report.href = "#";
+
+			let exclamation_mark = document.createElement("i");
+			exclamation_mark.classList.add("fas");
+			exclamation_mark.classList.add("fa-exclamation");
+
+			let badge_danger = document.createElement("span");
+			badge_danger.classList.add("badge");
+			badge_danger.classList.add("badge-danger");
+
+			badge_danger.appendChild(exclamation_mark);
+			link_report.appendChild(badge_danger);
+
+			history_table.appendChild(Tools.create_row([row["answer"] + link_report.outerHTML, ...players]));
 		}
 	}
 
-	function copyToClipboard(lobbyName) {
-		console.log(lobbyName);
-		var dummy = document.createElement('input'),
-		text = window.location.href;
-
+	function copy_to_clipboard_url() {
+		let dummy = document.createElement('input');
 		document.body.appendChild(dummy);
-		dummy.value = text;
+		dummy.value = window.location.href;
 		dummy.select();
 		document.execCommand('copy');
 		document.body.removeChild(dummy);

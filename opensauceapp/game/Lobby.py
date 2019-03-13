@@ -260,7 +260,7 @@ class Lobby:
             for p in players:
                 d["players"].append(p.name)
             scoreboard["history"].append(d)
-        scoreboard["datetime"] = self.datetime.isoformat()
+        scoreboard["datetime"] = self.datetime.timestamp()
         self.broadcast(
             {"type": "scoreboard", "data": scoreboard})
 
@@ -269,7 +269,7 @@ class Lobby:
         self.state = Lobby.WAITING_FOR_PLAYERS
         waiting_for_players = {}
         waiting_for_players["qte"] = Lobby.minPlayers - self.count_players()
-        waiting_for_players["datetime"] = self.datetime.isoformat()
+        waiting_for_players["datetime"] = self.datetime.timestamp()
         self.broadcast(
             {"type": "waiting_for_players", "data": waiting_for_players})
 
@@ -277,7 +277,7 @@ class Lobby:
         print("send game starts soon")
         self.state = Lobby.GAME_START_SOON
         game_starts_soon = {}
-        game_starts_soon["datetime"] = self.datetime.isoformat()
+        game_starts_soon["datetime"] = self.datetime.timestamp()
         self.broadcast(
             {"type": "game_starts_soon", "data": game_starts_soon})
 
@@ -288,7 +288,7 @@ class Lobby:
         question["question"] = self.currentSauce["question"]
         question["type"] = self.currentSauce["type"]
         question["category"] = self.currentSauce["category"]
-        question["datetime"] = self.datetime.isoformat()
+        question["datetime"] = self.datetime.timestamp()
         self.broadcast({"type": "question", "data": question})
 
     def send_answer(self):
@@ -296,7 +296,7 @@ class Lobby:
         self.state = Lobby.ANSWER
         answer = {}
         answer["answer"] = self.currentSauce["answer"]
-        answer["datetime"] = self.datetime.isoformat()
+        answer["datetime"] = self.datetime.timestamp()
         data = {"type": "answer", "data": answer}
         self.broadcast(data)
 
@@ -304,7 +304,7 @@ class Lobby:
         print("send game end")
         self.state = Lobby.GAME_END
         game_end = {}
-        game_end["datetime"] = self.datetime.isoformat()
+        game_end["datetime"] = self.datetime.timestamp()
         self.broadcast({"type": "game_end", "data": game_end})
 
     def broadcast(self, data):
