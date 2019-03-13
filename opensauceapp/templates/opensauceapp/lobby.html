@@ -129,6 +129,48 @@
 </div>
 
 
+<!-- to debug -->
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#report_modal">
+	DEBUG BUTTON
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="report_modal" tabindex="-1" role="dialog">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">Report</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<label>
+					Reasons:
+				</label>
+				<div class="custom-control custom-checkbox">
+					<label class="custom-control-label w-100">
+						<input type="checkbox" class="custom-control-input" id="customCheck1">
+						Check this custom checkbox
+					</label>
+					<label class="custom-control-label w-100">
+						<input type="checkbox" class="custom-control-input" id="customCheck1">
+						Check this custom checkbox
+					</label>
+				</div>
+				<hr>
+				<label class="w-100">
+					Additional informations:
+					<textarea class="form-control" id="exampleFormControlTextarea1" rows="3" placeholder="this can help administrators to decide for the removal"></textarea>
+				</label>
+			</div>
+			<div class="modal-footer">
+				<button id="report_button" type="button" class="btn btn-danger">Report</button>
+			</div>
+		</div>
+	</div>
+</div>
+
 <script>
 	let lobby_socket;
 
@@ -171,8 +213,12 @@
 	let pseudo_field = document.getElementById("pseudo_field");
 	let join_button = document.getElementById("join_button");
 
+	// Report
+	let report_button = document.getElementById("report_button");
+
 	leave_button.addEventListener("click", leave);
 	copy_to_clipboard_url_button.addEventListener("click", copy_to_clipboard_url);
+	report_button.addEventListener("click", submit_report);
 
 	join_button.addEventListener("click", try_to_join);
 	pseudo_field.addEventListener("keydown", function(e) {
@@ -237,6 +283,10 @@
 			e.srcElement.value = "";
 		}
 	});
+
+	function submit_report() {
+		console.log("submit report");
+	}
 
 	function try_to_connect() {
 		lobby_socket = new WebSocket("ws://" + window.location.host + "/lobby/" + lobby_name + "/");
@@ -327,14 +377,10 @@
 		submit_answer.focus();
 	}
 
-	function set_submit_answer_hidden(b)
-	{
-		if(!isPlaying)
-		{
+	function set_submit_answer_hidden(b) {
+		if (!isPlaying) {
 			submit_answer.hidden = true;
-		}
-		else
-		{
+		} else {
 			submit_answer.hidden = b;
 		}
 	}
@@ -399,10 +445,10 @@
 			let classes = [];
 			if (bonus != "")
 				classes.push("bg-success");
-			if(pseudo_field.value == row["name"])
+			if (pseudo_field.value == row["name"])
 				classes.push("font-weight-bold");
 
-			players_table.appendChild(Tools.create_row([i + 1, row["name"], row.score + bonus, getRights(row)], "td", classes));
+			players_table.appendChild(Tools.create_row([i + 1, row["name"], row.score + bonus, get_rights(row)], "td", classes));
 		}
 	}
 
@@ -411,13 +457,13 @@
 		for (let i = 0; i < s.length; i++) {
 			let row = s[i];
 			let classes = [];
-			if(pseudo_field.value == row["name"])
+			if (pseudo_field.value == row["name"])
 				classes.push("font-weight-bold");
-			spectators_table.appendChild(Tools.create_row([row["name"], getRights(row)], "td", classes));
+			spectators_table.appendChild(Tools.create_row([row["name"], get_rights(row)], "td", classes));
 		}
 	}
 
-	function getRights(player) {
+	function get_rights(player) {
 		let rights = "";
 		if (player.isOwner)
 			rights += "isOwner";
@@ -437,8 +483,11 @@
 				else
 					players.push("-");
 			}
-			let link_report = document.createElement("a");
+			let link_report = document.createElement("span");
 			link_report.classList.add("float-right");
+			link_report.setAttribute("data-toggle", "modal");
+			link_report.setAttribute("data-target", "#report_modal");
+			link_report.classList.add("cursor-pointer");
 			link_report.href = "#";
 
 			let exclamation_mark = document.createElement("i");
