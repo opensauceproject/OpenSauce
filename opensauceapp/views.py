@@ -11,7 +11,7 @@ import json
 
 from .game.Game import Game
 
-from .models import Sauce, Category
+from .models import Sauce, Category, ReportCategory
 
 
 def index(request):
@@ -20,7 +20,13 @@ def index(request):
 
 
 def lobby(request, lobby_name):
-    return render(request, "opensauceapp/lobby.html", {"lobby_name": lobby_name, "lobby_name_json": json.dumps(lobby_name)})
+    report_categories = ReportCategory.objects.all()
+    return render(request, "opensauceapp/lobby.html",
+    {
+        "lobby_name": lobby_name,
+        "lobby_name_json": json.dumps(lobby_name),
+        "report_categories": report_categories
+    })
 
 
 def lobbies_list(request):

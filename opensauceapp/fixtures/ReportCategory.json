@@ -1,25 +1,23 @@
-[{
-        "model": "opensauceapp.reportcategory",
-        "pk": 0,
-        "fields": {
-            "name": "NSFW",
-            "descritpion": "Image showing explicit content"
-        }
-    },
+[
     {
         "model": "opensauceapp.reportcategory",
-        "pk": 1,
         "fields": {
             "name": "Bad Answer",
-            "descritpion": "The answer is not according to the question"
+            "description": "The answer is not according to the question"
         }
     },
     {
         "model": "opensauceapp.reportcategory",
-        "pk": 2,
         "fields": {
             "name": "Bad Category",
-            "descritpion": "The question is not supposed to be in this category"
+            "description": "The question is not supposed to be in this category"
+        }
+    },
+    {
+        "model": "opensauceapp.reportcategory",
+        "fields": {
+            "name": "NSFW",
+            "description": "Image showing explicit content"
         }
     }
 ]

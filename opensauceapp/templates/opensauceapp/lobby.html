@@ -149,19 +149,20 @@
 					Reasons:
 				</label>
 				<div class="custom-control custom-checkbox">
+					{% for c in report_categories %}
 					<label class="custom-control-label w-100">
-						<input type="checkbox" class="custom-control-input" id="customCheck1">
-						Check this custom checkbox
+						<input type="checkbox" class="custom-control-input report_reason" data-report_id={{c.id}}>
+						{{c.name}}
+						<small class="form-text text-muted">
+							{{c.description}}
+						</small>
 					</label>
-					<label class="custom-control-label w-100">
-						<input type="checkbox" class="custom-control-input" id="customCheck1">
-						Check this custom checkbox
-					</label>
+					{% endfor %}
 				</div>
 				<hr>
 				<label class="w-100">
 					Additional informations:
-					<textarea class="form-control" id="exampleFormControlTextarea1" rows="3" placeholder="this can help administrators to decide for the removal"></textarea>
+					<textarea class="form-control" id="report_additional_informations" rows="3" placeholder="this can help administrators to decide for the removal"></textarea>
 				</label>
 			</div>
 			<div class="modal-footer">
