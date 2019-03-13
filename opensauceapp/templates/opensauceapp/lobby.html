@@ -165,6 +165,8 @@
 	let current_pseudo = document.getElementById("current_pseudo");
 	let leave_button = document.getElementById("leave_button");
 
+	let isPlaying = false;
+
 	let when_disconnected = document.getElementById("when_disconnected");
 	let pseudo_field = document.getElementById("pseudo_field");
 	let join_button = document.getElementById("join_button");
@@ -221,7 +223,11 @@
 	};
 
 	lobby_socket.onclose = function(e) {
-		console.error("Lobby socket closed unexpectedly");
+		// console.error("Lobby socket closed unexpectedly");
+		game_message.hidden = false;
+		date_time_container.hidden = true;
+		game_message.innerHTML = "Connetion to the lobby lost, please refresh your page";
+		game_message.classList.add("text-danger");
 	};
 
 	submit_answer.addEventListener("keydown", function(e) {
@@ -250,17 +256,18 @@
 		}
 	}
 
-	function join(pseudo) {
+	function join(pseudo_join) {
 		update_login_controls(true);
 		if (pseudo_field.value.length > 0) {
 			lobby_socket.send(JSON.stringify({
 				"type": "join",
-				"pseudo": pseudo
+				"pseudo": pseudo_join
 			}));
 		}
-		current_pseudo.value = pseudo;
+		current_pseudo.value = pseudo_join;
 		submit_answer.focus();
 		submit_answer.value = "";
+		isPlaying = true;
 	}
 
 	function leave() {
@@ -270,12 +277,13 @@
 		}));
 		pseudo_field.focus();
 		pseudo_field.select();
+		isPlaying = false;
 	}
 
 	function update_login_controls(connected) {
 		when_connected.hidden = !connected;
 		when_disconnected.hidden = connected;
-		submit_answer.hidden = !connected;
+		set_submit_answer_hidden(!connected);
 	}
 
 	function update_date_time() {
@@ -314,15 +322,27 @@
 		date_time_container.hidden = false;
 		game_message.hidden = true;
 		category_container.hidden = false;
-		submit_answer.hidden = false;
+		set_submit_answer_hidden(false);
 		category_container.hidden = false;
 		submit_answer.focus();
+	}
+
+	function set_submit_answer_hidden(b)
+	{
+		if(!isPlaying)
+		{
+			submit_answer.hidden = true;
+		}
+		else
+		{
+			submit_answer.hidden = b;
+		}
 	}
 
 	function update_answer(answer) {
 		game_message.innerHTML = "The answer was : " + answer;
 		game_message.hidden = false;
-		submit_answer.hidden = true;
+		set_submit_answer_hidden(true);
 		category_container.hidden = true;
 		category_container.hidden = true;
 		date_time_container.hidden = true;
@@ -331,7 +351,7 @@
 	function update_waiting_for_players(qte) {
 		game_message.innerHTML = "Waiting for " + qte + " players";
 		game_message.hidden = false;
-		submit_answer.hidden = true;
+		set_submit_answer_hidden(true);
 		category_container.hidden = true;
 		date_time_container.hidden = true;
 	}
@@ -339,7 +359,7 @@
 	function update_game_starts_soon(qte) {
 		game_message.innerHTML = "The game is about to begin !";
 		game_message.hidden = false;
-		submit_answer.hidden = true;
+		set_submit_answer_hidden(true);
 		category_container.hidden = true;
 		date_time_container.hidden = false;
 	}
@@ -347,7 +367,7 @@
 	function update_game_end() {
 		game_message.innerHTML = "The game has ended !"
 		game_message.hidden = false;
-		submit_answer.hidden = true;
+		set_submit_answer_hidden(true);
 		category_container.hidden = true;
 		date_time_container.hidden = true;
 	}
@@ -366,6 +386,7 @@
 
 	function init_history_table() {
 		history_table.innerHTML = '';
+		// not the best practice be a bit boring to initalize properly
 		history_table.appendChild(Tools.create_row(["Answer", "1<sup>st</sup> <span class=\"badge badge-light\">+5</span>", "2<sup>nd</sup> <span class=\"badge badge-light\">+3</span>", "3<sup>rd</sup> <span class=\"badge badge-light\">+2</span>", " "],
 			"th"));
 	}
@@ -378,6 +399,9 @@
 			let classes = [];
 			if (bonus != "")
 				classes.push("bg-success");
+			if(pseudo_field.value == row["name"])
+				classes.push("font-weight-bold");
+
 			players_table.appendChild(Tools.create_row([i + 1, row["name"], row.score + bonus, getRights(row)], "td", classes));
 		}
 	}
@@ -386,7 +410,10 @@
 		init_spectators_table();
 		for (let i = 0; i < s.length; i++) {
 			let row = s[i];
-			spectators_table.appendChild(Tools.create_row([row["name"], getRights(row)]));
+			let classes = [];
+			if(pseudo_field.value == row["name"])
+				classes.push("font-weight-bold");
+			spectators_table.appendChild(Tools.create_row([row["name"], getRights(row)], "td", classes));
 		}
 	}
 
