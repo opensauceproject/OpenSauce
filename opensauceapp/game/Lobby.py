@@ -233,36 +233,39 @@ class Lobby:
 
     def send_scoreboard(self):
         print("send scoreboard")
+        for secKey, player in self.players.item():
+            # Players and spectators
+            players = []
+            spectators = []
+            for player in self.players.values():
+                player_status = player.get_status()
+                if player.isPlaying:
+                    players.append(player_status)
+                else:
+                    spectators.append(player_status)
 
-        # Players and spectators
-        scoreboard = {}
-        players = []
-        spectators = []
-        for player in self.players.values():
-            playerStatus = player.get_status()
-            if player.isPlaying:
-                players.append(playerStatus)
-            else:
-                spectators.append(playerStatus)
-        # sorted by score
-        scoreboard["players"] = list(
-            sorted(players, key=lambda x: -x["score"]))
-        # sorted by name
-        scoreboard["spectators"] = list(
-            sorted(spectators, key=lambda x: x["name"]))
+            scoreboard = {}
+            # sorted by score
+            scoreboard["players"] = list(
+                sorted(players, key=lambda x: -x["score"]))
+            # sorted by name
+            scoreboard["spectators"] = list(
+                sorted(spectators, key=lambda x: x["name"]))
 
-        # Handle history
-        scoreboard["history"] = []
-        for sauce, players in self.history[::-1]:
-            d = {}
-            d["answer"] = sauce["answer"]
-            d["players"] = []
-            for p in players:
-                d["players"].append(p.name)
-            scoreboard["history"].append(d)
-        scoreboard["datetime"] = self.datetime.timestamp()
-        self.broadcast(
-            {"type": "scoreboard", "data": scoreboard})
+            # Handle history
+            scoreboard["history"] = []
+            for sauce, players_history in self.history[::-1]:
+                d = {}
+                d["answer"] = sauce["answer"]
+                d["players"] = []
+                for p in players_history:
+                    d["players"].append(p.name)
+                scoreboard["history"].append(d)
+
+            scoreboard["datetime"] = self.datetime.timestamp()
+
+            data = {"type": "scoreboard", "data": scoreboard}
+            player.socket.send(text_data=json.dumps(data))
 
     def send_waiting_for_players(self):
         print("send waiting for players")

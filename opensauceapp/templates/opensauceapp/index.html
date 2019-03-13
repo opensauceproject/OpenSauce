@@ -104,20 +104,19 @@
 	let create_lobby_button = document.getElementById("create_lobby_button");
 	let input_lobby_name = document.getElementById("input_lobby_name");
 
-	refreshLobbies.addEventListener("click", updateLobbiesList);
-	input_lobby_name.addEventListener("change", updateLinkToLobby);
+	refreshLobbies.addEventListener("click", update_lobbies_list);
+	input_lobby_name.addEventListener("change", update_link_to_lobby);
 
-	updateLobbiesList();
+	update_lobbies_list();
 
 	//autorefresh
-	setInterval(updateLobbiesList, 1000);
+	setInterval(update_lobbies_list, 1000);
 
-	function updateLinkToLobby(e) {
-
+	function update_link_to_lobby(e) {
 		create_lobby_button.href = "lobby/" + e.srcElement.value;
 	}
 
-	function updateLobbiesList() {
+	function update_lobbies_list() {
 		fetch("{% url 'lobbies_list' %}")
 			.then(function(response) {
 				return response.json();
