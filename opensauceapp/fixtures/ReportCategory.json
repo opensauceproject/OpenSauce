@@ -1,0 +1,23 @@
+[
+    {
+        "model": "opensauceapp.reportcategory",
+        "fields": {
+            "name": "Bad Answer",
+            "description": "The answer is not according to the question"
+        }
+    },
+    {
+        "model": "opensauceapp.reportcategory",
+        "fields": {
+            "name": "Bad Category",
+            "description": "The question is not supposed to be in this category"
+        }
+    },
+    {
+        "model": "opensauceapp.reportcategory",
+        "fields": {
+            "name": "NSFW",
+            "description": "Image showing explicit content"
+        }
+    }
+]

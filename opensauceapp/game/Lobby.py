@@ -214,8 +214,11 @@ class Lobby:
         if Lobby.QUESTION != self.state:
             return
         player = self.players[secKey]
+        if not player.isPlaying:
+            return
         if not player.can_earn_points():
             return
+
 
         # TODO : Check less restrictive
         if answer == self.currentSauce["answer"]:
@@ -233,17 +236,17 @@ class Lobby:
 
     def send_scoreboard(self):
         print("send scoreboard")
-
         # Players and spectators
-        scoreboard = {}
         players = []
         spectators = []
         for player in self.players.values():
-            playerStatus = player.get_status()
+            player_status = player.get_status()
             if player.isPlaying:
-                players.append(playerStatus)
+                players.append(player_status)
             else:
-                spectators.append(playerStatus)
+                spectators.append(player_status)
+
+        scoreboard = {}
         # sorted by score
         scoreboard["players"] = list(
             sorted(players, key=lambda x: -x["score"]))
@@ -253,23 +256,25 @@ class Lobby:
 
         # Handle history
         scoreboard["history"] = []
-        for sauce, players in self.history[::-1]:
+        for sauce, players_history in self.history[::-1]:
             d = {}
             d["answer"] = sauce["answer"]
             d["players"] = []
-            for p in players:
+            for p in players_history:
                 d["players"].append(p.name)
             scoreboard["history"].append(d)
-        scoreboard["datetime"] = self.datetime.isoformat()
-        self.broadcast(
-            {"type": "scoreboard", "data": scoreboard})
+
+        scoreboard["datetime"] = self.datetime.timestamp()
+
+        data = {"type": "scoreboard", "data": scoreboard}
+        self.broadcast(data)
 
     def send_waiting_for_players(self):
         print("send waiting for players")
         self.state = Lobby.WAITING_FOR_PLAYERS
         waiting_for_players = {}
         waiting_for_players["qte"] = Lobby.minPlayers - self.count_players()
-        waiting_for_players["datetime"] = self.datetime.isoformat()
+        waiting_for_players["datetime"] = self.datetime.timestamp()
         self.broadcast(
             {"type": "waiting_for_players", "data": waiting_for_players})
 
@@ -277,7 +282,7 @@ class Lobby:
         print("send game starts soon")
         self.state = Lobby.GAME_START_SOON
         game_starts_soon = {}
-        game_starts_soon["datetime"] = self.datetime.isoformat()
+        game_starts_soon["datetime"] = self.datetime.timestamp()
         self.broadcast(
             {"type": "game_starts_soon", "data": game_starts_soon})
 
@@ -288,7 +293,7 @@ class Lobby:
         question["question"] = self.currentSauce["question"]
         question["type"] = self.currentSauce["type"]
         question["category"] = self.currentSauce["category"]
-        question["datetime"] = self.datetime.isoformat()
+        question["datetime"] = self.datetime.timestamp()
         self.broadcast({"type": "question", "data": question})
 
     def send_answer(self):
@@ -296,7 +301,7 @@ class Lobby:
         self.state = Lobby.ANSWER
         answer = {}
         answer["answer"] = self.currentSauce["answer"]
-        answer["datetime"] = self.datetime.isoformat()
+        answer["datetime"] = self.datetime.timestamp()
         data = {"type": "answer", "data": answer}
         self.broadcast(data)
 
@@ -304,7 +309,7 @@ class Lobby:
         print("send game end")
         self.state = Lobby.GAME_END
         game_end = {}
-        game_end["datetime"] = self.datetime.isoformat()
+        game_end["datetime"] = self.datetime.timestamp()
         self.broadcast({"type": "game_end", "data": game_end})
 
     def broadcast(self, data):

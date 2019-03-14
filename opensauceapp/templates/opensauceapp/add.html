@@ -15,7 +15,7 @@ Ajout d'une Sauce
 
 <div class="container">
 	<h1 class="d-flex justify-content-center p-3">Ajouter une Sauce</h1>
-    {% csrf_token %}
+	{% csrf_token %}
 	<form>
 		<ul class="nav nav-tabs justify-content-center">
 			<li class="nav-item">
@@ -30,7 +30,11 @@ Ajout d'une Sauce
 				<label for="input_categories">Catégorie</label>
 				<select id="input_categories" class="custom-select form-control">
 					<option selected></option>
-					<option>Catégorie 1</option>
+					{% for sauce_category in sauce_categories %}
+					<option value="{{sauce_category.id}}">
+						{{sauce_category.name}}
+					</option>
+					{% endfor %}
 				</select>
 				<div class="invalid-feedback">
 					Veuillez choisir une catégorie...
@@ -224,7 +228,7 @@ Ajout d'une Sauce
 	function post_data(url = ``, data = {}) {
 		//https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
 		// Default options are marked with *
-        console.log(data);
+		console.log(data);
 		return fetch(url, {
 				method: "POST", // *GET, POST, PUT, DELETE, etc.
 				mode: "cors", // no-cors, cors, *same-origin
@@ -244,19 +248,16 @@ Ajout d'une Sauce
 	function send(e) {
 		if (validate()) {
 			console.log("send");
-            data = {};
-            if(sauce_type == SAUCE_TYPE.IMAGE)
-            {
-                data["type"] = "image";
-                data["image"] = sauce_image;
-            }
-            else if(sauce_type == SAUCE_TYPE.QUOTE)
-            {
-                data["type"] = "quote";
-                data["image"] = input_quote.value;
-            }
-            data["answer"] = input_answer.value;
-            data["difficulty"] = sauce_difficulty;
+			data = {};
+			if (sauce_type == SAUCE_TYPE.IMAGE) {
+				data["type"] = "image";
+				data["image"] = sauce_image;
+			} else if (sauce_type == SAUCE_TYPE.QUOTE) {
+				data["type"] = "quote";
+				data["image"] = input_quote.value;
+			}
+			data["answer"] = input_answer.value;
+			data["difficulty"] = sauce_difficulty;
 			post_data(`/add/`, data)
 				.then(data => console.log(JSON.stringify(data))) // JSON-string from `response.json()` call
 				.catch(error => console.error(error));
@@ -264,7 +265,7 @@ Ajout d'une Sauce
 			e.preventDefault();
 			console.log("cancel");
 		}
-        console.log(e);
+		console.log(e);
 	}
 </script>
 {% endblock %}

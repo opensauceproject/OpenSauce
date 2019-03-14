@@ -18,10 +18,9 @@
 	<div class="row">
 		<div class="col-md-8 col-sm-12">
 			<div>
-				<p class="h4 opensauce">Public lobbies 
+				<p class="h4 opensauce">Public lobbies
 					<span style="float:right;">
 					<a role="button" id="refreshLobbies" href="#" class="btn btn-dark">
-						<!-- TODO Ajax to refresh lobbies list and not entire page-->
 						<i class="fas fa-sync-alt"></i>
 					</a>
 					</span>
@@ -81,7 +80,7 @@
 			</div>
 		</div>
 		<div class="col-md-3 col-sm-12">
-		
+
 		</div>
 	</div>
 	<br>
@@ -118,17 +117,19 @@
 	let create_lobby_button = document.getElementById("create_lobby_button");
 	let input_lobby_name = document.getElementById("input_lobby_name");
 
-	refreshLobbies.addEventListener("click", updateLobbiesList);
-	input_lobby_name.addEventListener("change", updateLinkToLobby);
+	refreshLobbies.addEventListener("click", update_lobbies_list);
+	input_lobby_name.addEventListener("change", update_link_to_lobby);
 
-	updateLobbiesList();
+	update_lobbies_list();
 
-	function updateLinkToLobby(e) {
+	//autorefresh
+	setInterval(update_lobbies_list, 1000);
 
+	function update_link_to_lobby(e) {
 		create_lobby_button.href = "lobby/" + e.srcElement.value;
 	}
 
-	function updateLobbiesList() {
+	function update_lobbies_list() {
 		fetch("{% url 'lobbies_list' %}")
 			.then(function(response) {
 				return response.json();
