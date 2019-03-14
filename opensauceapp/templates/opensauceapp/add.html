@@ -19,10 +19,10 @@ Ajout d'une Sauce
 	<form>
 		<ul class="nav nav-tabs justify-content-center">
 			<li class="nav-item">
-				<a id="image_menu" class="nav-link active" href="#">Image</a>
+				<a id="image_menu" class="nav-link active">Image</a>
 			</li>
 			<li class="nav-item">
-				<a id="quote_menu" class="nav-link" href="#">Citation</a>
+				<a id="quote_menu" class="nav-link">Citation</a>
 			</li>
 		</ul>
 		<div>
@@ -87,8 +87,7 @@ Ajout d'une Sauce
 					TODO : Explain the difficulties
 				</small>
 			</div>
-			{# <button id="send_button" class="btn btn-primary">Envoyer</button> #}
-			<div id="send_button">Envoyer</div>
+			<button id="send_button" class="btn btn-primary">Envoyer</button>
 		</div>
 	</form>
 </div>
@@ -109,6 +108,8 @@ Ajout d'une Sauce
 	let image_menu = document.getElementById("image_menu");
 	let quote_menu = document.getElementById("quote_menu");
 
+	let input_categories = document.getElementById("input_categories");
+
 	let input_load_image = document.getElementById("input_load_image");
 	let input_image_path = document.getElementById("input_image_path");
 	let feedback_image_container = document.getElementById("feedback_image_container");
@@ -118,7 +119,6 @@ Ajout d'une Sauce
 	let input_difficulty_easy = document.getElementById("input_difficulty_easy");
 	let input_difficulty_medium = document.getElementById("input_difficulty_medium");
 	let input_difficulty_hard = document.getElementById("input_difficulty_hard");
-
 
 	let send_button = document.getElementById("send_button");
 
@@ -130,6 +130,8 @@ Ajout d'une Sauce
 	input_difficulty_easy.addEventListener("click", set_difficulty_easy);
 	input_difficulty_medium.addEventListener("click", set_difficulty_medium);
 	input_difficulty_hard.addEventListener("click", set_difficulty_difficult);
+
+	input_categories.addEventListener("change", change_category);
 
 	send_button.addEventListener("click", send);
 
@@ -159,6 +161,11 @@ Ajout d'une Sauce
 
 			reader.readAsDataURL(selected_file);
 		}
+	}
+
+	function change_category()
+	{
+		sauce_category = input_categories.options[input_categories.selectedIndex].value;
 	}
 
 	function show_image_tab() {
@@ -249,15 +256,15 @@ Ajout d'une Sauce
 		if (validate()) {
 			console.log("send");
 			data = {};
+			data["type"] = sauce_type;
 			if (sauce_type == SAUCE_TYPE.IMAGE) {
-				data["type"] = "image";
 				data["image"] = sauce_image;
 			} else if (sauce_type == SAUCE_TYPE.QUOTE) {
-				data["type"] = "quote";
 				data["image"] = input_quote.value;
 			}
 			data["answer"] = input_answer.value;
 			data["difficulty"] = sauce_difficulty;
+			data["sauce_category"] = sauce_category;
 			post_data(`/add/`, data)
 				.then(data => console.log(JSON.stringify(data))) // JSON-string from `response.json()` call
 				.catch(error => console.error(error));

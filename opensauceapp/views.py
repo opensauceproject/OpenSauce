@@ -56,4 +56,6 @@ def add(request):
     elif request.method == "POST":
         data = json.loads(request.body)
         print(data)
+        sauce = Sauce(question=data["image"], answer=data["answer"], sauce_category=SauceCategory.objects.get(id=data["sauce_category"]), difficulty=data["difficulty"], media_type=data["type"])
+        sauce.save()
         return JsonResponse({})
