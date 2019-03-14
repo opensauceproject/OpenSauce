@@ -7,30 +7,14 @@ from time import sleep
 import json
 from asgiref.sync import async_to_sync
 
+from ..models import Sauce
+
 
 # TODO :
 # - fix send when player join/leave/add/remove
 # -
 
 class Lobby:
-    sauces = [
-        {"question": "La réponse de cette super question de débug est tout simplement la touche UN du clavier !",
-         "answer": "1",
-         "category": "games",
-         "type": "text"
-         },
-        {"question": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/4QBmRXhpZgAATU0AKgAAAAgABAEaAAUAAAABAAAAPgEbAAUAAAABAAAARgEoAAMAAAABAAIAAAExAAIAAAAQAAAATgAAAAAAAABgAAAAAQAAAGAAAAABcGFpbnQubmV0IDQuMS41AP/bAEMAGhITFxMQGhcVFx0bGh8nQConIyMnTzg8L0BdUmJhXFJaWWd0lH5nbYxvWVqBr4KMmZ6mp6ZkfLbDtKHBlKOmn//bAEMBGx0dJyInTCoqTJ9qWmqfn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn//AABEIAGQAZAMBIgACEQEDEQH/xAAfAAABBQEBAQEBAQAAAAAAAAAAAQIDBAUGBwgJCgv/xAC1EAACAQMDAgQDBQUEBAAAAX0BAgMABBEFEiExQQYTUWEHInEUMoGRoQgjQrHBFVLR8CQzYnKCCQoWFxgZGiUmJygpKjQ1Njc4OTpDREVGR0hJSlNUVVZXWFlaY2RlZmdoaWpzdHV2d3h5eoOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4eLj5OXm5+jp6vHy8/T19vf4+fr/xAAfAQADAQEBAQEBAQEBAAAAAAAAAQIDBAUGBwgJCgv/xAC1EQACAQIEBAMEBwUEBAABAncAAQIDEQQFITEGEkFRB2FxEyIygQgUQpGhscEJIzNS8BVictEKFiQ04SXxFxgZGiYnKCkqNTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqCg4SFhoeIiYqSk5SVlpeYmZqio6Slpqeoqaqys7S1tre4ubrCw8TFxsfIycrS09TV1tfY2dri4+Tl5ufo6ery8/T19vf4+fr/2gAMAwEAAhEDEQA/AOnooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiimTbvJfZ9/adv1oAp3+s2ennbNJuk/wCeacn/AOtWNL4vO79zaDHq7/0FZthoV7qLb2BijJ5kk6n6DvW5F4TslX97JNI3rkAUAVYvF53fvrQY9Uf/ABrdsNStdRQtbyZI+8h4YfhWFqPhVUhaSxkdmUZ8t+c/Q1z9pdS2V0k8JIZD+Y9KAPSKKZBKs8EcqfddQw/Gn0AFFFFABRRRQAUUUUAFFFFABRRRQAV51qaqmqXSoMKJWAH416BdXCWttJPIcLGuTXnYEl7d4UbpJn/UmgDu9FBGj2uf+eYq9UdvEILeOFekahR+AqSgAooooAKKKKACiiigAooooAKKK5rxFruwNZ2b/N0kkHb2HvQBV8TasLqX7JA2Yoz87D+Jv8BVnwrpRUfb5l5IxECPzaqGgaK1/KJ51ItkP/fZ9PpXaABVAUAAcADtQAtFFFABRRRQAUUUUAFFFFABRRVPVppINLuZIiQ6ocEdvegDJ8Q675Aa0tG/e9Hcfw+w96yNE0d9Tm3yZW3Q/M394+grKJycnk1oQa5qFvCkUM4SNBgKI14/SgDvI40ijWONQqKMADsKdXCf8JHqn/P1/wCQ1/wp3/CSap/z8D/v2v8AhQB3NFYXhrVLrUDcLcsH2bSGCgYzn0+lbtABRRRQAUUUUAFFFFABSEBlKsAQRgg96WigCt/Ztj/z5W//AH6X/Cj+zbH/AJ8rb/v0v+FWaKAKv9m2P/Plbf8Afpf8KP7Nsf8Anytv+/S/4VaooAjht4bcEQQxxA9Qihc/lUlFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFAH/2Q==",
-         "answer": "2",
-         "category": "games",
-         "type": "image"
-         },
-        {"question": "Question 3 : donc on réponds par la touche 3, simple non ?",
-         "answer": "3",
-         "category": "tv",
-         "type": "text"
-         },
-    ]
-
     # States
     WAITING_FOR_PLAYERS = 0
     GAME_START_SOON = 1
@@ -64,6 +48,7 @@ class Lobby:
         self.datetime = datetime.datetime.now()
         self.playerThatFound = []
         self.history = []
+        self.sauces = Sauce.objects.all()
 
     def count(self):
         return len(self.players)
@@ -128,7 +113,7 @@ class Lobby:
             player.reset_round()
         self.send_scoreboard()
         # set new sauce
-        self.currentSauce = random.choice(Lobby.sauces)
+        self.currentSauce = random.choice(self.sauces)
         # reset play that found
         self.playerThatFound = []
         # set new end time
@@ -221,7 +206,7 @@ class Lobby:
 
 
         # TODO : Check less restrictive
-        if answer == self.currentSauce["answer"]:
+        if answer == self.currentSauce.answer:
             # right answer
             self.add_player_points(player)
             if len(self.playerThatFound) >= self.count_players():
@@ -235,7 +220,6 @@ class Lobby:
         return s
 
     def send_scoreboard(self):
-        print("send scoreboard")
         # Players and spectators
         players = []
         spectators = []
@@ -258,7 +242,8 @@ class Lobby:
         scoreboard["history"] = []
         for sauce, players_history in self.history[::-1]:
             d = {}
-            d["answer"] = sauce["answer"]
+            d["id"] = sauce.id
+            d["answer"] = sauce.answer
             d["players"] = []
             for p in players_history:
                 d["players"].append(p.name)
@@ -266,50 +251,53 @@ class Lobby:
 
         scoreboard["datetime"] = self.datetime.timestamp()
 
+        print("send scoreboard", scoreboard)
         data = {"type": "scoreboard", "data": scoreboard}
         self.broadcast(data)
 
     def send_waiting_for_players(self):
-        print("send waiting for players")
         self.state = Lobby.WAITING_FOR_PLAYERS
         waiting_for_players = {}
         waiting_for_players["qte"] = Lobby.minPlayers - self.count_players()
         waiting_for_players["datetime"] = self.datetime.timestamp()
+
+        print("send waiting for players : ", waiting_for_players)
         self.broadcast(
             {"type": "waiting_for_players", "data": waiting_for_players})
 
     def send_game_starts_soon(self):
-        print("send game starts soon")
         self.state = Lobby.GAME_START_SOON
         game_starts_soon = {}
         game_starts_soon["datetime"] = self.datetime.timestamp()
+        print("send game starts soon : ", game_starts_soon)
         self.broadcast(
             {"type": "game_starts_soon", "data": game_starts_soon})
 
     def send_question(self):
-        print("send question")
         self.state = Lobby.QUESTION
         question = {}
-        question["question"] = self.currentSauce["question"]
-        question["type"] = self.currentSauce["type"]
-        question["category"] = self.currentSauce["category"]
+        question["question"] = self.currentSauce.question
+        question["media_type"] = self.currentSauce.media_type
+        question["category"] = self.currentSauce.sauce_category.name
         question["datetime"] = self.datetime.timestamp()
+        print("send question : ", question)
         self.broadcast({"type": "question", "data": question})
 
     def send_answer(self):
-        print("send answer")
         self.state = Lobby.ANSWER
         answer = {}
-        answer["answer"] = self.currentSauce["answer"]
+        answer["answer"] = self.currentSauce.answer
         answer["datetime"] = self.datetime.timestamp()
+        print("send answer : ", answer)
         data = {"type": "answer", "data": answer}
         self.broadcast(data)
 
     def send_game_end(self):
-        print("send game end")
         self.state = Lobby.GAME_END
         game_end = {}
         game_end["datetime"] = self.datetime.timestamp()
+
+        print("send game end : ", game_end)
         self.broadcast({"type": "game_end", "data": game_end})
 
     def broadcast(self, data):

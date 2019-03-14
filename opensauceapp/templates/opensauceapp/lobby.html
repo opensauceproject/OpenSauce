@@ -369,11 +369,11 @@
 		game_message.innerHTML = "";
 		question_text.innerHTML = "";
 		question_image.style = "";
-		if (question["type"] == "text") {
+		if (question["media_type"] == 0) {
 			question_text.hidden = false;
 			question_image.hidden = true;
 			question_text.innerHTML = question["question"];
-		} else if (question["type"] == "image") {
+		} else if (question["media_type"] == 1) {
 			question_text.hidden = true;
 			question_image.hidden = false;
 			question_image.style = "background-image : url('" + question["question"] + "')";

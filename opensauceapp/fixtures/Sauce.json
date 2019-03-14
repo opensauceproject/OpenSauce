@@ -1,0 +1,32 @@
+[
+    {
+        "model": "opensauceapp.sauce",
+        "fields": {
+            "question" : "C'est pas faux.",
+            "answer" :"Kaamelott",
+            "sauce_category" : 1,
+            "difficulty" : 1,
+            "media_type" : 0
+        }
+    },
+    {
+        "model": "opensauceapp.sauce",
+        "fields": {
+            "question" : "T'es tendue Natacha.",
+            "answer" :"Dikkenek",
+            "sauce_category" : 1,
+            "difficulty" : 1,
+            "media_type" : 0
+        }
+    },
+    {
+        "model": "opensauceapp.sauce",
+        "fields": {
+            "question" : "Trois consonnes, quatre voyelles et un seul sens : je t’aime.",
+            "answer" :"Titanic",
+            "sauce_category" : 1,
+            "difficulty" : 1,
+            "media_type" : 0
+        }
+    }
+]
