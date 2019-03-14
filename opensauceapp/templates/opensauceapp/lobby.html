@@ -80,10 +80,10 @@
 <div id="right_container" class="bg-dark text-white">
 	<div class="h3">
 		{% autoescape on %}{{lobby_name}}{% endautoescape %}
-		<button class="btn btn-light" onclick="copyToClipboard('{{lobby_name}}');"><i class="far fa-copy"></i></button>
-		<span style="float:right">
+		<button class="btn btn-light btn-sm" onclick="copyToClipboard('{{lobby_name}}');" data-toggle="popover" title="Popover title" data-content="And here's some amazing content. It's very engaging. Right?"><i class="far fa-copy"></i></button>
+		<span style="float:right">	
 			
-			<a class="btn btn-light" href="{% url 'index' %}" role="button" data-content="And here's some amazing content. It's very engaging. Right?"><i class="fas fa-home"></i></a>
+			<a class="btn btn-light btn-sm" href="{% url 'index' %}" role="button" data-content="And here's some amazing content. It's very engaging. Right?"><i class="fas fa-home"></i></a>
 		</span>
 	</div>
 	<div id="connexion">

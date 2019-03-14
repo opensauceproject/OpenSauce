@@ -6,6 +6,9 @@
 <head>
 	<title>OpenSauce - {% block title %}{% endblock %}</title>
 	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+  	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
 	<!-- bootstrap -->
 	{% load bootstrap4 %}
 	{% bootstrap_css %}
@@ -17,6 +20,10 @@
 	<!-- jquery UI -->
 	<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
 	<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+
+	<!-- PayPal -->
+	<script src="https://www.paypal.com/sdk/js?client-id=P5ZWJ8SNLK34S"></script>
+	<script>paypal.Buttons().render('#paypal-button-container');</script>
 
 	<!-- custom scripts -->
 	<script src="{% static 'ressources/js/script.js' %}" charset="utf-8"></script>
