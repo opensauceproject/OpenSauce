@@ -154,25 +154,21 @@
 				</button>
 			</div>
 			<div class="modal-body">
-				<label>
-					Reasons:
-				</label>
-				<div class="custom-control custom-checkbox">
+				<form id="report_form">
+					<label>Reasons:</label>
 					{% for c in report_categories %}
-					<label class="custom-control-label w-100">
-						<input type="checkbox" class="custom-control-input report_reason" data-report_id={{c.id}}>
-						{{c.name}}
-						<small class="form-text text-muted">
-							{{c.description}}
-						</small>
-					</label>
+					<div class="custom-control custom-checkbox">
+						<input type="checkbox" class="custom-control-input report_reason" id="report_reason_{{c.id}}" data-report_id="{{c.id}}">
+						<label class="custom-control-label" for="report_reason_{{c.id}}">{{c.name}}</label>
+						<small class="form-text text-muted">{{c.description}}</small>
+					</div>
 					{% endfor %}
-				</div>
-				<hr>
-				<label class="w-100">
-					Additional informations:
-					<textarea class="form-control" id="report_additional_informations" rows="3" placeholder="this can help administrators to decide for the removal"></textarea>
-				</label>
+					<hr>
+					<label class="w-100">
+						Additional informations:
+						<textarea class="form-control" id="report_additional_informations" rows="3" placeholder="this can help administrators to decide for the removal"></textarea>
+					</label>
+				</form>
 			</div>
 			<div class="modal-footer">
 				<button id="report_button" type="button" class="btn btn-danger">Report</button>
@@ -224,6 +220,7 @@
 	let join_button = document.getElementById("join_button");
 
 	// Report
+	let report_form = document.getElementById("report_form");
 	let report_button = document.getElementById("report_button");
 
 	leave_button.addEventListener("click", leave);
@@ -296,6 +293,19 @@
 
 	function submit_report() {
 		console.log("submit report");
+		let inputs = report_form.elements;
+		let data = {};
+		data["report_categories_ids"] = [];
+		for (let i = 0; i < inputs.length; i++)
+		{
+			let input = inputs[i];
+			if(input.type == "checkbox" && input.checked)
+				data["report_categories_ids"].push(input.dataset.report_id);
+			else if(input.type == "textarea")
+				data["text"] = input.value;
+		}
+		console.log(data);
+		// TODO : axax send
 	}
 
 	function try_to_connect() {
@@ -368,11 +378,11 @@
 		game_message.innerHTML = "";
 		question_text.innerHTML = "";
 		question_image.style = "";
-		if (question["type"] == "text") {
+		if (question["media_type"] == 0) {
 			question_text.hidden = false;
 			question_image.hidden = true;
 			question_text.innerHTML = question["question"];
-		} else if (question["type"] == "image") {
+		} else if (question["media_type"] == 1) {
 			question_text.hidden = true;
 			question_image.hidden = false;
 			question_image.style = "background-image : url('" + question["question"] + "')";
