@@ -49,8 +49,16 @@
   border-bottom-left-radius: 0.25rem;
 }
 
+.giffed{
+  background-image: url('http://37.media.tumblr.com/2b9166b4e7859921d363331015424038/tumblr_n3lzui9VLx1rhhw7fo1_500.gif');
+  background-size: cover;
+  padding:0;
+  margin:0;
+}
+
 body {
   background-color: #FFFFFF;
+
 }
 
 .cursor-pointer {

@@ -60,7 +60,7 @@
 
 </style>
 <div id="left_container">
-	<a class="position-absolute float-right opensaucetitle-small" href="{% url 'index' %}">OpenSauce</a>
+	<a role="button" class="btn btn-dark position-absolute float-right opensaucetitle-small" href="{% url 'index' %}">OpenSauce</a>
 	<div id="game_message" class="w-100 text-center h2" hidden></div>
 	<div id="date_time_container" class="w-100 text-center h2" hidden>Time left : <span id="date_time">0</span> s.</div>
 	<div id="category_container" hidden>Category : <span id="category"></span></div>
@@ -71,21 +71,30 @@
 	<input id="submit_answer" type="text" hidden>
 </div>
 <div id="right_container" class="bg-dark text-white">
-	<div>
-		<h3>
+<!--debut conflit-->
+	<div class="h3 row">
+		<div class="col-md-12">
+			<div class="text-center">
 			{% autoescape on %}{{lobby_name}}{% endautoescape %}
-		</h3>
-		<div class="input-group">
-			<input id="copy_to_clipboard_url_input" class="form-control" type="input" disabled>
-			<div class="input-group-append">
-				<button id="copy_to_clipboard_url_button" class="btn btn-light">
-					<i class="far fa-copy"></i>
-				</button>
+			</div>	
+		</div>
+		<!-- Home button
+		<div class="col-md-1">	
+			<a class="btn btn-light btn-sm float-right" href="{% url 'index' %}" role="button"><i class="fas fa-home"></i></a>
+		</div>
+		-->
+	</div>
+	<div class="h3 row">
+		<div class="col-md-12">	
+			<div class="input-group">
+				<input id="copy_to_clipboard_url_input" class="form-control" type="input" disabled>
+				<button id="copy_to_clipboard_url_button" class="btn btn-light"><i class="far fa-copy"></i></button>
 			</div>
 		</div>
 	</div>
-
+	<hr class="bg-white">
 	<div id="connexion">
+		
 		<div class="h3">Log in</div>
 		<div id="when_disconnected" class="input-group">
 			<div class="input-group-prepend">

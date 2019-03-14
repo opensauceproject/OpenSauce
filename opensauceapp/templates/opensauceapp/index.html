@@ -5,7 +5,9 @@
 
 {% block content %}
 <div class="container">
-	<p class="text-center opensaucetitle">OpenSauce</p>
+	<div>
+		<p class="text-center opensaucetitle">OpenSauce</p>
+	</div>
 	<br>
 	<div class="row">
 		<p class="wrapper mx-auto text-center w-100">
@@ -45,6 +47,7 @@
 						<a href="#" id="create_lobby_button" role="button" class="btn btn-dark"><span>Create</span></a>
 					</div>
 				</div>
+				<br><br>
 			</div>
 		</div>
 		<div class="col-md-4 col-sm-12">
@@ -54,23 +57,39 @@
 			</p>
 		</div>
 	</div>
-	<hr>
-	<div class="row">
-		<div class="col-md-3 col-sm-12">
-		</div>
-		<div class="col-md-6 col-sm-12">
-			<div class="btn-group" role="group" aria-label="Basic example">
-				<a role="button" href="#" class="btn btn-outline-dark"><i class="fab fa-github"></i> Fork us on GitHub</a>
-				<!--<a role="button" href="#" class="btn btn-outline-dark blue"><i class="fab fa-facebook-f"></i> Like our Facebook page</a>-->
-				<a role="button" href="https://discord.gg/zXFjYaz" class="btn btn-dark"><i class="fab fa-discord"></i> Join us on Discord</a>
-				<a role="button" href="https://twitter.com/OpenSauceApp" class="btn btn-primary"><i class="fab fa-twitter-square"></i> Follow us on Twitter</a>
+
+
+
+
+	<footer class="page-footer font-small blue pt-4">
+		<div class="container-fluid text-center text-md-left">
+			<hr>
+			<div class="row">
+				<div class="col-md-3 col-sm-12">
+					<div class="btn-group" role="group">
+						<a role="button" href="#" 									class="btn btn-white text-dark"><i class="fab fa-github"></i></a>
+						<a role="button" href="#" 									class="btn btn-white text-dark"><i class="fab fa-facebook-f"></i></a>
+						<a role="button" href="#" 									class="btn btn-white text-dark"><i class="fab fa-instagram"></i></a>
+						<a role="button" href="https://discord.gg/zXFjYaz" 			class="btn btn-white text-dark"><i class="fab fa-discord"></i></a>
+						<a role="button" href="https://twitter.com/OpenSauceApp" 	class="btn btn-white text-dark"><i class="fab fa-twitter"></i></a>
+					</div>
+				</div>
+				<div class="col-md-6 col-sm-12">
+					<p class="text-center">
+						<span class="text-muted"><a role="button" href="https://www.he-arc.ch/"> <img style="opacity: 0.9;" class="w-25" src="{% static 'ressources/img/hearc_logo.png' %}"/></a></span>
+					</p>
+				</div>
+				<div class="col-md-3 col-sm-12">
+					<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top" class="float-right">
+						<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+						<input type="hidden" name="cmd" value="_s-xclick" />
+						<input type="hidden" name="hosted_button_id" value="A7QDMRLC42M8W" />
+						<button type="input" class="btn btn-outline-dark btn-sm" target="_blank" href="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" name="submit"><i class="fab fa-paypal"></i> Donate to Devs</button>
+					</form>
+				</div>
 			</div>
 		</div>
-		<div class="col-md-3 col-sm-12">
-
-		</div>
-	</div>
-	<br>
+	</footer>
 </div>
 <script>
 	$(document).ready(function(){
