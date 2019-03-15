@@ -204,7 +204,6 @@ class Lobby:
         if not player.can_earn_points():
             return
 
-
         # TODO : Check less restrictive
         if answer == self.currentSauce.answer:
             # right answer
@@ -251,7 +250,7 @@ class Lobby:
 
         scoreboard["datetime"] = self.datetime.timestamp()
 
-        print("send scoreboard", scoreboard)
+        # print("send scoreboard", scoreboard)
         data = {"type": "scoreboard", "data": scoreboard}
         self.broadcast(data)
 
@@ -260,8 +259,7 @@ class Lobby:
         waiting_for_players = {}
         waiting_for_players["qte"] = Lobby.minPlayers - self.count_players()
         waiting_for_players["datetime"] = self.datetime.timestamp()
-
-        print("send waiting for players : ", waiting_for_players)
+        # print("send waiting for players : ", waiting_for_players)
         self.broadcast(
             {"type": "waiting_for_players", "data": waiting_for_players})
 
@@ -269,7 +267,7 @@ class Lobby:
         self.state = Lobby.GAME_START_SOON
         game_starts_soon = {}
         game_starts_soon["datetime"] = self.datetime.timestamp()
-        print("send game starts soon : ", game_starts_soon)
+        # print("send game starts soon : ", game_starts_soon)
         self.broadcast(
             {"type": "game_starts_soon", "data": game_starts_soon})
 
@@ -280,7 +278,7 @@ class Lobby:
         question["media_type"] = self.currentSauce.media_type
         question["category"] = self.currentSauce.sauce_category.name
         question["datetime"] = self.datetime.timestamp()
-        print("send question : ", question)
+        # print("send question : ", question)
         self.broadcast({"type": "question", "data": question})
 
     def send_answer(self):
@@ -288,7 +286,7 @@ class Lobby:
         answer = {}
         answer["answer"] = self.currentSauce.answer
         answer["datetime"] = self.datetime.timestamp()
-        print("send answer : ", answer)
+        # print("send answer : ", answer)
         data = {"type": "answer", "data": answer}
         self.broadcast(data)
 
@@ -297,7 +295,7 @@ class Lobby:
         game_end = {}
         game_end["datetime"] = self.datetime.timestamp()
 
-        print("send game end : ", game_end)
+        # print("send game end : ", game_end)
         self.broadcast({"type": "game_end", "data": game_end})
 
     def broadcast(self, data):
