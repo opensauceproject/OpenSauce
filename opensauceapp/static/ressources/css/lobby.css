@@ -28,8 +28,6 @@ html, body {
 #game {
     height: calc(100% - 150px);
     padding-top: 25px;
-    padding-left: 25px;
-    padding-right: 25px;
 }
 
 #top_left_container {
@@ -52,6 +50,8 @@ html, body {
 
 #question_text {
     font-size: 50px;
+    padding-left: 25px;
+    padding-right: 25px;
     display: table-cell;
     vertical-align: middle;
 }
