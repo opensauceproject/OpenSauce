@@ -55,6 +55,9 @@ def sauce_infos(request, sauce_id):
 @login_required
 def reports(request):
     context = {}
+    context["sauce_reports"] = Report.objects.all()
+    context["QUOTE"] = 0
+    context["IMAGE"] = 1
     return render(request, "opensauceapp/reports.html", context)
 
 # no need of the csrf because anybody can use this route

@@ -7,13 +7,6 @@ Administration Page
 
 {% block content %}
 <style>
-  .flexcontainer
-  {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-  }
-
   .left-flexitems
   {
     order: 0;
@@ -26,6 +19,14 @@ Administration Page
     order: 1;
     width: 25%;
     margin-left: 20px;
+  }
+
+  #question_image {
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    width: 100px;
+    height: 100px;
   }
 </style>
 
@@ -42,25 +43,27 @@ Administration Page
       <a class="ml-auto" href="{% url 'logout' %}">Se déconnecter</a>
     </div>
 
-    <div class="card">
-      <div class="card-header">
-        Signalement #XXXX
-      </div>
-      <div class="card-body">
-        <div class="card-text flexcontainer">
-          <div class="left-flexitems">
-            <p>Quote : Je vous disais que j'étais victime des colifichets et qu'il faudrait qu'on commence à me considérer en tant que tel.</p>
-            <p>Réponse : Kaamelott</p>
-          </div>
-          <div class="right-flexitems">
-            <p>Date : 27.02.2019</p>
-            <p>Heure : 19:00</p>
-          </div>
+    {% for report in sauce_reports %}
+      <div class="card">
+        <div class="card-header">
+          Signalement #{{ report.id }}
         </div>
-        <a href="#" class="btn btn-primary">Ignorer</a>
-        <a href="#" class="btn btn-primary">Supprimer</a>
+        <div class="card-body">
+          <div class="card-text">
+            {% if report.sauce.media_type == QUOTE %}
+              <p>Question : {{ report.sauce.question }}</p>
+            {% else %}
+              <p>Image : </p>
+              <div id="question_image" class="w-100 h-100" style="background-image: {{ report.sauce.question}}"></div>
+            <p>Réponse : {{ report.sauce.answer }}</p>
+            {% endif %}
+          </div>
+          <a href="#" class="btn btn-primary">Ignorer</a>
+          <a href="#" class="btn btn-primary">Supprimer</a>
+        </div>
       </div>
-    </div>
+    {% endfor %}
+
   </div>
 </div>
 {% endblock %}
