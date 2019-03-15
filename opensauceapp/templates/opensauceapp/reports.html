@@ -49,8 +49,8 @@ Administration Page
             <p>Réponse : {{ report.sauce.answer }}</p>
           </div>
 
-          <button type="button" class="ignore_button" value="{{ report.id }}" class="btn btn-primary">Ignorer</a>
-          <button type="button" class="delete_button" value="{{ report.id }}" class="btn btn-primary">Supprimer</a>
+          <button type="button" value="{{ report.id }}" class="btn btn-primary ignore_button">Ignorer</a>
+          <button type="button" value="{{ report.id }}" class="btn btn-primary delete_button">Supprimer</a>
         </div>
       </div>
     {% endfor %}
