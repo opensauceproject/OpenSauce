@@ -31,8 +31,9 @@ Administration Page
       <a class="ml-auto" href="{% url 'logout' %}">Se déconnecter</a>
     </div>
 
+    {% csrf_token %}
     {% for report in sauce_reports %}
-      <div class="card">
+      <div id="report_card_{{ report.id }}" class="card">
         <div class="card-header">
           Signalement #{{ report.id }}
         </div>
@@ -48,12 +49,64 @@ Administration Page
             <p>Réponse : {{ report.sauce.answer }}</p>
           </div>
 
-          <a href="#" class="btn btn-primary">Ignorer</a>
-          <a href="#" class="btn btn-primary">Supprimer</a>
+          <button type="button" class="ignore_button" value="{{ report.id }}" class="btn btn-primary">Ignorer</a>
+          <button type="button" class="delete_button" value="{{ report.id }}" class="btn btn-primary">Supprimer</a>
         </div>
       </div>
     {% endfor %}
 
   </div>
 </div>
+
+<script type="text/javascript" language="Javascript">
+  let ignore_buttons = document.getElementsByClassName("ignore_button");
+  let delete_buttons = document.getElementsByClassName("delete_button");
+
+  [].forEach.call(ignore_buttons, function (button) { button.addEventListener("click", execute_ignore); });
+  [].forEach.call(delete_buttons, function (button) { button.addEventListener("click", execute_delete); });
+
+  function execute_delete(event)
+  {
+    let source = event.target || event.srcElement;
+    let card = document.getElementById("report_card_" + source.value);
+    let data = {id : source.value}
+
+    fetch('/report_delete/', {
+        method: "DELETE",
+        mode: "cors",
+        cache: "no-cache",
+        credentials: "same-origin",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        redirect: "follow",
+        referrer: "no-referrer",
+        body: JSON.stringify(data),
+    });
+
+    card.style.visibility = 'hidden';
+  }
+
+  function execute_ignore(event)
+  {
+    let source = event.target || event.srcElement;
+    let card = document.getElementById("report_card_" + source.value);
+    let data = {id : source.value}
+
+    fetch('/report_ignore/', {
+        method: "DELETE",
+        mode: "cors",
+        cache: "no-cache",
+        credentials: "same-origin",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        redirect: "follow",
+        referrer: "no-referrer",
+        body: JSON.stringify(data),
+    });
+
+    card.style.visibility = 'hidden';
+  }
+</script>
 {% endblock %}

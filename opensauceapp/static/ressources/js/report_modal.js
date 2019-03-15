@@ -50,7 +50,7 @@ function load_modal_report(id) {
                 report_question_text.hidden = false;
                 report_question_image.hidden = true;
             } else if (sauce.media_type == 1) {
-                report_question_image.style = "background-image : url('sauce.question + "')";
+                report_question_image.style = "background-image : url('" + sauce.question + "')";
                 report_question_text.hidden = true;
                 report_question_image.hidden = false;
             }

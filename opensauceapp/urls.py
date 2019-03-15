@@ -13,6 +13,8 @@ urlpatterns = [
 
     path(r'reports/', views.reports, name='reports'),
     path(r'report_add/', views.report_add, name='report_add'),
+    path(r'report_ignore/', views.report_ignore, name='report_ignore'),
+    path(r'report_delete/', views.report_delete, name='report_delete'),
 
     path(r'add/', views.add, name='add'),
     path(r'sauce_infos/<sauce_id>', views.sauce_infos, name='sauce_infos'),

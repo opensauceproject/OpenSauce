@@ -99,8 +99,22 @@ def report_add(request):
         print(data)
     return JsonResponse({})
 
+@login_required
+@csrf_exempt
 def report_ignore(request):
+    if request.method == "DELETE":
+        data = json.loads(request.body)
+        report = Report.objects.get(id=data["id"])
+        report.delete()
     return JsonResponse({})
 
-def report_remove(request):
+@login_required
+@csrf_exempt
+def report_delete(request):
+    if request.method == "DELETE":
+        data = json.loads(request.body)
+        data = json.loads(request.body)
+        report = Report.objects.get(id=data["id"])
+        report.sauce.delete()
+        report.delete()
     return JsonResponse({})
