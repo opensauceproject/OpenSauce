@@ -19,19 +19,19 @@
 		<div class="col-md-8 col-sm-12">
 			<div>
 				<p class="h4 opensauce">Public lobbies
-					<span style="float:right;">
-						<a role="button" id="refreshLobbies" href="#" class="btn btn-dark">
+					<span class="float-right">
+						<a role="button" id="refresh_lobbies" href="#" class="btn btn-dark">
 							<i class="fas fa-sync-alt"></i>
 						</a>
 					</span>
 				</p>
 				<br>
-				<div id="noLobbies" hidden>
+				<div id="no_lobbies" hidden>
 					<div class="alert alert-dark" role="alert">
 						There is currently no active lobby ! Feel free to create one.
 					</div>
 				</div>
-				<div class="list-group" id="lobbiesList"></div>
+				<div class="list-group" id="lobbies_list"></div>
 			</div>
 			<br>
 			<div>
@@ -44,22 +44,19 @@
 					</div>
 					<input id="input_lobby_name" type="text" class="form-control">
 					<div class="input-group-append">
-						<a href="#" id="create_lobby_button" role="button" class="btn btn-dark"><span>Create</span></a>
+						<a href="#" id="create_lobby_button" role="button" class="btn btn-outline-dark" disabled><span>Create</span></a>
 					</div>
 				</div>
 				<br><br>
 			</div>
 		</div>
 		<div class="col-md-4 col-sm-12">
-			<p class="h4 opensauce">Find players on <a role="button" href="https://discord.gg/zXFjYaz" class="btn btn-outline-dark btn-sm"><i class="fab fa-discord"></i> Discord</a></small>
+			<p class="h4 opensauce">Find players on <a role="button" href="https://discord.gg/zXFjYaz" class="btn btn-outline-dark btn-sm"><i class="fab fa-discord"></i> Discord</a>
 				<br><br>
 				<iframe class="center" src="https://canary.discordapp.com/widget?id=552925373235462381&theme=light" width="100%" height="500" allowtransparency="true" frameborder="0"></iframe>
 			</p>
 		</div>
 	</div>
-
-
-
 
 	<footer class="page-footer font-small blue pt-4">
 		<div class="container-fluid text-center text-md-left">
@@ -84,7 +81,7 @@
 						<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
 							<input type="hidden" name="cmd" value="_s-xclick" />
 							<input type="hidden" name="hosted_button_id" value="A7QDMRLC42M8W" />
-							<button type="input" class="btn btn-outline-dark btn-sm" target="_blank" href="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" name="submit"><i class="fab fa-paypal"></i> Donate to Devs</button>
+							<button type="input" class="btn btn-outline-dark btn-sm" target="_blank" href="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" name="submit"><i class="fab fa-paypal"></i> Donate to Devs.</button>
 						</form>
 				</div>
 			</div>
@@ -92,42 +89,40 @@
 	</footer>
 </div>
 <script>
-	$(document).ready(function() {
-		let create_lobby_button = document.getElementById("create_lobby_button");
-		create_lobby_button.disabled = true;
-		create_lobby_button.classList.remove('btn-dark');
-		create_lobby_button.classList.add('btn-outline-dark', 'disabled');
-		$('#input_lobby_name').keyup(function(event) {
-			if ($(this).val().length != 0) {
-				create_lobby_button.disabled = false;
-				create_lobby_button.classList.remove('btn-outline-dark', 'disabled');
-				create_lobby_button.classList.add('btn-dark');
-			} else {
-				create_lobby_button.disabled = true;
-				create_lobby_button.classList.remove('btn-dark');
-				create_lobby_button.classList.add('btn-outline-dark', 'disabled');
-			}
-			console.log(create_lobby_button.disabled);
-			if (event.keyCode == 13 && !create_lobby_button.disabled) {
-				console.log("go !");
-				$("#create_lobby_button").find('span').trigger('click');
-			}
-		})
-	});
-
-	let lobbiesList = document.getElementById("lobbiesList");
-	let refreshLobbies = document.getElementById("refreshLobbies");
-	let noLobbies = document.getElementById("noLobbies");
+	let lobbies_list = document.getElementById("lobbies_list");
+	let refresh_lobbies = document.getElementById("refresh_lobbies");
+	let no_lobbies = document.getElementById("no_lobbies");
 	let create_lobby_button = document.getElementById("create_lobby_button");
 	let input_lobby_name = document.getElementById("input_lobby_name");
 
-	refreshLobbies.addEventListener("click", update_lobbies_list);
+	refresh_lobbies.addEventListener("click", update_lobbies_list);
 	input_lobby_name.addEventListener("change", update_link_to_lobby);
+	input_lobby_name.addEventListener("input", handle_create_lobby_button);
+	input_lobby_name.addEventListener("input", handle_enter_key);
 
 	update_lobbies_list();
+	handle_create_lobby_button();
 
 	//autorefresh
-	setInterval(update_lobbies_list, 1000);
+	// setInterval(update_lobbies_list, 1000);
+
+	function handle_create_lobby_button() {
+		if (input_lobby_name.value.length > 0) {
+			create_lobby_button.disabled = false;
+			create_lobby_button.classList.remove('btn-outline-dark', 'disabled');
+			create_lobby_button.classList.add('btn-dark');
+		} else {
+			create_lobby_button.disabled = true;
+			create_lobby_button.classList.remove('btn-dark');
+			create_lobby_button.classList.add('btn-outline-dark', 'disabled');
+		}
+	}
+
+	function handle_enter_key(e) {
+		if (e.keyCode == 13) {
+
+		}
+	}
 
 	function update_link_to_lobby(e) {
 		create_lobby_button.href = "lobby/" + e.srcElement.value;
@@ -139,20 +134,35 @@
 				return response.json();
 			})
 			.then(function(json) {
-				lobbiesList.innerHTML = "";
+				lobbies_list.innerHTML = "";
 				if (json.list.length <= 0) {
-					noLobbies.hidden = false;
+					no_lobbies.hidden = false;
 				} else {
 					for (let i = 0; i < json.list.length; i++) {
 						let lobby = json.list[i];
-						let lobbyLink = document.createElement("a");
-						lobbyLink.href = "lobby/" + lobby["name"];
-						lobbyLink.type = "button";
-						lobbyLink.classList.add("list-group-item", "list-group-item-action");
-						lobbyLink.innerHTML += "<h4>" + lobby["players"] + " <i class=\"fas fa-running\"></i>" + " " + lobby["spectators"] + " <i class=\"fas fa-eye\"></i>" + " | " + lobby["name"] + "</h4>";
-						lobbiesList.appendChild(lobbyLink);
+						let lobby_link = document.createElement("a");
+						lobby_link.href = "lobby/" + lobby["name"];
+						lobby_link.type = "button";
+						lobby_link.classList.add("list-group-item", "d-flex", "justify-content-between", "align-items-center");
+
+						let right = document.createElement("span");
+
+						let badgesPlayers = document.createElement("span");
+						badgesPlayers.classList.add("badge", "badge-dark", "badge-pill");
+						badgesPlayers.innerHTML = lobby["players"] + " <i class=\"fas fa-gamepad\"></i>";
+
+						let badgesSpectators = document.createElement("span");
+						badgesSpectators.classList.add("badge", "badge-dark", "badge-pill");
+						badgesSpectators.innerHTML = lobby["spectators"] + " <i class=\"fas fa-eye\"></i>";
+
+						lobby_link.innerHTML = lobby["name"];
+
+						right.appendChild(badgesPlayers);
+						right.appendChild(badgesSpectators);
+						lobby_link.appendChild(right);
+						lobbies_list.appendChild(lobby_link);
 					}
-					noLobbies.hidden = true;
+					no_lobbies.hidden = true;
 				}
 			});
 	}
