@@ -57,6 +57,7 @@ html, body {
 }
 
 #question_image {
+    display: table; /* fix on ff the div size : https://stackoverflow.com/a/24290980/9263555*/
     background-position: center;
     background-repeat: no-repeat;
     background-size: contain;
