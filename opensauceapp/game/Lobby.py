@@ -5,6 +5,8 @@ import datetime
 from threading import Thread
 from time import sleep
 import json
+import string
+import unidecode
 from asgiref.sync import async_to_sync
 
 from ..models import Sauce
@@ -26,6 +28,8 @@ class Lobby:
     timeoutWhenQuestion = datetime.timedelta(seconds=15)
     timeoutWhenAnswer = datetime.timedelta(seconds=2)
     timeoutWhenGameFinished = datetime.timedelta(seconds=5)
+
+    ignored_prefix_char_sequence = ["the", "a", "an", "le", "la", "les"]
 
     pointsGoal = 100
 
@@ -204,13 +208,32 @@ class Lobby:
         if not player.can_earn_points():
             return
 
-        # TODO : Check less restrictive
-        if answer == self.currentSauce.answer:
-            # right answer
+        print(Lobby.sanitize(answer), Lobby.sanitize(self.currentSauce.answer))
+        if Lobby.sanitize(answer) == Lobby.sanitize(self.currentSauce.answer):
+            # correct answer
             self.add_player_points(player)
             if len(self.playerThatFound) >= self.count_players():
                 self.answer()
             self.send_scoreboard()
+
+    @staticmethod
+    def sanitize(s):
+        # any special char unicode char to the closest ascci char
+        s = unidecode.unidecode(s)
+        # remove punctuation and remove whitespaces
+        s = s.translate(str.maketrans('', '', string.punctuation + string.whitespace))
+        # only lower cases
+        s = s.lower()
+        # remove special char sequence
+        for sequence in Lobby.ignored_prefix_char_sequence:
+            l = len(sequence)
+            word_prefix = s[:l]
+            if word_prefix == sequence:
+                s = s[l:]
+                break
+
+        return s
+
 
     def __str__(self):
         s = "--" + self.name + ", status : " + str(self.state) + "\n"
