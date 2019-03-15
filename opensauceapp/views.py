@@ -23,7 +23,7 @@ def lobby(request, lobby_name):
     context["lobby_name"] = lobby_name
     context["lobby_name_json"] = json.dumps(lobby_name)
     context["report_categories"] = ReportCategory.objects.all()
-    return render(request, "opensauceapp/lobby.html", context)
+    return render(request, "opensauceapp/lobby/lobby.html", context)
 
 
 def lobbies_list(request):

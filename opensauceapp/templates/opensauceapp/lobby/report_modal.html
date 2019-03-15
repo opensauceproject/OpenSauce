@@ -1,0 +1,45 @@
+{% load static %}
+
+<div class="modal fade" id="report_modal" tabindex="-1" role="dialog">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">Report</h5>
+				<button type="button" class="close" data-dismiss="modal">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<div>
+					Question : <span id="report_question_text"></span>
+				</div>
+				<div id="report_question_image" class="w-100"></div>
+				<div>
+					Answer : <span id="report_answer"></span>
+				</div>
+				<div>
+					Category : <span id="report_category"></span>
+				</div>
+				<hr>
+				<form id="report_form">header
+					<label>Reasons:</label>
+					{% for c in report_categories %}
+					<div class="custom-control custom-checkbox">
+						<input type="checkbox" class="custom-control-input report_reason" id="report_reason_{{c.id}}" data-report_id="{{c.id}}">
+						<label class="custom-control-label" for="report_reason_{{c.id}}">{{c.name}}</label>
+						<small class="form-text text-muted">{{c.description}}</small>
+					</div>
+					{% endfor %}
+					<hr>
+					<label class="w-100">
+						Additional informations:
+						<textarea class="form-control" id="report_additional_informations" rows="3" placeholder="this can help administrators to decide for the removal"></textarea>
+					</label>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button id="report_button" type="button" class="btn btn-danger" data-dismiss="modal">Report</button>
+			</div>
+		</div>
+	</div>
+</div>

@@ -1,0 +1,96 @@
+{% extends "opensauceapp/base.html" %}
+{% load static %}
+{% block title %}Lobby {% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" type="text/css" href="{% static 'ressources/css/lobby.css' %}">
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'ressources/js/lobby.js' %}" charset="utf-8" defer></script>
+<script src="{% static 'ressources/js/report_modal.js' %}" charset="utf-8" defer></script>
+{% endblock %}
+
+{% block content %}
+{% include 'opensauceapp/lobby/report_modal.html' %}
+
+<div id="left_container">
+	<div id="top_left_container">
+		<a id="opensauce_logo" role="button" class="btn btn-dark position-absolute opensaucetitle-small" href="{% url 'index' %}">OpenSauce</a>
+		<div id="message_container">
+			<div id="game_message" class="w-100 text-center h2" hidden></div>
+			<div id="date_time_container" class="w-100 text-center h2" hidden>Time left : <span id="date_time">0</span> s.</div>
+			<div id="category_container" class="w-100 text-center h3" hidden><span id="category"></span></div>
+		</div>
+	</div>
+	<div id="game">
+		<div id="current_question" class="w-100 text-center">
+			<div id="question_text" class="w-100 h-100 text-center" hidden></div>
+			<div id="question_image" class="w-100 h-100" hidden></div>
+		</div>
+		<input id="submit_answer" type="text" hidden>
+	</div>
+</div>
+<div id="right_container" class="bg-dark text-white">
+	<div class="h3 row">
+		<div class="col-md-12">
+			<div class="text-center">
+				{% autoescape on %}{{lobby_name}}{% endautoescape %}
+			</div>
+		</div>
+	</div>
+	<div class="h3 row">
+		<div class="col-md-12">
+			<div class="input-group">
+				<input id="copy_to_clipboard_url_input" class="form-control" type="input" disabled>
+				<div class="input-group-append">
+					<button id="copy_to_clipboard_url_button" class="btn btn-light"><i class="far fa-copy"></i></button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<hr class="bg-white">
+	<div id="connexion">
+
+		<div class="h3">Log in</div>
+		<div id="when_disconnected" class="input-group">
+			<div class="input-group-prepend">
+				<span class="input-group-text">Nickname</span>
+			</div>
+			<input id="pseudo_field" class="form-control" type="text">
+			<div class="input-group-append">
+				<input id="join_button" class="btn btn-success" type="button" value="Join">
+			</div>
+		</div>
+		<div id="when_connected" class="input-group" hidden>
+			<div class="input-group-prepend">
+				<span class="input-group-text">Nickname</span>
+			</div>
+			<input id="current_pseudo" class="form-control" type="text" disabled>
+			<div class="input-group-append">
+				<input id="leave_button" class="btn btn-danger" type="button" value="Leave">
+			</div>
+		</div>
+	</div>
+	<hr class="bg-white">
+	<div id="players_table_container">
+		<p class="h3">Players
+			<i class="float-right fas fa-gamepad"></i>
+		</p>
+		<table id="players_table" class="table table-borderless w-100">
+		</table>
+	</div>
+	<hr class="bg-white">
+	<div id="spectators_table_container">
+		<p class="h3">Spectators <i class="float-right fas fa-eye"></i></p>
+		<table id="spectators_table" class="table table-sm table-borderless w-100">
+		</table>
+	</div>
+	<hr class="bg-white">
+	<div id="history_table_container">
+		<p class="h3">History <i class="float-right fas fa-history"></i></p>
+		<table id="history_table" class="table table-sm table-borderless w-100">
+		</table>
+	</div>
+</div>
+{% endblock %}
