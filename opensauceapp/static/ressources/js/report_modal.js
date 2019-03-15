@@ -24,7 +24,7 @@ function submit_report() {
     }
     data["sauce_id"] = current_report_sauce_id;
 
-    fetch("{% url 'report_add' %}", {
+    fetch('/report_add/', {
         method: "POST",
         mode: "cors",
         cache: "no-cache",

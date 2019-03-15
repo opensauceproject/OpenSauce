@@ -12,7 +12,7 @@ urlpatterns = [
     path(r'lobbies_list/', views.lobbies_list, name='lobbies_list'),
 
     path(r'reports/', views.reports, name='reports'),
-    path(r'report_add', views.report_add, name='report_add'),
+    path(r'report_add/', views.report_add, name='report_add'),
 
     path(r'add/', views.add, name='add'),
     path(r'sauce_infos/<sauce_id>', views.sauce_infos, name='sauce_infos'),
