@@ -20,15 +20,15 @@
 			<div>
 				<p class="h4 opensauce">Public lobbies
 					<span style="float:right;">
-					<a role="button" id="refreshLobbies" href="#" class="btn btn-dark">
-						<i class="fas fa-sync-alt"></i>
-					</a>
+						<a role="button" id="refreshLobbies" href="#" class="btn btn-dark">
+							<i class="fas fa-sync-alt"></i>
+						</a>
 					</span>
 				</p>
 				<br>
-				<div id="noLobbies"hidden>
+				<div id="noLobbies" hidden>
 					<div class="alert alert-dark" role="alert">
-							There is currently no active lobby ! Feel free to create one.
+						There is currently no active lobby ! Feel free to create one.
 					</div>
 				</div>
 				<div class="list-group" id="lobbiesList"></div>
@@ -52,8 +52,8 @@
 		</div>
 		<div class="col-md-4 col-sm-12">
 			<p class="h4 opensauce">Find players on <a role="button" href="https://discord.gg/zXFjYaz" class="btn btn-outline-dark btn-sm"><i class="fab fa-discord"></i> Discord</a></small>
-			<br><br>
-			<iframe class="center" src="https://canary.discordapp.com/widget?id=552925373235462381&theme=light" width="100%" height="500" allowtransparency="true" frameborder="0"></iframe>
+				<br><br>
+				<iframe class="center" src="https://canary.discordapp.com/widget?id=552925373235462381&theme=light" width="100%" height="500" allowtransparency="true" frameborder="0"></iframe>
 			</p>
 		</div>
 	</div>
@@ -67,50 +67,48 @@
 			<div class="row">
 				<div class="col-md-3 col-sm-12">
 					<div class="btn-group" role="group">
-						<a role="button" href="#" 									class="btn btn-white text-dark"><i class="fab fa-github"></i></a>
-						<a role="button" href="#" 									class="btn btn-white text-dark"><i class="fab fa-facebook-f"></i></a>
-						<a role="button" href="#" 									class="btn btn-white text-dark"><i class="fab fa-instagram"></i></a>
-						<a role="button" href="https://discord.gg/zXFjYaz" 			class="btn btn-white text-dark"><i class="fab fa-discord"></i></a>
-						<a role="button" href="https://twitter.com/OpenSauceApp" 	class="btn btn-white text-dark"><i class="fab fa-twitter"></i></a>
+						<a role="button" href="#" class="btn btn-white text-dark"><i class="fab fa-github"></i></a>
+						<a role="button" href="#" class="btn btn-white text-dark"><i class="fab fa-facebook-f"></i></a>
+						<a role="button" href="#" class="btn btn-white text-dark"><i class="fab fa-instagram"></i></a>
+						<a role="button" href="https://discord.gg/zXFjYaz" class="btn btn-white text-dark"><i class="fab fa-discord"></i></a>
+						<a role="button" href="https://twitter.com/OpenSauceApp" class="btn btn-white text-dark"><i class="fab fa-twitter"></i></a>
 					</div>
 				</div>
 				<div class="col-md-6 col-sm-12">
 					<p class="text-center">
-						<span class="text-muted"><a role="button" href="https://www.he-arc.ch/"> <img style="opacity: 0.9;" class="w-25" src="{% static 'ressources/img/hearc_logo.png' %}"/></a></span>
+						<span class="text-muted"><a role="button" href="https://www.he-arc.ch/"> <img style="opacity: 0.9;" class="w-25" src="{% static 'ressources/img/hearc_logo.png' %}" /></a></span>
 					</p>
 				</div>
 				<div class="col-md-3 col-sm-12">
 					<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top" class="float-right">
 						<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
-						<input type="hidden" name="cmd" value="_s-xclick" />
-						<input type="hidden" name="hosted_button_id" value="A7QDMRLC42M8W" />
-						<button type="input" class="btn btn-outline-dark btn-sm" target="_blank" href="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" name="submit"><i class="fab fa-paypal"></i> Donate to Devs</button>
-					</form>
+							<input type="hidden" name="cmd" value="_s-xclick" />
+							<input type="hidden" name="hosted_button_id" value="A7QDMRLC42M8W" />
+							<button type="input" class="btn btn-outline-dark btn-sm" target="_blank" href="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" name="submit"><i class="fab fa-paypal"></i> Donate to Devs</button>
+						</form>
 				</div>
 			</div>
 		</div>
 	</footer>
 </div>
 <script>
-	$(document).ready(function(){
+	$(document).ready(function() {
 		let create_lobby_button = document.getElementById("create_lobby_button");
-		create_lobby_button.disabled =  true;
+		create_lobby_button.disabled = true;
 		create_lobby_button.classList.remove('btn-dark');
 		create_lobby_button.classList.add('btn-outline-dark', 'disabled');
-		$('#input_lobby_name').keyup(function(event){
-			if($(this).val().length !=0){
+		$('#input_lobby_name').keyup(function(event) {
+			if ($(this).val().length != 0) {
 				create_lobby_button.disabled = false;
 				create_lobby_button.classList.remove('btn-outline-dark', 'disabled');
 				create_lobby_button.classList.add('btn-dark');
-			}
-			else
-			{
+			} else {
 				create_lobby_button.disabled = true;
 				create_lobby_button.classList.remove('btn-dark');
 				create_lobby_button.classList.add('btn-outline-dark', 'disabled');
 			}
 			console.log(create_lobby_button.disabled);
-			if(event.keyCode == 13 && !create_lobby_button.disabled){
+			if (event.keyCode == 13 && !create_lobby_button.disabled) {
 				console.log("go !");
 				$("#create_lobby_button").find('span').trigger('click');
 			}
@@ -150,7 +148,7 @@
 						let lobbyLink = document.createElement("a");
 						lobbyLink.href = "lobby/" + lobby["name"];
 						lobbyLink.type = "button";
-						lobbyLink.classList. add("list-group-item", "list-group-item-action");
+						lobbyLink.classList.add("list-group-item", "list-group-item-action");
 						lobbyLink.innerHTML += "<h4>" + lobby["players"] + " <i class=\"fas fa-running\"></i>" + " " + lobby["spectators"] + " <i class=\"fas fa-eye\"></i>" + " | " + lobby["name"] + "</h4>";
 						lobbiesList.appendChild(lobbyLink);
 					}
