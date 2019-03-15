@@ -1,23 +1,36 @@
-[
-    {
-        "model": "opensauceapp.reportcategory",
-        "fields": {
-            "name": "Bad Answer",
-            "description": "The answer is not according to the question"
-        }
-    },
-    {
-        "model": "opensauceapp.reportcategory",
-        "fields": {
-            "name": "Bad Category",
-            "description": "The question is not supposed to be in this category"
-        }
-    },
-    {
-        "model": "opensauceapp.reportcategory",
-        "fields": {
-            "name": "NSFW",
-            "description": "Image showing explicit content"
-        }
-    }
+[{
+		"model": "opensauceapp.reportcategory",
+		"fields": {
+			"name": "Bad Answer",
+			"description": "The answer is not according to the question."
+		}
+	},
+	{
+		"model": "opensauceapp.reportcategory",
+		"fields": {
+			"name": "Bad Category",
+			"description": "The question is not supposed to be in this category."
+		}
+	},
+	{
+		"model": "opensauceapp.reportcategory",
+		"fields": {
+			"name": "Bad Quality",
+			"description": "Low resolution image or grammatical mistake."
+		}
+	},
+	{
+		"model": "opensauceapp.reportcategory",
+		"fields": {
+			"name": "Spam",
+			"description": "This question is totally irrelevant."
+		}
+	},
+	{
+		"model": "opensauceapp.reportcategory",
+		"fields": {
+			"name": "NSFW",
+			"description": "Image or quote showing inappropriate content."
+		}
+	}
 ]
