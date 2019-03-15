@@ -98,3 +98,9 @@ def report_add(request):
 
         print(data)
     return JsonResponse({})
+
+def report_ignore(request):
+    return JsonResponse({})
+
+def report_remove(request):
+    return JsonResponse({})

@@ -6,28 +6,16 @@ Administration Page
 {% load static %}
 
 {% block content %}
-<style>
-  .left-flexitems
-  {
-    order: 0;
-    width: 75%;
-    margin-right: 20px;
-  }
 
-  .right-flexitems
-  {
-    order: 1;
-    width: 25%;
-    margin-left: 20px;
-  }
+<style>
 
   #question_image {
+    background-size: contain;
+    height: 150px;
     background-position: center;
     background-repeat: no-repeat;
-    background-size: contain;
-    width: 100px;
-    height: 100px;
   }
+
 </style>
 
 <div class="container">
@@ -50,14 +38,16 @@ Administration Page
         </div>
         <div class="card-body">
           <div class="card-text">
+
             {% if report.sauce.media_type == QUOTE %}
               <p>Question : {{ report.sauce.question }}</p>
             {% else %}
-              <p>Image : </p>
-              <div id="question_image" class="w-100 h-100" style="background-image: {{ report.sauce.question}}"></div>
-            <p>Réponse : {{ report.sauce.answer }}</p>
+              <div id="question_image" class="w-100" style="background-image: url('{{report.sauce.question}}')"></div>
             {% endif %}
+
+            <p>Réponse : {{ report.sauce.answer }}</p>
           </div>
+
           <a href="#" class="btn btn-primary">Ignorer</a>
           <a href="#" class="btn btn-primary">Supprimer</a>
         </div>
