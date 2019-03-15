@@ -221,7 +221,7 @@ class Lobby:
         # any special char unicode char to the closest ascci char
         s = unidecode.unidecode(s)
         # remove punctuation and remove whitespaces
-        s = s.translate(str.maketrans('', '', string.punctuation + string.whitespace))
+        s = s.translate(str.maketrans('', '', string.punctuation))
         # only lower cases
         s = s.lower()
         # remove special char sequence
@@ -231,6 +231,7 @@ class Lobby:
             if word_prefix == sequence:
                 s = s[l:]
                 break
+        s = s.translate(str.maketrans('', '', string.whitespace))
 
         return s
 

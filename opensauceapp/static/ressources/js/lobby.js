@@ -1,6 +1,5 @@
 let lobby_socket;
 
-let lobby_name = "{{lobby_name}}";
 let history = [];
 let datetime;
 
