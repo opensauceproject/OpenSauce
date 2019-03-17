@@ -38,6 +38,8 @@ def lobbies_list(request):
         }
         data["list"].append(l)
 
+    data["list"] = sorted(data["list"], key=lambda d : (-d["total"], -d["players"], -d["spectators"]))
+
     return JsonResponse(data)
 
 
