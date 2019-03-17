@@ -139,7 +139,6 @@ function validate() {
 function post_data(url = ``, data = {}) {
 	//https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
 	// Default options are marked with *
-	console.log(data);
 	return fetch(url, {
 			method: "POST", // *GET, POST, PUT, DELETE, etc.
 			mode: "cors", // no-cors, cors, *same-origin
@@ -158,7 +157,6 @@ function post_data(url = ``, data = {}) {
 
 function send(e) {
 	if (validate()) {
-		console.log("send");
 		data = {};
 		data["type"] = sauce_type;
 		if (sauce_type == SAUCE_TYPE.IMAGE) {
@@ -174,7 +172,5 @@ function send(e) {
 			.catch(error => console.error(error));
 	} else {
 		e.preventDefault();
-		console.log("cancel");
 	}
-	console.log(e);
 }

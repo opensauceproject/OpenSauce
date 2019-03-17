@@ -90,7 +90,6 @@ lobby_socket.addEventListener("message", function(e) {
 });
 
 lobby_socket.addEventListener("close", function(e) {
-    // console.error("Lobby socket closed unexpectedly");
     game_message.hidden = false;
     date_time_container.hidden = true;
     game_message.innerHTML = "Connetion to the lobby lost, please refresh your page";
@@ -158,7 +157,6 @@ function update_date_time() {
     //format
 
     let tsec = parseInt(t / 1000) + 1;
-    // console.log(tsec);
     if (tsec) {
         if (tsec >= 0) {
             date_time.innerHTML = tsec;

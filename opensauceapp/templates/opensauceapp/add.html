@@ -15,7 +15,8 @@ Add new sauce
 
 {% block content %}
 <div class="container">
-	<h1 class="d-flex justify-content-center p-3">Ajouter une Sauce</h1>
+	{% include 'opensauceapp/title.html' %}
+	<h3>Add a new sauce</h3>
 	{% csrf_token %}
 	<form>
 		<ul class="nav nav-tabs justify-content-center">
@@ -23,12 +24,12 @@ Add new sauce
 				<a id="image_menu" class="nav-link active">Image</a>
 			</li>
 			<li class="nav-item">
-				<a id="quote_menu" class="nav-link">Citation</a>
+				<a id="quote_menu" class="nav-link">Quote</a>
 			</li>
 		</ul>
 		<div>
 			<div class="form-group">
-				<label for="input_categories">Catégorie</label>
+				<label for="input_categories">Category</label>
 				<select id="input_categories" class="custom-select form-control">
 					<option selected></option>
 					{% for sauce_category in sauce_categories %}
@@ -38,16 +39,16 @@ Add new sauce
 					{% endfor %}
 				</select>
 				<div class="invalid-feedback">
-					Veuillez choisir une catégorie...
+					Please select a category...
 				</div>
 			</div>
 			<div class="image-only form-group">
 				<label for="input_load_image">Image</label>
 				<div class="custom-file">
 					<input id="input_load_image" type="file" class="custom-file-input">
-					<label id="input_image_path" class="custom-file-label">Choisir un fichier</label>
+					<label id="input_image_path" class="custom-file-label">Select a file</label>
 					<div class="invalid-feedback">
-						Veuillez choisir une image...
+						Please select an image...
 					</div>
 				</div>
 				<div id="feedback_image_container" class="text-center p-3" hidden>
@@ -58,34 +59,40 @@ Add new sauce
 				<label for="sauce_quote">Citation</label>
 				<input id="input_quote" type="text" class="form-control">
 				<div class="invalid-feedback">
-					Veuillez saisir une citation...
+					Please write your quote...
 				</div>
 			</div>
 			<div class="form-group">
-				<label for="sauce_answer">Réponse</label>
+				<label for="sauce_answer">Answer</label>
 				<input id="input_answer" type="text" class="form-control">
 				<div class="invalid-feedback">
-					Veuillez saisir une réponse...
+					Please add the answer...
 				</div>
 			</div>
 			<div class="form-group">
-				<label for="difficulty_easy">Difficulté</label>
-				<ul id="input_difficulty" class="nav nav-pills nav-fill form-control">
+				<label for="difficulty_easy">Difficulty</label>
+				<ul id="input_difficulty" class="nav nav-pills nav-fill form-control font-weight-bold">
 					<li class="nav-item">
-						<a id="input_difficulty_easy" class="nav-link cursor-pointer">Facile</a>
+						<a id="input_difficulty_easy" class="nav-link cursor-pointer">Easy</a>
 					</li>
 					<li class="nav-item">
-						<a id="input_difficulty_medium" class="nav-link cursor-pointer">Moyen</a>
+						<a id="input_difficulty_medium" class="nav-link cursor-pointer">Medium</a>
 					</li>
 					<li class="nav-item">
-						<a id="input_difficulty_hard" class="nav-link cursor-pointer">Difficile</a>
+						<a id="input_difficulty_hard" class="nav-link cursor-pointer">Hard</a>
 					</li>
 				</ul>
 				<div class="invalid-feedback">
-					Veuillez choisir une difficulté...
+					Please choose a difficulty...
 				</div>
 				<small class="form-text text-muted">
-					TODO : Explain the difficulties
+					We categories in 3 diffrents difficulties :
+					<ul>
+						<li>Easy : Anybody who heard of it can answer</li>
+						<li>Medium : The image or the quote is not famous, doesn't show any protagonistes (display names in case of a quote)</li>
+						<li>Hard : Only a real fan can answer it : fan-art of antagonist, landscape without characters, unknown quote / scene</li>
+					</ul>
+					Keep in mind that the questions should always be related to popculture.
 				</small>
 			</div>
 			<button id="send_button" class="btn btn-primary">Envoyer</button>
