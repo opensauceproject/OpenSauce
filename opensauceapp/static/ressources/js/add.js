@@ -162,19 +162,25 @@ function post_data(url = ``, data = {}) {
 
 function send(e) {
 	if (validate()) {
+		send_button.disabled = true;
 		data = {};
 		data["type"] = sauce_type;
 		if (sauce_type == SAUCE_TYPE.IMAGE) {
-			data["image"] = sauce_image;
+			data["question"] = sauce_image;
 		} else if (sauce_type == SAUCE_TYPE.QUOTE) {
-			data["image"] = input_quote.value;
+			data["question"] = input_quote.value;
 		}
 		data["answer"] = input_answer.value;
 		data["difficulty"] = sauce_difficulty;
 		data["sauce_category"] = sauce_category;
 		post_data(`/add/`, data)
-			.then(data => console.log(JSON.stringify(data))) // JSON-string from `response.json()` call
-			.catch(error => console.error(error));
+			.then(function() {
+				send_button.disabled = false;
+                location.reload();
+			})
+			.catch(function() {
+
+			});
 	} else {
 		e.preventDefault();
 	}

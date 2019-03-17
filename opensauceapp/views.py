@@ -8,10 +8,17 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_exempt
 import json
+import re
+from PIL import Image
+from io import BytesIO
+import base64
+
 
 from .game.Game import Game
+from .tools import get_client_ip
 
 from .models import *
+
 
 def index(request):
     context = {}
@@ -38,7 +45,8 @@ def lobbies_list(request):
         }
         data["list"].append(l)
 
-    data["list"] = sorted(data["list"], key=lambda d : (-d["total"], -d["players"], -d["spectators"]))
+    data["list"] = sorted(
+        data["list"], key=lambda d: (-d["total"], -d["players"], -d["spectators"]))
 
     return JsonResponse(data)
 
@@ -46,12 +54,14 @@ def lobbies_list(request):
 # used to fetch the info when reporting
 def sauce_infos(request, sauce_id):
     data = {}
-    sauce = Sauce.objects.select_related("sauce_category").filter(id=sauce_id)[0]
+    sauce = Sauce.objects.select_related(
+        "sauce_category").filter(id=sauce_id)[0]
     data["question"] = sauce.question
     data["answer"] = sauce.answer
     data["media_type"] = sauce.media_type
     data["sauce_category"] = sauce.sauce_category.name
     return JsonResponse(data)
+
 
 @never_cache
 @login_required
@@ -63,6 +73,10 @@ def reports(request):
     return render(request, "opensauceapp/reports.html", context)
 
 # no need of the csrf because anybody can use this route
+MAX_WIDTH = 1280
+MAX_HEIGHT = 1024
+MAX_RATIO = MAX_WIDTH / MAX_HEIGHT
+
 @csrf_exempt
 def add(request):
     if request.method == "GET":
@@ -71,11 +85,60 @@ def add(request):
         return render(request, "opensauceapp/add.html", context)
     elif request.method == "POST":
         data = json.loads(request.body)
-        sauce = Sauce(question=data["image"], answer=data["answer"], sauce_category=SauceCategory.objects.get(id=data["sauce_category"]), difficulty=data["difficulty"], media_type=data["type"])
-        sauce.save()
+        sauce = Sauce()
+        invalid = False
+        sauce.answer = data["answer"]
+        sauce.sauce_category = SauceCategory.objects.get(
+            id=data["sauce_category"])
+        sauce.difficulty = data["difficulty"]
+        sauce.media_type = data["type"]
+        if sauce.media_type == 0:
+            # quote
+            sauce.question = data["question"]
+        elif sauce.media_type == 1:
+            # image
+            try:
+                image64_split = re.match('(data:image/.+;base64,)(.*)', data["question"])
+                image64_header = image64_split.group(1)
+                image64_data = image64_split.group(2)
+
+                image_data = base64.b64decode(image64_data)
+                image = Image.open(BytesIO(image_data))
+                width, height = image.size
+                ratio = width / height
+
+                # keep the min size
+                resize_width = min(MAX_WIDTH, width)
+                resize_height = min(MAX_HEIGHT, height)
+
+                # correct the ratio
+                # wider
+                if ratio > MAX_RATIO:
+                    resize_height = int(resize_width / ratio)
+                # heigher
+                else:
+                    resize_width = int(resize_height * ratio)
+
+                image = image.resize((resize_width, resize_height))
+
+                buffered = BytesIO()
+                image.save(buffered, format="PNG")
+                binary_image64 = base64.b64encode(buffered.getvalue())
+
+                img_str = image64_header + binary_image64.decode('utf-8')
+                sauce.question = img_str
+            except:
+                invalid = True
+
+
+        sauce.ip = get_client_ip(request)
+        if not invalid:
+            sauce.save()
         return JsonResponse({})
 
 # no need of the csrf because anybody can use this route
+
+
 @csrf_exempt
 def report_add(request):
     if request.method == "POST":
@@ -87,6 +150,7 @@ def report_add(request):
             return HttpResponseBadRequest()
         report.sauce = sauces[0]
         report.additional_informations = data["additional_informations"]
+        report.ip = get_client_ip(request)
         report.save()
 
         for category_id in data["report_categories_ids"]:
@@ -97,9 +161,8 @@ def report_add(request):
                 return HttpResponseBadRequest()
             report_report_category.report_category = report_categories[0]
             report_report_category.save()
-
-        print(data)
     return JsonResponse({})
+
 
 @login_required
 @csrf_exempt
@@ -109,6 +172,7 @@ def report_ignore(request):
         report = Report.objects.get(id=data["id"])
         report.delete()
     return JsonResponse({})
+
 
 @login_required
 @csrf_exempt
