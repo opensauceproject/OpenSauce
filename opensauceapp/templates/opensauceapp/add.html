@@ -21,10 +21,10 @@ Add new sauce
 	<form>
 		<ul class="nav nav-tabs justify-content-center">
 			<li class="nav-item">
-				<a id="image_menu" class="nav-link active">Image</a>
+				<a id="image_menu" class="nav-link" href="#image">Image</a>
 			</li>
 			<li class="nav-item">
-				<a id="quote_menu" class="nav-link">Quote</a>
+				<a id="quote_menu" class="nav-link" href="#quote">Quote</a>
 			</li>
 		</ul>
 		<div>
@@ -95,7 +95,8 @@ Add new sauce
 					Keep in mind that the questions should always be related to popculture.
 				</small>
 			</div>
-			<button id="send_button" class="btn btn-primary">Envoyer</button>
+			<a href="{% url 'index' %}" role="button" class="btn btn-danger float-left">Cancel</a>
+			<button id="send_button" class="btn btn-primary float-right">Submit</button>
 		</div>
 	</form>
 </div>

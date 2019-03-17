@@ -47,8 +47,13 @@ let sauce_quote;
 let sauce_answer;
 let sauce_difficulty;
 
-show_image_tab();
+if (window.location.hash == "#quote") {
+	show_quote_tab();
+} else {
+	show_image_tab();
+}
 clear_difficulites();
+
 
 function update_image(e) {
 	//https://stackoverflow.com/questions/3814231/loading-an-image-to-a-img-from-input-file/16153675
