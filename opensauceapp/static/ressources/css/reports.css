@@ -1,7 +1,9 @@
-
+/*
+This style sheet is used for the report page
+*/
 #question_image {
-  background-size: contain;
-  height: 150px;
-  background-position: center;
-  background-repeat: no-repeat;
+	background-size: contain;
+	height: 150px;
+	background-position: center;
+	background-repeat: no-repeat;
 }

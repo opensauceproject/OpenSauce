@@ -1,72 +1,35 @@
-@font-face {font-family: "DTLProkyonST";
-    src: url("//db.onlinewebfonts.com/t/d0374bf16da70eff39d6f085935f8882.eot");
-    src: url("//db.onlinewebfonts.com/t/d0374bf16da70eff39d6f085935f8882.eot?#iefix") format("embedded-opentype"),
-    url("//db.onlinewebfonts.com/t/d0374bf16da70eff39d6f085935f8882.woff2") format("woff2"),
-    url("//db.onlinewebfonts.com/t/d0374bf16da70eff39d6f085935f8882.woff") format("woff"),
-    url("//db.onlinewebfonts.com/t/d0374bf16da70eff39d6f085935f8882.ttf") format("truetype"),
-    url("//db.onlinewebfonts.com/t/d0374bf16da70eff39d6f085935f8882.svg#DTLProkyonST") format("svg");
+/*
+This style sheet is used for every pages
+*/
+html, body {
+	background-color: #FAFAFA;
 }
 
-.opensaucetitle {
-    font-family: 'DTLProkyonST';
-    font-size: 100px;
-    font-weight: bold;
+h1 {
+	font-size: 100px;
+	font-weight: bold;
 }
 
-.opensaucetitle-small {
-  font-family: 'DTLProkyonST';
-  font-size: 30px;
-  font-weight: bold;
-}
-
-.opensaucetext {
-  font-family: 'DTLProkyonST';
-  font-size: 12px;
-  font-weight: normal;
-}
-
-.opensauce {
-    font-family: 'DTLProkyonST';
-}
-
-.custom_number{
-  text-align: center;
-  width: 100%;
-  margin-bottom: 0;
-  padding-top: 0.375rem;
-  padding-right: 1.75rem;
-  padding-bottom: 0.375rem;
-  padding-left: 0.75rem;
-  line-height: 1.5;
-  color: #495057;
-  vertical-align: middle;
-  border-radius: .25rem;
-  border-style:solid;
-  border-width: .1rem;
-  border-top-left-radius: 0.25rem;
-  border-top-right-radius: 0.25rem;
-  border-bottom-right-radius: 0.25rem;
-  border-bottom-left-radius: 0.25rem;
-}
-
-.giffed{
-  background-image: url('http://37.media.tumblr.com/2b9166b4e7859921d363331015424038/tumblr_n3lzui9VLx1rhhw7fo1_500.gif');
-  background-size: cover;
-  padding:0;
-  margin:0;
-}
-
-body {
-  background-color: #FFFFFF;
-
+h1, h2, h3, h4, h5, h6, title-font {
+	font-family: 'DTLProkyonST';
 }
 
 .cursor-pointer {
-    cursor: pointer;
+	cursor: pointer;
 }
 
 .footer {
-  position: absolute;
-  height: 50px;
-  bottom: 0;
+	position: absolute;
+	height: 50px;
+	bottom: 0;
+}
+
+@font-face {
+	font-family: "DTLProkyonST";
+	src: url("http://db.onlinewebfonts.com/t/d0374bf16da70eff39d6f085935f8882.eot");
+	src: url("http://db.onlinewebfonts.com/t/d0374bf16da70eff39d6f085935f8882.eot?#iefix") format("embedded-opentype"),
+		url("http://db.onlinewebfonts.com/t/d0374bf16da70eff39d6f085935f8882.woff2") format("woff2"),
+		url("http://db.onlinewebfonts.com/t/d0374bf16da70eff39d6f085935f8882.woff") format("woff"),
+		url("http://db.onlinewebfonts.com/t/d0374bf16da70eff39d6f085935f8882.ttf") format("truetype"),
+		url("http://db.onlinewebfonts.com/t/d0374bf16da70eff39d6f085935f8882.svg#DTLProkyonST") format("svg");
 }

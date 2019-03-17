@@ -1,60 +1,62 @@
 {% extends 'opensauceapp/base.html' %}
-{% block title %}Home{% endblock %}
-
 {% load static %}
+
+{% block title %}
+Home
+{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" type="text/css" href="{% static 'ressources/css/index.css' %}">
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'ressources/js/index.js' %}" charset="utf-8" defer></script>
+{% endblock %}
 
 {% block content %}
 <div class="container">
-	<div>
-		<p class="text-center opensaucetitle">OpenSauce</p>
-	</div>
-	<br>
-	<div class="row">
-		<p class="wrapper mx-auto text-center w-100">
-			OpenSauce is an online party game inspired by PopSauce implementing categories and that is not meant to crash.<br><br>
-		</p>
+	<h1 class="text-center">OpenSauce</h1>
+	<div class="text-center w-100">
+		An online quiz party game inspired by PopSauce.
 	</div>
 	<hr>
 	<div class="row">
 		<div class="col-md-8 col-sm-12">
-			<div>
-				<p class="h4 opensauce">Public lobbies
-					<span class="float-right">
-						<a role="button" id="refresh_lobbies" href="#" class="btn btn-dark">
-							<i class="fas fa-sync-alt"></i>
-						</a>
-					</span>
-				</p>
-				<br>
-				<div id="no_lobbies" hidden>
-					<div class="alert alert-dark" role="alert">
-						There is currently no active lobby ! Feel free to create one.
-					</div>
+			<h3>Public lobbies</h3>
+			<div id="no_lobbies" hidden>
+				<div class="alert alert-dark" role="alert">
+					There is currently no active lobby ! Feel free to create one.
 				</div>
-				<div class="list-group" id="lobbies_list"></div>
 			</div>
-			<br>
-			<div>
-				<br>
-				<p class="h4 opensauce">Create a lobby</p>
-				<br>
-				<div class="input-group">
-					<div class="input-group-prepend">
-						<span class="input-group-text">Lobby name</span>
-					</div>
-					<input id="input_lobby_name" type="text" class="form-control">
-					<div class="input-group-append">
-						<a href="#" id="create_lobby_button" role="button" class="btn btn-outline-dark" disabled><span>Create</span></a>
-					</div>
+			<div class="list-group" id="lobbies_list"></div>
+
+			<h3 class="pt-5">Create a lobby</h3>
+			<div class="input-group">
+				<div class="input-group-prepend">
+					<span class="input-group-text">Lobby name</span>
 				</div>
-				<br><br>
+				<input id="input_lobby_name" type="text" class="form-control">
+				<div class="input-group-append">
+					<a href="#" id="create_lobby_button" role="button" class="btn btn-outline-dark" disabled><span>Create</span></a>
+				</div>
+			</div>
+
+			<h3 class="pt-5">Submit your own sauces</h3>
+			<div>
+				This web site is free and community driven, so we need your help to make it better ! <a href="{% url 'add' %}">Click here</a>
 			</div>
 		</div>
+
 		<div class="col-md-4 col-sm-12">
-			<p class="h4 opensauce">Find players on <a role="button" href="https://discord.gg/zXFjYaz" class="btn btn-outline-dark btn-sm"><i class="fab fa-discord"></i> Discord</a>
-				<br><br>
-				<iframe class="center" src="https://canary.discordapp.com/widget?id=552925373235462381&theme=light" width="100%" height="500" allowtransparency="true" frameborder="0"></iframe>
-			</p>
+			<div>
+				<h4 class="float-left">Find players on</h4>
+				<a role="button" href="https://discord.gg/zXFjYaz" class="float-right btn btn-outline-dark btn-sm">
+					<i class="fab fa-discord"></i> Discord
+				</a>
+			</div>
+			<iframe class="center" src="https://canary.discordapp.com/widget?id=552925373235462381&theme=light" width="100%" height="500px" frameborder="0">
+				Your browser doesnt support Discord server preview !
+			</iframe>
 		</div>
 	</div>
 
@@ -62,19 +64,17 @@
 		<div class="container-fluid text-center text-md-left">
 			<hr>
 			<div class="row">
-				<div class="col-md-3 col-sm-12">
-					<div class="btn-group" role="group">
-						<a role="button" href="https://github.com/HE-Arc/OpenSauce" class="btn btn-white text-dark"><i class="fab fa-github"></i></a>
-						<a role="button" href="#" class="btn btn-white text-dark"><i class="fab fa-facebook-f"></i></a>
-						<a role="button" href="#" class="btn btn-white text-dark"><i class="fab fa-instagram"></i></a>
-						<a role="button" href="https://discord.gg/zXFjYaz" class="btn btn-white text-dark"><i class="fab fa-discord"></i></a>
-						<a role="button" href="https://twitter.com/OpenSauceApp" class="btn btn-white text-dark"><i class="fab fa-twitter"></i></a>
-					</div>
+				<div class="col-md-3 col-sm-12 btn-group" role="group">
+					<a role="button" href="https://github.com/HE-Arc/OpenSauce" class="btn btn-white text-dark"><i class="fab fa-github"></i></a>
+					<a role="button" href="#" class="btn btn-white text-dark"><i class="fab fa-facebook-f"></i></a>
+					<a role="button" href="#" class="btn btn-white text-dark"><i class="fab fa-instagram"></i></a>
+					<a role="button" href="https://discord.gg/zXFjYaz" class="btn btn-white text-dark"><i class="fab fa-discord"></i></a>
+					<a role="button" href="https://twitter.com/OpenSauceApp" class="btn btn-white text-dark"><i class="fab fa-twitter"></i></a>
 				</div>
-				<div class="col-md-6 col-sm-12">
-					<p class="text-center">
-						<span class="text-muted"><a role="button" href="https://www.he-arc.ch/"> <img style="opacity: 0.9;" class="w-25" src="{% static 'ressources/img/hearc_logo.png' %}" /></a></span>
-					</p>
+				<div class="col-md-6 col-sm-12 text-center">
+					<a role="button" href="https://www.he-arc.ch/">
+						<img style="opacity: 0.9;" class="w-25" src="{% static 'ressources/img/hearc_logo.png' %}" />
+					</a>
 				</div>
 				<div class="col-md-3 col-sm-12">
 					<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top" class="float-right">
@@ -88,83 +88,4 @@
 		</div>
 	</footer>
 </div>
-<script>
-	let lobbies_list = document.getElementById("lobbies_list");
-	let refresh_lobbies = document.getElementById("refresh_lobbies");
-	let no_lobbies = document.getElementById("no_lobbies");
-	let create_lobby_button = document.getElementById("create_lobby_button");
-	let input_lobby_name = document.getElementById("input_lobby_name");
-
-	refresh_lobbies.addEventListener("click", update_lobbies_list);
-	input_lobby_name.addEventListener("keydown", update_link_to_lobby);
-	input_lobby_name.addEventListener("keydown", handle_create_lobby_button);
-	input_lobby_name.addEventListener("keydown", handle_enter_key);
-
-	update_lobbies_list();
-	handle_create_lobby_button();
-
-	//autorefresh
-	setInterval(update_lobbies_list, 1000);
-
-	function handle_create_lobby_button() {
-		if (input_lobby_name.value.length > 0) {
-			create_lobby_button.disabled = false;
-			create_lobby_button.classList.remove('btn-outline-dark', 'disabled');
-			create_lobby_button.classList.add('btn-dark');
-		} else {
-			create_lobby_button.disabled = true;
-			create_lobby_button.classList.remove('btn-dark');
-			create_lobby_button.classList.add('btn-outline-dark', 'disabled');
-		}
-	}
-
-	function handle_enter_key(e) {
-		if (e.keyCode == 13) {
-            window.location.href = create_lobby_button.href;
-		}
-	}
-
-	function update_link_to_lobby(e) {
-		create_lobby_button.href = "lobby/" + e.srcElement.value;
-	}
-
-	function update_lobbies_list() {
-		fetch("{% url 'lobbies_list' %}")
-			.then(function(response) {
-				return response.json();
-			})
-			.then(function(json) {
-				lobbies_list.innerHTML = "";
-				if (json.list.length <= 0) {
-					no_lobbies.hidden = false;
-				} else {
-					for (let i = 0; i < json.list.length; i++) {
-						let lobby = json.list[i];
-						let lobby_link = document.createElement("a");
-						lobby_link.href = "lobby/" + lobby["name"];
-						lobby_link.type = "button";
-						lobby_link.classList.add("list-group-item", "d-flex", "justify-content-between", "align-items-center");
-
-						let right = document.createElement("span");
-
-						let badgesPlayers = document.createElement("span");
-						badgesPlayers.classList.add("badge", "badge-dark", "badge-pill");
-						badgesPlayers.innerHTML = lobby["players"] + " <i class=\"fas fa-gamepad\"></i>";
-
-						let badgesSpectators = document.createElement("span");
-						badgesSpectators.classList.add("badge", "badge-dark", "badge-pill");
-						badgesSpectators.innerHTML = lobby["spectators"] + " <i class=\"fas fa-eye\"></i>";
-
-						lobby_link.innerHTML = lobby["name"];
-
-						right.appendChild(badgesPlayers);
-						right.appendChild(badgesSpectators);
-						lobby_link.appendChild(right);
-						lobbies_list.appendChild(lobby_link);
-					}
-					no_lobbies.hidden = true;
-				}
-			});
-	}
-</script>
 {% endblock %}
