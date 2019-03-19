@@ -4,7 +4,26 @@ let catergory_difficulty_checkbox = document.getElementByClassName("catergory-di
 
 console.log(catergory_difficulty_checkbox);
 
-score_goal_select.addEventListener("change", function(e) {
-    let score_goal_value = e.srcElement.selectedOptions[0].value;
-    console.log(score_goal_value);
-});
+score_goal_select.addEventListener("change", send_settings);
+
+for(let i = 0; i < catergory_difficulty_checkbox.length; i++)
+{
+    // Verify this when network
+    let checkbox = catergory_difficulty_checkbox[i];
+    checkbox.addEventListener("change", send_settings);
+}
+
+function update_settings(settings)
+{
+    // TODO Update settings according to the message
+}
+
+function send_settings()
+{
+    let settings = {};
+    settings["score_goal_value"] = parseInt(e.srcElement.selectedOptions[0].value);
+    lobby_socket.send(JSON.stringify({
+        "type": "settings",
+        "settings": settings,
+    }));
+}

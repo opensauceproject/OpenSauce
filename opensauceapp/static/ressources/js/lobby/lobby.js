@@ -83,6 +83,9 @@ lobby_socket.addEventListener("message", function(e) {
         case "answer":
             update_answer(data.answer);
             break;
+        case "settings":
+            update_settings(data.settings);
+            break;
         case "game_end":
             update_game_end();
             break;
