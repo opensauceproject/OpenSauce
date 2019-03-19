@@ -14,7 +14,7 @@ from io import BytesIO
 import base64
 
 
-from .game.Game import Game
+from .game.Game import Game, Lobby
 from .tools import get_client_ip
 
 from .models import *
@@ -30,6 +30,9 @@ def lobby(request, lobby_name):
     context["lobby_name"] = lobby_name
     context["lobby_name_json"] = json.dumps(lobby_name)
     context["report_categories"] = ReportCategory.objects.all()
+    context["sauce_categories"] = SauceCategory.objects.all()
+    context["score_goals"] = Lobby.score_goals
+    context["default_score_goal"] = Lobby.default_score_goal
     return render(request, "opensauceapp/lobby/lobby.html", context)
 
 

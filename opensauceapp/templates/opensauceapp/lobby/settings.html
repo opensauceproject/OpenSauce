@@ -1,0 +1,30 @@
+<div>
+    <h3>Settings</h3>
+    <h4>Score goal</h4>
+    <select id="score_goal_select">
+        {% for score_goal in score_goals %}
+        {% if score_goal == default_score_goal %}
+        <option selected>{{score_goal}}</option>
+        {% else %}
+        <option>{{score_goal}}</option>
+        {%endif %}
+        {% endfor %}
+    </select>
+    <h4>Sauce Categories</h4>
+    <table id="sauce_categories_table" class="w-100">
+        <tr>
+            <th></th>
+            <th class="text-center">Easy</th>
+            <th class="text-center">Medium</th>
+            <th class="text-center">Hard</th>
+        </tr>
+        {% for category in sauce_categories %}
+        <tr>
+            <td>{{category.name}}</td>
+            <td class="text-center"><input class="catergory-difficulty-checkbox" data-category_id="{{category.id}}" type="checkbox"></td>
+            <td class="text-center"><input data-category_id="{{category.id}}" type="checkbox"></td>
+            <td class="text-center"><input data-category_id="{{category.id}}" type="checkbox"></td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>

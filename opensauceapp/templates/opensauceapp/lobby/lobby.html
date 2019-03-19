@@ -7,8 +7,9 @@
 {% endblock %}
 
 {% block scripts %}
-<script src="{% static 'ressources/js/lobby.js' %}" charset="utf-8" defer></script>
-<script src="{% static 'ressources/js/report_modal.js' %}" charset="utf-8" defer></script>
+<script src="{% static 'ressources/js/lobby/lobby.js' %}" charset="utf-8" defer></script>
+<script src="{% static 'ressources/js/lobby/report_modal.js' %}" charset="utf-8" defer></script>
+<script src="{% static 'ressources/js/lobby/settings.js' %}" charset="utf-8" defer></script>
 {% endblock %}
 
 {% block content %}
@@ -42,6 +43,7 @@
 			</div>
 		</div>
 	</div>
+	{% include 'opensauceapp/lobby/settings.html' %}
 	<div class="h3 row">
 		<div class="col-md-12">
 			<div class="input-group">

@@ -29,6 +29,9 @@ class Lobby:
     timeoutWhenAnswer = datetime.timedelta(seconds=2)
     timeoutWhenGameFinished = datetime.timedelta(seconds=5)
 
+    score_goals = [10, 20, 30, 50, 100, 200]
+    default_score_goal = 50
+
     ignored_prefix_char_sequence = ["the", "a", "an", "le", "la", "les"]
 
     pointsGoal = 100
