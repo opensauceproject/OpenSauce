@@ -82,6 +82,9 @@ class Lobby:
         self.next_round()
         self.send_question()
 
+    def set_settings(self, settings):
+        self.settings = settings
+
     def question_delay(self, questionID):
         self.datetime = datetime.datetime.now() + Lobby.timeoutWhenQuestion
         sleep(Lobby.timeoutWhenQuestion.total_seconds())
@@ -235,9 +238,7 @@ class Lobby:
                 s = s[l:]
                 break
         s = s.translate(str.maketrans('', '', string.whitespace))
-
         return s
-
 
     def __str__(self):
         s = "--" + self.name + ", status : " + str(self.state) + "\n"
