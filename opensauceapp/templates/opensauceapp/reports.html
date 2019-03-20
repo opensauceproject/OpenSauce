@@ -15,38 +15,54 @@
 	{% include 'opensauceapp/title.html' %}
 	<div>
 		<div class="d-flex">
-			<p class="h2 opensauce">Liste des signalements</p>
-			<a class="ml-auto" href="{% url 'logout' %}">Se déconnecter</a>
+			<p class="h2 opensauce">List of reports</p>
+			<a class="ml-auto" href="{% url 'logout' %}">Disconnect</a>
 		</div>
 
 		{% csrf_token %}
+
 		{% for report in sauce_reports %}
 		<div id="report_card_{{ report.id }}" class="card">
 			<div class="card-header">
-				Signalement #{{ report.id }}
+				<h5>Report #{{ report.id }}</h5>
 			</div>
 			<div class="card-body">
-				<div class="card-text">
+				<div class="flex_container card-text">
 
-					{% if report.sauce.media_type == QUOTE %}
-					<center>
-						<p>Question : {{ report.sauce.question }}</p>
-					</center>
-					{% else %}
-					<div id="question_image" class="w-100" style="background-image: url('{{report.sauce.question}}')"></div>
-					{% endif %}
+					<div class="flex_right">
+						<p>
+							<b>Category</b> : {{ report.sauce.sauce_category.name }}<br>
+							<b>Motiv</b> : {{ report.additional_informations }}<br>
+							<b>Date</b> : {{ report.date }}
+						</p>
+						<center></center>
+					</div>
 
+					<div class="flex_left">
+						{% if report.sauce.media_type == QUOTE %}
+							<p><b>Question</b> : {{ report.sauce.question }}</p>
+						{% else %}
+							<div id="question_image" class="w-100" style="background-image: url('{{report.sauce.question}}')"></div>
+						{% endif %}
+						<p><b>Answer</b> : {{ report.sauce.answer }}</p>
+					</div>
+
+				</div>
+
+				<div class="d_flex">
+					<br>
 					<center>
-						<p>Réponse : {{ report.sauce.answer }}</p>
+						<button type="button" value="{{ report.id }}" class="btn btn-primary ignore_button">Ignorer</button>
+						<button type="button" value="{{ report.id }}" class="ml-auto btn btn-primary delete_button">Supprimer</button>
 					</center>
 				</div>
 
-				<center>
-					<button type="button" value="{{ report.id }}" class="btn btn-primary ignore_button">Ignorer</a>
-						<button type="button" value="{{ report.id }}" class="btn btn-primary delete_button">Supprimer</a>
-				</center>
 			</div>
 		</div>
+		{% empty %}
+		<br>
+		<br>
+		<center><h3>No reports have been emitted</h3><center>
 		{% endfor %}
 	</div>
 </div>
