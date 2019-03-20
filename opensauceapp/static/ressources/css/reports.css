@@ -1,9 +1,27 @@
 /*
 This style sheet is used for the report page
 */
+
+.flex_container {
+	display: flex;
+	width: 100%;
+}
+
+.flex_right {
+	order: 1;
+	width: 50%;
+	margin-left: 5%;
+}
+
+.flex_left {
+	order: 0;
+	width: 50%;
+	margin-left: 5%;
+}
+
 #question_image {
 	background-size: contain;
 	height: 150px;
-	background-position: center;
+	background-position: left;
 	background-repeat: no-repeat;
 }
