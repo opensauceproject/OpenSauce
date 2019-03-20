@@ -3,7 +3,10 @@ This style sheet is used for every pages
 */
 html, body {
 	background-color: #FAFAFA;
+	height: 100%;
+	margin: 0;
 }
+
 
 h1 {
 	font-size: 100px;
@@ -23,10 +26,11 @@ h1, h2, h3, h4, h5, h6, title-font {
 	cursor: pointer;
 }
 
+.content {
+	min-height: calc(100vh - 75px);
+  }
 .footer {
-	position: absolute;
-	height: 50px;
-	bottom: 0;
+	height: 30px;
 }
 
 @font-face {
@@ -37,4 +41,8 @@ h1, h2, h3, h4, h5, h6, title-font {
 		url("http://db.onlinewebfonts.com/t/d0374bf16da70eff39d6f085935f8882.woff") format("woff"),
 		url("http://db.onlinewebfonts.com/t/d0374bf16da70eff39d6f085935f8882.ttf") format("truetype"),
 		url("http://db.onlinewebfonts.com/t/d0374bf16da70eff39d6f085935f8882.svg#DTLProkyonST") format("svg");
+}
+
+.hide-if-overflow {
+	overflow:hidden;
 }

@@ -14,7 +14,7 @@ Home
 {% endblock %}
 
 {% block content %}
-<div class="container">
+<div class="container content">
 	{% include 'opensauceapp/title.html' %}
 	<div class="row">
 		<div class="col-md-8 col-sm-12">
@@ -25,7 +25,7 @@ Home
 				</div>
 			</div>
 			<div class="list-group" id="lobbies_list"></div>
-
+			
 			<h3 class="pt-5">Create a lobby</h3>
 			<div class="input-group">
 				<div class="input-group-prepend">
@@ -45,43 +45,18 @@ Home
 
 		<div class="col-md-4 col-sm-12">
 			<div>
-				<h4 class="float-left">Find players on</h4>
-				<a role="button" href="https://discord.gg/zXFjYaz" class="float-right btn btn-outline-dark btn-sm">
+				<h3 class="pt-5">Find players on <a role="button" href="https://discord.gg/zXFjYaz" class="btn btn-outline-dark btn-sm">
 					<i class="fab fa-discord"></i> Discord
-				</a>
+					</a>
+				</h3>
+				
 			</div>
 			<iframe class="center" src="https://canary.discordapp.com/widget?id=552925373235462381&theme=light" width="100%" height="500px" frameborder="0">
 				Your browser doesnt support Discord server preview !
 			</iframe>
 		</div>
 	</div>
-
-	<footer class="page-footer font-small blue pt-4">
-		<div class="container-fluid text-center text-md-left">
-			<hr>
-			<div class="row">
-				<div class="col-md-3 col-sm-12 btn-group" role="group">
-					<a role="button" href="https://github.com/HE-Arc/OpenSauce" class="btn btn-white text-dark"><i class="fab fa-github"></i></a>
-					<a role="button" href="#" class="btn btn-white text-dark"><i class="fab fa-facebook-f"></i></a>
-					<a role="button" href="#" class="btn btn-white text-dark"><i class="fab fa-instagram"></i></a>
-					<a role="button" href="https://discord.gg/zXFjYaz" class="btn btn-white text-dark"><i class="fab fa-discord"></i></a>
-					<a role="button" href="https://twitter.com/OpenSauceApp" class="btn btn-white text-dark"><i class="fab fa-twitter"></i></a>
-				</div>
-				<div class="col-md-6 col-sm-12 text-center">
-					<a role="button" href="https://www.he-arc.ch/">
-						<img style="opacity: 0.9;" class="w-25" src="{% static 'ressources/img/hearc_logo.png' %}" />
-					</a>
-				</div>
-				<div class="col-md-3 col-sm-12">
-					<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top" class="float-right">
-						<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
-							<input type="hidden" name="cmd" value="_s-xclick" />
-							<input type="hidden" name="hosted_button_id" value="A7QDMRLC42M8W" />
-							<button type="input" class="btn btn-outline-dark btn-sm" target="_blank" href="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" name="submit"><i class="fab fa-paypal"></i> Donate to Devs.</button>
-						</form>
-				</div>
-			</div>
-		</div>
-	</footer>
 </div>
+{% include 'opensauceapp/footer.html' %}
+
 {% endblock %}
