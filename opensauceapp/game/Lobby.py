@@ -65,7 +65,18 @@ class Lobby:
         self.datetime = datetime.datetime.now()
         self.playerThatFound = []
         self.history = []
-        self.sauces = Sauce.objects.all()
+        self.sauces = self.fetch_sauces_from_settings()
+
+    def fetch_sauces_from_settings(self):
+        filtred_sauces = Sauce.objects.all()
+        for category in self.settings["categories"]:
+            category_id = category.category_id
+            difficulty = category.difficulty
+            value = category.value
+            if not value:
+                filtred_sauces = filtred_sauces.filter(category_id=category_id, difficulty=difficulty)
+
+        return filtred_sauces
 
     def count(self):
         return len(self.players)
@@ -227,7 +238,6 @@ class Lobby:
         if not player.can_earn_points():
             return
 
-        print(Lobby.sanitize(answer), Lobby.sanitize(self.currentSauce.answer))
         if Lobby.sanitize(answer) == Lobby.sanitize(self.currentSauce.answer):
             # correct answer
             self.add_player_points(player)
