@@ -21,9 +21,9 @@
         {% for category in sauce_categories %}
         <tr>
             <td>{{category.name}}</td>
-            <td class="text-center"><input class="catergory-difficulty-checkbox" data-category_id="{{category.id}}" type="checkbox"></td>
-            <td class="text-center"><input class="catergory-difficulty-checkbox" data-category_id="{{category.id}}" type="checkbox"></td>
-            <td class="text-center"><input class="catergory-difficulty-checkbox" data-category_id="{{category.id}}" type="checkbox"></td>
+            <td class="text-center"><input class="catergory-difficulty-checkbox" data-difficulty="1" data-category_id="{{category.id}}" type="checkbox"></td>
+            <td class="text-center"><input class="catergory-difficulty-checkbox" data-difficulty="2" data-category_id="{{category.id}}" type="checkbox"></td>
+            <td class="text-center"><input class="catergory-difficulty-checkbox" data-difficulty="3" data-category_id="{{category.id}}" type="checkbox"></td>
         </tr>
         {% endfor %}
     </table>

@@ -87,7 +87,7 @@ lobby_socket.addEventListener("message", function(e) {
             update_settings(data.settings);
             break;
         case "game_end":
-            update_game_end();
+            update_game_end(data.winner);
             break;
     }
 });
@@ -229,8 +229,10 @@ function update_game_starts_soon(qte) {
     date_time_container.hidden = false;
 }
 
-function update_game_end() {
-    game_message.innerHTML = "The game has ended !"
+function update_game_end(winner) {
+    game_message.innerHTML = "The game has ended !";
+    game_message.innerHTML += "The winner is " + winner;
+    game_message.innerHTML += "Congratulation !";
     game_message.hidden = false;
     set_submit_answer_hidden(true);
     category_container.hidden = true;

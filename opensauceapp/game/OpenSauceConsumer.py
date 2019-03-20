@@ -41,7 +41,7 @@ class OpenSauceConsumer(WebsocketConsumer):
             lobby.player_leave(self.secKey)
         elif type == "submit":
             lobby.player_submit(self.secKey, data["answer"])
-        elif tpye == "settings":
+        elif type == "settings":
             lobby.set_settings(data["settings"])
 
         print(Game.get_instance())

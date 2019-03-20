@@ -9,7 +9,7 @@ import string
 import unidecode
 from asgiref.sync import async_to_sync
 
-from ..models import Sauce
+from ..models import Sauce, SauceCategory
 
 
 # TODO :
@@ -30,11 +30,9 @@ class Lobby:
     timeoutWhenGameFinished = datetime.timedelta(seconds=5)
 
     score_goals = [10, 20, 30, 50, 100, 200]
-    default_score_goal = 50
+    default_score_goal = 10
 
     ignored_prefix_char_sequence = ["the", "a", "an", "le", "la", "les"]
-
-    pointsGoal = 100
 
     minPlayers = 1
 
@@ -43,8 +41,20 @@ class Lobby:
 
     def __init__(self, name):
         self.name = name
-        self.settings = {}
+        self.settings = Lobby.default_settings()
         self.reset()
+
+    @staticmethod
+    def default_settings():
+        settings = {}
+        settings["categories"] = []
+        settings["score_goal_value"] = Lobby.default_score_goal
+        categories = SauceCategory.objects.all()
+        for category in categories:
+            for difficulty in range(1, 4): # 1-3
+                setting = {'category_id': category.id, 'difficulty': difficulty, 'value': True}
+                settings["categories"].append(setting)
+        return settings
 
     def reset(self):
         self.state = Lobby.WAITING_FOR_PLAYERS
@@ -83,7 +93,9 @@ class Lobby:
         self.send_question()
 
     def set_settings(self, settings):
+        print(settings)
         self.settings = settings
+        self.send_settings()
 
     def question_delay(self, questionID):
         self.datetime = datetime.datetime.now() + Lobby.timeoutWhenQuestion
@@ -110,7 +122,7 @@ class Lobby:
         self.datetime = datetime.datetime.now() + Lobby.timeoutWhenAnswer
         sleep(Lobby.timeoutWhenAnswer.total_seconds())
         best_player = self.get_best_player()
-        if best_player and best_player.score >= Lobby.pointsGoal:
+        if best_player and best_player.score + best_player.points_this_round >= self.settings["score_goal_value"]:
             self.send_game_end()
         else:
             self.next_round()
@@ -170,6 +182,7 @@ class Lobby:
             player.isOwner = True
         self.players[secKey] = player
         self.send_scoreboard()
+        self.send_settings()
         self.update_and_send_state()
 
     def player_remove(self, secKey):
@@ -246,6 +259,13 @@ class Lobby:
             s += "---- " + str(name) + " : " + str(player) + "\n"
         return s
 
+    def send_settings(self):
+        settings = {}
+        settings["settings"] = self.settings
+        settings["datetime"] = self.datetime.timestamp()
+        data = {"type": "settings", "data": settings}
+        self.broadcast(data)
+
     def send_scoreboard(self):
         # Players and spectators
         players = []
@@ -321,7 +341,9 @@ class Lobby:
     def send_game_end(self):
         self.state = Lobby.GAME_END
         game_end = {}
+
         game_end["datetime"] = self.datetime.timestamp()
+        game_end["winner"] = self.get_best_player().name
 
         # print("send game end : ", game_end)
         self.broadcast({"type": "game_end", "data": game_end})

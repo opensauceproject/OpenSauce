@@ -3,23 +3,21 @@ let no_lobbies = document.getElementById("no_lobbies");
 let create_lobby_button = document.getElementById("create_lobby_button");
 let input_lobby_name = document.getElementById("input_lobby_name");
 
-input_lobby_name.addEventListener("keydown", update_link_to_lobby);
-input_lobby_name.addEventListener("keydown", handle_create_lobby_button);
+input_lobby_name.addEventListener("input", update_link_to_lobby);
+input_lobby_name.addEventListener("input", handle_create_lobby_button);
 input_lobby_name.addEventListener("keydown", handle_enter_key);
 
 update_lobbies_list();
-handle_create_lobby_button();
+handle_create_lobby_button({srcElement: input_lobby_name});
 
 //autorefresh
 setInterval(update_lobbies_list, 1000);
 
-function handle_create_lobby_button() {
-	if (input_lobby_name.value.length > 0) {
-		create_lobby_button.disabled = false;
+function handle_create_lobby_button(e) {
+	if (e.srcElement.value.length > 0) {
 		create_lobby_button.classList.remove('btn-outline-dark', 'disabled');
 		create_lobby_button.classList.add('btn-dark');
 	} else {
-		create_lobby_button.disabled = true;
 		create_lobby_button.classList.remove('btn-dark');
 		create_lobby_button.classList.add('btn-outline-dark', 'disabled');
 	}
