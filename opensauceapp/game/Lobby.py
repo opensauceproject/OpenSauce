@@ -1,5 +1,3 @@
-from .Player import Player
-
 import random
 import datetime
 from threading import Thread
@@ -10,11 +8,8 @@ import unidecode
 from asgiref.sync import async_to_sync
 
 from ..models import Sauce, SauceCategory
+from .Player import Player
 
-
-# TODO :
-# - fix send when player join/leave/add/remove
-# -
 
 class Lobby:
     # States
@@ -42,10 +37,27 @@ class Lobby:
     def __init__(self, name):
         self.name = name
         self.settings = Lobby.default_settings()
+        self.players = {}
         self.reset()
+
+    def reset(self):
+        """Reset the lobby to a basic state"""
+        self.state = Lobby.WAITING_FOR_PLAYERS
+        self.questionID = 0
+        self.current_sauce = None
+        self.datetime = datetime.datetime.now()
+        self.player_that_found = []
+        for player in self.players.values():
+            player.isPlaying = False
+        self.history = []
+        self.sauces = self.fetch_sauces_from_settings()
+        self.update_and_send_state()
+        self.send_scoreboard()
+        self.send_settings()
 
     @staticmethod
     def default_settings():
+        """Everything is enabled by default"""
         settings = {}
         settings["categories"] = []
         settings["score_goal_value"] = Lobby.default_score_goal
@@ -56,25 +68,21 @@ class Lobby:
                 settings["categories"].append(setting)
         return settings
 
-    def reset(self):
-        self.state = Lobby.WAITING_FOR_PLAYERS
-        self.players = {}
-        self.gameStarted = False
-        self.questionID = 0
-        self.currentSauce = None
-        self.datetime = datetime.datetime.now()
-        self.playerThatFound = []
-        self.history = []
-        self.sauces = self.fetch_sauces_from_settings()
-
     def fetch_sauces_from_settings(self):
-        filtred_sauces = Sauce.objects.all()
+        all_sauces = Sauce.objects.all()
+        filtred_sauces = []
+
+        settings_lookup = {}
         for category in self.settings["categories"]:
-            category_id = category.category_id
-            difficulty = category.difficulty
-            value = category.value
-            if not value:
-                filtred_sauces = filtred_sauces.filter(category_id=category_id, difficulty=difficulty)
+            category_id = category["category_id"]
+            difficulty = category["difficulty"]
+            value = category["value"]
+            settings_lookup[(category_id, difficulty)] = value
+
+        # it's difficult with filter so we do it manualy
+        for sauce in all_sauces:
+            if settings_lookup[(sauce.sauce_category.id, sauce.difficulty)]:
+                filtred_sauces.append(sauce)
 
         return filtred_sauces
 
@@ -104,8 +112,10 @@ class Lobby:
         self.send_question()
 
     def set_settings(self, settings):
-        print(settings)
         self.settings = settings
+        self.sauces = self.fetch_sauces_from_settings()
+        for i in self.sauces:
+            print(i)
         self.send_settings()
 
     def question_delay(self, questionID):
@@ -116,7 +126,7 @@ class Lobby:
             self.answer()
 
     def answer(self):
-        self.history.append((self.currentSauce, self.playerThatFound))
+        self.history.append((self.current_sauce, self.player_that_found))
         self.questionID += 1
         self.send_answer()
         thread = Thread(target=self.answer_delay)
@@ -135,20 +145,21 @@ class Lobby:
         best_player = self.get_best_player()
         if best_player and best_player.score + best_player.points_this_round >= self.settings["score_goal_value"]:
             self.send_game_end()
+            sleep(Lobby.timeoutWhenGameFinished.total_seconds())
+            self.reset()
         else:
             self.next_round()
             self.send_question()
 
     def next_round(self):
-        self.state = Lobby.QUESTION
         # reset players
         for player in self.players.values():
             player.reset_round()
         self.send_scoreboard()
         # set new sauce
-        self.currentSauce = random.choice(self.sauces)
+        self.current_sauce = random.choice(self.sauces)
         # reset play that found
-        self.playerThatFound = []
+        self.player_that_found = []
         # set new end time
         thread = Thread(target=self.question_delay,
                         args=(self.questionID,))
@@ -163,7 +174,7 @@ class Lobby:
         elif Lobby.GAME_START_SOON == self.state:
             pass
         elif Lobby.QUESTION == self.state:
-            if len(self.playerThatFound) >= self.count_players():
+            if len(self.player_that_found) >= self.count_players():
                 self.state = Lobby.ANSWER
                 self.datetime = datetime.datetime.now() + Lobby.timeoutWhenQuestion
         elif Lobby.ANSWER == self.state:
@@ -220,12 +231,12 @@ class Lobby:
         self.update_and_send_state()
 
     def add_player_points(self, player):
-        index = len(self.playerThatFound)
+        index = len(self.player_that_found)
         lenPointsRepartitionMinusOne = len(Lobby.pointsRepartition) - 1
         if index >= lenPointsRepartitionMinusOne:
             index = lenPointsRepartitionMinusOne
 
-        self.playerThatFound.append(player)
+        self.player_that_found.append(player)
         player.add_points(Lobby.pointsRepartition[index])
 
     def player_submit(self, secKey, answer):
@@ -238,10 +249,10 @@ class Lobby:
         if not player.can_earn_points():
             return
 
-        if Lobby.sanitize(answer) == Lobby.sanitize(self.currentSauce.answer):
+        if Lobby.sanitize(answer) == Lobby.sanitize(self.current_sauce.answer):
             # correct answer
             self.add_player_points(player)
-            if len(self.playerThatFound) >= self.count_players():
+            if len(self.player_that_found) >= self.count_players():
                 self.answer()
             self.send_scoreboard()
 
@@ -332,17 +343,19 @@ class Lobby:
     def send_question(self):
         self.state = Lobby.QUESTION
         question = {}
-        question["question"] = self.currentSauce.question
-        question["media_type"] = self.currentSauce.media_type
-        question["category"] = self.currentSauce.sauce_category.name
+        question["question"] = self.current_sauce.question
+        question["media_type"] = self.current_sauce.media_type
+        question["category"] = self.current_sauce.sauce_category.name
         question["datetime"] = self.datetime.timestamp()
         # print("send question : ", question)
         self.broadcast({"type": "question", "data": question})
 
     def send_answer(self):
+        if self.state is not Lobby.QUESTION:
+            return
         self.state = Lobby.ANSWER
         answer = {}
-        answer["answer"] = self.currentSauce.answer
+        answer["answer"] = self.current_sauce.answer
         answer["datetime"] = self.datetime.timestamp()
         # print("send answer : ", answer)
         data = {"type": "answer", "data": answer}

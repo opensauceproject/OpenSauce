@@ -18,6 +18,9 @@ class Sauce(models.Model):
     date = models.DateTimeField(default=datetime.now, blank=True)
     ip = models.CharField(default="localhost", max_length=20)
 
+    def __str__(self):
+        return str(self.id) + " " + self.answer + " " +  str(self.media_type) + " " + str(self.sauce_category.name)
+
 
 class ReportCategory(models.Model):
     id = models.AutoField(primary_key=True)
