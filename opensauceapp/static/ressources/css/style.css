@@ -33,6 +33,10 @@ h1, h2, h3, h4, h5, h6, title-font {
 	height: 30px;
 }
 
+.no-select {
+    user-select: none;
+}
+
 @font-face {
 	font-family: "DTLProkyonST";
 	src: url("http://db.onlinewebfonts.com/t/d0374bf16da70eff39d6f085935f8882.eot");

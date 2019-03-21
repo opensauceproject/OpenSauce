@@ -19,7 +19,6 @@ class Player:
 
     def set_name(self, new_name):
         without_space_name = new_name.translate(str.maketrans('', '', string.whitespace))
-        print(len(without_space_name))
         if(len(without_space_name) > 0):
             self.name = new_name
 

@@ -22,19 +22,20 @@ class Lobby:
     GAME_END = 4
 
     timeoutWhenGameStarting = datetime.timedelta(seconds=1)
-    timeoutWhenQuestion = datetime.timedelta(seconds=15)
-    timeoutWhenAnswer = datetime.timedelta(seconds=2)
-    timeoutWhenGameFinished = datetime.timedelta(seconds=5)
+    timeoutWhenQuestion = datetime.timedelta(seconds=4)
+    timeoutWhenAnswer = datetime.timedelta(seconds=4)
+    timeoutWhenGameFinished = datetime.timedelta(seconds=3)
 
     score_goals = [10, 20, 30, 50, 100, 200]
-    default_score_goal = 10
+    default_score_goal = 20
 
     ignored_prefix_char_sequence = ["the", "a", "an", "le", "la", "les"]
 
-    minPlayers = 1
+    min_players = 1
+    max_round_without_points = 10
 
     # the last is repeated for all the next players
-    pointsRepartition = [5, 3, 2, 1]
+    points_repartition = [5, 3, 2, 1]
 
     def __init__(self, name):
         self.name = name
@@ -45,12 +46,13 @@ class Lobby:
     def reset(self):
         """Reset the lobby to a basic state"""
         self.state = Lobby.WAITING_FOR_PLAYERS
-        self.questionID = 0
+        self.state_id = random.randrange(0, 999999)
+        self.round_without_points = 0
         self.current_sauce = None
         self.datetime = datetime.datetime.now()
         self.player_that_found = []
         for player in self.players.values():
-            player.isPlaying = False
+            player.reset_game()
         self.history = []
         self.sauces = self.fetch_sauces_from_settings()
         self.update_and_send_state(True)
@@ -73,7 +75,7 @@ class Lobby:
         filtred_sauces = []
 
         settings_lookup = {}
-        print(self.settings)
+        # print(self.settings)
         for category in self.settings["categories"]:
             category_id = category["category_id"]
             difficulty = category["difficulty"]
@@ -120,14 +122,19 @@ class Lobby:
         #     print(i)
         self.send_settings()
 
-    def question_delay(self, questionID):
+    def question_delay(self, state_id):
         self.datetime = datetime.datetime.now() + Lobby.timeoutWhenQuestion
         sleep(Lobby.timeoutWhenQuestion.total_seconds())
-        # is it still the same round ?
-        if Lobby.QUESTION == self.state and questionID == self.questionID:
+        # no more time (not everybody found), check the state id in case of everybody found the answer
+        if Lobby.QUESTION == self.state and state_id == self.state_id:
             self.answer()
 
     def answer(self):
+        # reset the room use to prevent people from staying without playing
+        if len(self.player_that_found) <= 0:
+            self.round_without_points += 1
+            if self.round_without_points >= Lobby.max_round_without_points:
+                self.reset()
         self.history.append((self.current_sauce, self.player_that_found))
         self.send_answer()
         thread = Thread(target=self.answer_delay)
@@ -160,12 +167,12 @@ class Lobby:
         self.send_scoreboard()
         # set new sauce
         self.current_sauce = random.choice(self.sauces)
-        self.questionID += 1
+        self.state_id = random.randrange(0, 999999)
         # reset play that found
         self.player_that_found = []
         # set new end time
         thread = Thread(target=self.question_delay,
-                        args=(self.questionID,))
+                        args=(self.state_id,))
         thread.start()
 
     def update_state(self, restart):
@@ -173,7 +180,7 @@ class Lobby:
             self.reset()
 
         if Lobby.WAITING_FOR_PLAYERS == self.state:
-            if self.count_players() >= Lobby.minPlayers:
+            if self.count_players() >= Lobby.min_players:
                 self.state = Lobby.GAME_START_SOON
                 thread = Thread(target=self.game_start_soon_delay)
                 thread.start()
@@ -222,14 +229,12 @@ class Lobby:
         return self.count() <= 0
 
     def player_join(self, secKey, playerName):
-        print("player join")
         player = self.players[secKey]
         player.isPlaying = True
         player.set_name(playerName)
         self.update_and_send_state()
 
     def player_leave(self, secKey):
-        print("player leave")
         player = self.players[secKey]
         player.reset_game()
         if self.count_players() <= 0:
@@ -239,12 +244,12 @@ class Lobby:
 
     def add_player_points(self, player):
         index = len(self.player_that_found)
-        lenPointsRepartitionMinusOne = len(Lobby.pointsRepartition) - 1
-        if index >= lenPointsRepartitionMinusOne:
-            index = lenPointsRepartitionMinusOne
+        len_points_repartition_MinusOne = len(Lobby.points_repartition) - 1
+        if index >= len_points_repartition_MinusOne:
+            index = len_points_repartition_MinusOne
 
         self.player_that_found.append(player)
-        player.add_points(Lobby.pointsRepartition[index])
+        player.add_points(Lobby.points_repartition[index])
 
     def player_submit(self, secKey, answer):
         # Can submit now...
@@ -316,6 +321,8 @@ class Lobby:
         # Handle history
         scoreboard["history"] = []
         for sauce, players_history in self.history[::-1]:
+            if sauce is None:
+                continue
             d = {}
             d["id"] = sauce.id
             d["answer"] = sauce.answer
@@ -333,7 +340,7 @@ class Lobby:
     def send_waiting_for_players(self):
         self.state = Lobby.WAITING_FOR_PLAYERS
         waiting_for_players = {}
-        waiting_for_players["qte"] = Lobby.minPlayers - self.count_players()
+        waiting_for_players["qte"] = Lobby.min_players - self.count_players()
         waiting_for_players["datetime"] = self.datetime.timestamp()
         # print("send waiting for players : ", waiting_for_players)
         self.broadcast(

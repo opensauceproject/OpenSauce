@@ -30,7 +30,7 @@ class OpenSauceConsumer(WebsocketConsumer):
 
         # type of the request
         type = data["type"]
-        print("$<" + self.secKey + "> " + str(data))
+        # print("$<" + self.secKey + "> " + str(data))
 
         lobby = Game.get_instance().get_lobby(self.lobby_name)
 
