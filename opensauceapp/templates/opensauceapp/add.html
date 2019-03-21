@@ -14,7 +14,7 @@ Add new sauce
 {% endblock %}
 
 {% block content %}
-<div class="container">
+<div class="container content">
 	{% include 'opensauceapp/title.html' %}
 	<h3>Add a new sauce</h3>
 	{% csrf_token %}
@@ -100,4 +100,10 @@ Add new sauce
 		</div>
 	</form>
 </div>
+
+
+	
+{% include 'opensauceapp/footer.html' %}
+
+
 {% endblock %}

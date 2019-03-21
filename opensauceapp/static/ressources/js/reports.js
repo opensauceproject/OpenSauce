@@ -1,8 +1,15 @@
 let ignore_buttons = document.getElementsByClassName("ignore_button");
 let delete_buttons = document.getElementsByClassName("delete_button");
 
-[].forEach.call(ignore_buttons, function (button) { button.addEventListener("click", execute_ignore); });
-[].forEach.call(delete_buttons, function (button) { button.addEventListener("click", execute_delete); });
+for(button of ignore_buttons)
+{
+  button.addEventListener("click", execute_ignore);
+}
+
+for(button of delete_buttons)
+{
+  button.addEventListener("click", execute_delete);
+}
 
 function execute_delete(event)
 {
@@ -23,7 +30,7 @@ function execute_delete(event)
       body: JSON.stringify(data),
   });
 
-  card.style.visibility = 'hidden';
+  card.remove();
 }
 
 function execute_ignore(event)
@@ -45,5 +52,5 @@ function execute_ignore(event)
       body: JSON.stringify(data),
   });
 
-  card.style.visibility = 'hidden';
+  card.remove();
 }
