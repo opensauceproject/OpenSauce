@@ -54,6 +54,8 @@ init_spectators_table();
 init_history_table();
 update_login_controls(false);
 
+let id;
+
 copy_to_clipboard_url_input.value = window.location.href;
 
 window.setInterval(update_date_time, 99);
@@ -66,6 +68,9 @@ lobby_socket.addEventListener("message", function(e) {
     datetime = new Date(data.datetime * 1000);
 
     switch (message.type) {
+        case "welcome":
+            id = data;
+            break;
         case "scoreboard":
             update_players_table(data.players);
             update_spectators_table(data.spectators);
@@ -119,20 +124,15 @@ function send_answer(answer) {
 }
 
 function try_to_join(e) {
-    let pseudo = pseudo_field.value;
-    if (pseudo.length > 0) {
-        join(pseudo);
-    }
+    join(pseudo_field.value);
 }
 
 function join(pseudo_join) {
     update_login_controls(true);
-    if (pseudo_field.value.length > 0) {
-        lobby_socket.send(JSON.stringify({
-            "type": "join",
-            "pseudo": pseudo_join
-        }));
-    }
+    lobby_socket.send(JSON.stringify({
+        "type": "join",
+        "pseudo": pseudo_join
+    }));
     current_pseudo.value = pseudo_join;
     submit_answer.focus();
     submit_answer.value = "";
@@ -141,12 +141,15 @@ function join(pseudo_join) {
 
 function leave() {
     update_login_controls(false);
-    lobby_socket.send(JSON.stringify({
-        "type": "leave"
-    }));
     pseudo_field.focus();
     pseudo_field.select();
     isPlaying = false;
+}
+
+function send_leave() {
+    lobby_socket.send(JSON.stringify({
+        "type": "leave"
+    }));
 }
 
 function update_login_controls(connected) {
@@ -173,6 +176,7 @@ function update_date_time() {
 
 // Update UI on messages
 function update_question(question) {
+    current_question.hidden = false;
     game_message.innerHTML = "";
     question_text.innerHTML = "";
     question_image.style = "";
@@ -205,6 +209,7 @@ function set_submit_answer_hidden(b) {
 }
 
 function update_answer(answer) {
+    current_question.hidden = false;
     game_message.innerHTML = "The answer was : " + answer;
     game_message.hidden = false;
     set_submit_answer_hidden(true);
@@ -214,6 +219,7 @@ function update_answer(answer) {
 }
 
 function update_waiting_for_players(qte) {
+    current_question.hidden = true;
     game_message.innerHTML = "Waiting for " + qte + " players";
     game_message.hidden = false;
     set_submit_answer_hidden(true);
@@ -222,6 +228,7 @@ function update_waiting_for_players(qte) {
 }
 
 function update_game_starts_soon(qte) {
+    current_question.hidden = true;
     game_message.innerHTML = "The game is about to begin !";
     game_message.hidden = false;
     set_submit_answer_hidden(true);
@@ -230,9 +237,10 @@ function update_game_starts_soon(qte) {
 }
 
 function update_game_end(winner) {
-    game_message.innerHTML = "The game has ended !";
-    game_message.innerHTML += "The winner is " + winner;
-    game_message.innerHTML += "Congratulation !";
+    current_question.hidden = true;
+    game_message.innerHTML = "The game has ended !" + "<br>";
+    game_message.innerHTML += "The winner is " + winner + "<br>";
+    game_message.innerHTML += "Congratulations !";
     game_message.hidden = false;
     set_submit_answer_hidden(true);
     category_container.hidden = true;
@@ -266,7 +274,7 @@ function update_players_table(p) {
         let classes = [];
         if (bonus != "")
             classes.push("bg-success");
-        if (pseudo_field.value == row["name"])
+        if (id == row["id"])
             classes.push("font-weight-bold");
 
         players_table.appendChild(Tools.create_row([i + 1, row["name"], row.score + bonus, get_rights(row)], "td", classes));
@@ -278,7 +286,7 @@ function update_spectators_table(s) {
     for (let i = 0; i < s.length; i++) {
         let row = s[i];
         let classes = [];
-        if (pseudo_field.value == row["name"])
+        if (id == row["id"])
             classes.push("font-weight-bold");
         spectators_table.appendChild(Tools.create_row([row["name"], get_rights(row)], "td", classes));
     }
