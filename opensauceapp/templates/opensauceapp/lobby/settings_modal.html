@@ -1,0 +1,45 @@
+<div id="settings_modal" class="modal" tabindex="-1" role="dialog">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">Settings</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<h6>Score goal</h6>
+				<select id="score_goal_select">
+					{% for score_goal in score_goals %}
+					{% if score_goal == default_score_goal %}
+					<option selected>{{score_goal}}</option>
+					{% else %}
+					<option>{{score_goal}}</option>
+					{%endif %}
+					{% endfor %}
+				</select>
+
+				<h6 class="pt-3">Sauce Categories</h6>
+				<table id="sauce_categories_table" class="w-100">
+					<tr>
+						<th></th>
+						<th class="text-center">Easy</th>
+						<th class="text-center">Medium</th>
+						<th class="text-center">Hard</th>
+					</tr>
+					{% for category in sauce_categories %}
+					<tr>
+						<td>{{category.name}}</td>
+						<td class="text-center"><input class="catergory-difficulty-checkbox" data-difficulty="1" data-category_id="{{category.id}}" type="checkbox"></td>
+						<td class="text-center"><input class="catergory-difficulty-checkbox" data-difficulty="2" data-category_id="{{category.id}}" type="checkbox"></td>
+						<td class="text-center"><input class="catergory-difficulty-checkbox" data-difficulty="3" data-category_id="{{category.id}}" type="checkbox"></td>
+					</tr>
+					{% endfor %}
+				</table>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
