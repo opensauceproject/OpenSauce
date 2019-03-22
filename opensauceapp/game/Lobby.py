@@ -9,7 +9,7 @@ from asgiref.sync import async_to_sync
 
 from ..models import Sauce
 from ..models import SauceCategory
-from .Tools import sanitize
+from .Tools import sanitize, str_delta
 
 from .Player import Player
 
@@ -31,6 +31,7 @@ class Lobby:
     default_score_goal = 20
 
     ignored_prefix = ["the", "a", "an", "le", "la", "les"]
+    answer_max_delta = 1
 
     min_players = 1
     max_round_without_points = 10
@@ -288,7 +289,9 @@ class Lobby:
         submited_answer_s = sanitize(submited_answer, Lobby.ignored_prefix)
         real_answer_s = sanitize(current_answer, Lobby.ignored_prefix)
 
-        if submited_answer_s == real_answer_s:
+        delta = str_delta(submited_answer_s, real_answer_s)
+
+        if delta <= Lobby.answer_max_delta:
             # correct answer
             self.round_without_points = 0
 

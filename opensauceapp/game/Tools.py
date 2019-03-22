@@ -1,5 +1,6 @@
 import unidecode
 import string
+import difflib
 
 def sanitize(s, ignored_prefix):
         # any special char unicode char to the closest ascci char
@@ -17,3 +18,8 @@ def sanitize(s, ignored_prefix):
                 break
         s = s.translate(str.maketrans('', '', string.whitespace))
         return s
+
+def str_delta(str1, str2):
+    ndiff = list(difflib.ndiff(str1, str2))
+    diffs = list(filter(lambda a: a[0] != ' ',  ndiff))
+    return len(diffs)
