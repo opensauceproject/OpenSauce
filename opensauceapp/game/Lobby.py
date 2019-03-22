@@ -22,10 +22,10 @@ class Lobby:
     ANSWER = 3
     GAME_END = 4
 
-    timeoutWhenGameStarting = datetime.timedelta(seconds=1)
-    timeoutWhenQuestion = datetime.timedelta(seconds=4)
-    timeoutWhenAnswer = datetime.timedelta(seconds=4)
-    timeoutWhenGameEnd = datetime.timedelta(seconds=3)
+    timeout_when_state_game_start_soon = datetime.timedelta(seconds=1)
+    timeout_when_question = datetime.timedelta(seconds=4)
+    timeout_when_answer = datetime.timedelta(seconds=4)
+    timeout_when_game_end = datetime.timedelta(seconds=3)
 
     score_goals = [10, 20, 30, 50, 100, 200]
     default_score_goal = 20
@@ -33,7 +33,7 @@ class Lobby:
     ignored_prefix = ["the", "a", "an", "le", "la", "les"]
     answer_max_delta = 1
 
-    min_players = 1
+    min_players = 3
     max_round_without_points = 10
 
     # the last is repeated for all the next players
@@ -121,14 +121,14 @@ class Lobby:
 #                     |___/
 
     def delay_game_start_soon(self):
-        self.datetime = datetime.datetime.now() + Lobby.timeoutWhenGameStarting
-        sleep(Lobby.timeoutWhenGameStarting.total_seconds())
+        self.datetime = datetime.datetime.now() + Lobby.timeout_when_state_game_start_soon
+        sleep(Lobby.timeout_when_state_game_start_soon.total_seconds())
         if Lobby.GAME_START_SOON == self.state:
             self.goto_question_state(True)
 
     def delay_question(self, state_id):
-        self.datetime = datetime.datetime.now() + Lobby.timeoutWhenQuestion
-        sleep(Lobby.timeoutWhenQuestion.total_seconds())
+        self.datetime = datetime.datetime.now() + Lobby.timeout_when_question
+        sleep(Lobby.timeout_when_question.total_seconds())
         # Verify that this the correct state to give the answer
         if Lobby.QUESTION == self.state and state_id == self.state_id:
             self.goto_answer_state()
@@ -137,8 +137,8 @@ class Lobby:
                 self.reset()
 
     def delay_answer(self):
-        self.datetime = datetime.datetime.now() + Lobby.timeoutWhenAnswer
-        sleep(Lobby.timeoutWhenAnswer.total_seconds())
+        self.datetime = datetime.datetime.now() + Lobby.timeout_when_answer
+        sleep(Lobby.timeout_when_answer.total_seconds())
         if Lobby.ANSWER == self.state:
             best_player = self.get_best_player()
             if best_player and best_player.score + best_player.points_this_round >= self.settings["score_goal_value"]:
@@ -147,8 +147,8 @@ class Lobby:
                 self.goto_question_state()
 
     def delay_game_end(self):
-        self.datetime = datetime.datetime.now() + Lobby.timeoutWhenGameEnd
-        sleep(Lobby.timeoutWhenGameEnd.total_seconds())
+        self.datetime = datetime.datetime.now() + Lobby.timeout_when_game_end
+        sleep(Lobby.timeout_when_game_end.total_seconds())
         self.goto_waiting_for_players()
 
 
