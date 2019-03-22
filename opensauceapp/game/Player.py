@@ -55,6 +55,10 @@ class Player:
             s += str(self.score)
         return s
 
+    def send(self, data):
+        jsondumps = json.dumps(data)
+        self.socket.send(text_data=jsondumps)
+
     def get_status(self):
         status = {}
         status["id"] = self.id

@@ -4,11 +4,12 @@ from threading import Thread
 from time import sleep
 import json
 import string
-import unidecode
+from secrets import token_hex
 from asgiref.sync import async_to_sync
 
 from ..models import Sauce
 from ..models import SauceCategory
+from .Tools import sanitize
 
 from .Player import Player
 
@@ -24,12 +25,12 @@ class Lobby:
     timeoutWhenGameStarting = datetime.timedelta(seconds=1)
     timeoutWhenQuestion = datetime.timedelta(seconds=4)
     timeoutWhenAnswer = datetime.timedelta(seconds=4)
-    timeoutWhenGameFinished = datetime.timedelta(seconds=3)
+    timeoutWhenGameEnd = datetime.timedelta(seconds=3)
 
     score_goals = [10, 20, 30, 50, 100, 200]
     default_score_goal = 20
 
-    ignored_prefix_char_sequence = ["the", "a", "an", "le", "la", "les"]
+    ignored_prefix = ["the", "a", "an", "le", "la", "les"]
 
     min_players = 1
     max_round_without_points = 10
@@ -40,35 +41,21 @@ class Lobby:
     def __init__(self, name):
         self.name = name
         self.players = {}
-        self.settings = self.default_settings()
-        self.reset()
+        self.set_default_settings()
+        self.goto_waiting_for_players()
 
-    def reset(self):
-        """Reset the lobby to a basic state"""
-        self.state = Lobby.WAITING_FOR_PLAYERS
-        self.state_id = random.randrange(0, 999999)
-        self.round_without_points = 0
-        self.current_sauce = None
-        self.datetime = datetime.datetime.now()
-        self.player_that_found = []
-        for player in self.players.values():
-            player.reset_game()
-        self.history = []
-        self.sauces = self.fetch_sauces_from_settings()
-        self.update_and_send_state(True)
-
-    @staticmethod
-    def default_settings():
+    def set_default_settings(self):
         """Everything is enabled by default"""
         settings = {}
         settings["categories"] = []
         settings["score_goal_value"] = Lobby.default_score_goal
         categories = SauceCategory.objects.all()
         for category in categories:
-            for difficulty in range(1, 4): # 1-3
-                setting = {'category_id': category.id, 'difficulty': difficulty, 'value': True}
+            for difficulty in range(1, 4):  # 1-3
+                setting = {'category_id': category.id,
+                           'difficulty': difficulty, 'value': True}
                 settings["categories"].append(setting)
-        return settings
+        self.settings = settings
 
     def fetch_sauces_from_settings(self):
         all_sauces = Sauce.objects.all()
@@ -104,42 +91,6 @@ class Lobby:
     def count_spectators(self):
         return len(self.get_spectators())
 
-    def update_and_send_state(self, restart = False):
-        self.update_state(restart)
-        self.send_current_state()
-
-    def game_start_soon_delay(self):
-        self.datetime = datetime.datetime.now() + Lobby.timeoutWhenGameStarting
-        sleep(Lobby.timeoutWhenGameStarting.total_seconds())
-        if Lobby.GAME_START_SOON == self.state:
-            self.next_round()
-            self.send_question()
-
-    def set_settings(self, settings):
-        self.settings = settings
-        self.sauces = self.fetch_sauces_from_settings()
-        # for i in self.sauces:
-        #     print(i)
-        self.send_settings()
-
-    def question_delay(self, state_id):
-        self.datetime = datetime.datetime.now() + Lobby.timeoutWhenQuestion
-        sleep(Lobby.timeoutWhenQuestion.total_seconds())
-        # no more time (not everybody found), check the state id in case of everybody found the answer
-        if Lobby.QUESTION == self.state and state_id == self.state_id:
-            self.answer()
-
-    def answer(self):
-        # reset the room use to prevent people from staying without playing
-        if len(self.player_that_found) <= 0:
-            self.round_without_points += 1
-            if self.round_without_points >= Lobby.max_round_without_points:
-                self.reset()
-        self.history.append((self.current_sauce, self.player_that_found))
-        self.send_answer()
-        thread = Thread(target=self.answer_delay)
-        thread.start()
-
     def get_best_player(self):
         playerSorted = sorted(self.get_players(), key=lambda p: p.score)
         if len(playerSorted) <= 0:
@@ -147,92 +98,158 @@ class Lobby:
         else:
             return playerSorted[0]
 
-    def answer_delay(self):
+    def get_current_state(self, complete_state = False):
+        if Lobby.WAITING_FOR_PLAYERS == self.state:
+            return self.get_waiting_for_players()
+        elif Lobby.GAME_START_SOON == self.state:
+            return self.get_game_starts_soon()
+        elif self.state == Lobby.QUESTION:
+            return self.get_question()
+        elif Lobby.ANSWER == self.state:
+            return self.get_answer()
+        elif Lobby.GAME_END == self.state:
+            return self.get_game_end()
+        else:
+            raise "Unhandled state"
+
+#  ____       _
+# |  _ \  ___| | __ _ _   _
+# | | | |/ _ \ |/ _` | | | |
+# | |_| |  __/ | (_| | |_| |
+# |____/ \___|_|\__,_|\__, |
+#                     |___/
+
+    def delay_game_start_soon(self):
+        self.datetime = datetime.datetime.now() + Lobby.timeoutWhenGameStarting
+        sleep(Lobby.timeoutWhenGameStarting.total_seconds())
+        if Lobby.GAME_START_SOON == self.state:
+            self.goto_question_state(True)
+
+    def delay_question(self, state_id):
+        self.datetime = datetime.datetime.now() + Lobby.timeoutWhenQuestion
+        sleep(Lobby.timeoutWhenQuestion.total_seconds())
+        # Verify that this the correct state to give the answer
+        if Lobby.QUESTION == self.state and state_id == self.state_id:
+            self.goto_answer_state()
+            self.round_without_points += 1
+            if self.round_without_points >= Lobby.max_round_without_points:
+                self.reset()
+
+    def delay_answer(self):
         self.datetime = datetime.datetime.now() + Lobby.timeoutWhenAnswer
         sleep(Lobby.timeoutWhenAnswer.total_seconds())
         if Lobby.ANSWER == self.state:
             best_player = self.get_best_player()
             if best_player and best_player.score + best_player.points_this_round >= self.settings["score_goal_value"]:
-                self.send_game_end()
-                sleep(Lobby.timeoutWhenGameFinished.total_seconds())
-                self.reset()
+                self.goto_game_end_state()
             else:
-                self.next_round()
-                self.send_question()
+                self.goto_question_state()
 
-    def next_round(self):
-        # reset players
+    def delay_game_end(self):
+        self.datetime = datetime.datetime.now() + Lobby.timeoutWhenGameEnd
+        sleep(Lobby.timeoutWhenGameEnd.total_seconds())
+        self.goto_waiting_for_players()
+
+
+#   ____       _          ____  _        _
+#  / ___| ___ | |_ ___   / ___|| |_ __ _| |_ ___
+# | |  _ / _ \| __/ _ \  \___ \| __/ _` | __/ _ \
+# | |_| | (_) | || (_) |  ___) | || (_| | ||  __/
+#  \____|\___/ \__\___/  |____/ \__\__,_|\__\___|
+
+    def goto_waiting_for_players(self):
+        self.state = Lobby.WAITING_FOR_PLAYERS
+        self.round_without_points = 0
+        self.current_sauce = None
+        self.state_id = token_hex(16)
+        self.datetime = datetime.datetime.now()
+        self.player_that_found = []
+        for player in self.players.values():
+            player.reset_game()
+        self.history = []
+        self.sauces = self.fetch_sauces_from_settings()
+        self.broadcast(self.get_scoreboard())
+        self.broadcast(self.get_current_state())
+
+    def goto_question_state(self, first_round=False):
+        self.state = Lobby.QUESTION
+
+        # Reset previous round
         for player in self.players.values():
             player.reset_round()
-        self.send_scoreboard()
-        # set new sauce
-        self.current_sauce = random.choice(self.sauces)
-        self.state_id = random.randrange(0, 999999)
-        # reset play that found
         self.player_that_found = []
-        # set new end time
-        thread = Thread(target=self.question_delay,
-                        args=(self.state_id,))
-        thread.start()
 
-    def update_state(self, restart):
-        if not restart and self.count_players() <= 0:
-            self.reset()
+        # Broadcast the scoreboard when it's useful
+        if not first_round:
+            self.broadcast(self.get_scoreboard())
 
-        if Lobby.WAITING_FOR_PLAYERS == self.state:
-            if self.count_players() >= Lobby.min_players:
-                self.state = Lobby.GAME_START_SOON
-                thread = Thread(target=self.game_start_soon_delay)
-                thread.start()
-        elif Lobby.GAME_START_SOON == self.state:
-            pass
-        elif Lobby.QUESTION == self.state:
-            if len(self.player_that_found) >= self.count_players():
-                self.state = Lobby.ANSWER
-                self.datetime = datetime.datetime.now() + Lobby.timeoutWhenQuestion
-        elif Lobby.ANSWER == self.state:
-            pass
-        elif Lobby.GAME_END == self.state:
-            pass
-        else:
-            raise "Unhandled state"
+        # Set new sauce
+        self.current_sauce = random.choice(self.sauces)
+        # Set a new state id, used for delayed thread
+        self.state_id = token_hex(16)
+        # Set the end time
 
-    def send_current_state(self):
-        self.send_scoreboard()
-        self.send_settings()
-        if Lobby.WAITING_FOR_PLAYERS == self.state:
-            self.send_waiting_for_players()
-        elif Lobby.GAME_START_SOON == self.state:
-            self.send_game_starts_soon()
-        elif self.state == Lobby.QUESTION:
-            self.send_question()
-        elif Lobby.ANSWER == self.state:
-            self.send_answer()
-        elif Lobby.GAME_END == self.state:
-            self.send_game_end()
-        else:
-            raise "Unhandled state"
+        # Run a thread to give the answer after a delay
+        Thread(target=self.delay_question, args=(self.state_id,)).start()
+
+        self.broadcast(self.get_current_state())
+
+    def goto_answer_state(self):
+        self.state = Lobby.ANSWER
+
+        # Add the current sauce to the history with the players
+        self.history.append((self.current_sauce, self.player_that_found))
+
+        # Run a thread to continue after giving the answer
+        Thread(target=self.delay_answer).start()
+        self.broadcast(self.get_answer())
+
+    def goto_game_start_soon_state(self):
+        self.state = Lobby.GAME_START_SOON
+        Thread(target=self.delay_game_start_soon).start()
+        self.broadcast(self.get_current_state())
+
+    def goto_game_end_state(self):
+        self.state = Lobby.GAME_END
+        Thread(target=self.delay_game_end).start()
+        self.broadcast(self.get_current_state())
+
+#  ____  _
+# |  _ \| | __ _ _   _  ___ _ __
+# | |_) | |/ _` | | | |/ _ \ '__|
+# |  __/| | (_| | |_| |  __/ |
+# |_|   |_|\__,_|\__, |\___|_|
+#                |___/
+#  __  __                                     _
+# |  \/  | _____   _____ _ __ ___   ___ _ __ | |_ ___
+# | |\/| |/ _ \ \ / / _ \ '_ ` _ \ / _ \ '_ \| __/ __|
+# | |  | | (_) \ V /  __/ | | | | |  __/ | | | |_\__ \
+# |_|  |_|\___/ \_/ \___|_| |_| |_|\___|_| |_|\__|___/
 
     def player_add(self, secKey, socket):
         player = Player(socket)
         if len(self.players) < 1:
             player.isOwner = True
         self.players[secKey] = player
-        self.send_scoreboard()
-        self.update_and_send_state()
+        player.send(self.get_current_state())
+        player.send(self.get_settings())
+        self.broadcast(self.get_scoreboard())
 
     def player_remove(self, secKey):
         if secKey in self.players:
             del self.players[secKey]
+        self.broadcast(self.get_scoreboard())
         # if the last player is remove the lobby tell to remove the lobby
-        self.update_and_send_state()
         return self.count() <= 0
 
     def player_join(self, secKey, playerName):
         player = self.players[secKey]
         player.isPlaying = True
         player.set_name(playerName)
-        self.update_and_send_state()
+        if Lobby.WAITING_FOR_PLAYERS == self.state:
+            if self.count_players() >= Lobby.min_players:
+                self.goto_game_start_soon_state()
+        self.broadcast(self.get_scoreboard())
 
     def player_leave(self, secKey):
         player = self.players[secKey]
@@ -240,66 +257,69 @@ class Lobby:
         if self.count_players() <= 0:
             self.reset()
         else:
-            self.send_scoreboard()
+            self.broadcast(self.get_scoreboard())
 
-    def add_player_points(self, player):
+#  ____  _                         __  __
+# |  _ \| | __ _ _   _  ___ _ __  |  \/  | ___  ___ ___  __ _  __ _  ___  ___
+# | |_) | |/ _` | | | |/ _ \ '__| | |\/| |/ _ \/ __/ __|/ _` |/ _` |/ _ \/ __|
+# |  __/| | (_| | |_| |  __/ |    | |  | |  __/\__ \__ \ (_| | (_| |  __/\__ \
+# |_|   |_|\__,_|\__, |\___|_|    |_|  |_|\___||___/___/\__,_|\__, |\___||___/
+#                |___/                                        |___/
+
+    def get_current_points(self):
         index = len(self.player_that_found)
         len_points_repartition_MinusOne = len(Lobby.points_repartition) - 1
         if index >= len_points_repartition_MinusOne:
             index = len_points_repartition_MinusOne
+        return Lobby.points_repartition[index]
 
-        self.player_that_found.append(player)
-        player.add_points(Lobby.points_repartition[index])
-
-    def player_submit(self, secKey, answer):
-        # Can submit now...
+    def player_submit(self, secKey, submited_answer):
+        player = self.players[secKey]
+        # Can you submit now ?
         if Lobby.QUESTION != self.state:
             return
-        player = self.players[secKey]
         if not player.isPlaying:
             return
         if not player.can_earn_points():
             return
 
-        if Lobby.sanitize(answer) == Lobby.sanitize(self.current_sauce.answer):
+        current_answer = self.current_sauce.answer
+
+        submited_answer_s = sanitize(submited_answer, Lobby.ignored_prefix)
+        real_answer_s = sanitize(current_answer, Lobby.ignored_prefix)
+
+        if submited_answer_s == real_answer_s:
             # correct answer
-            self.add_player_points(player)
+            self.round_without_points = 0
+
+            player.add_points(self.get_current_points())
+            self.player_that_found.append(player)
+
             if len(self.player_that_found) >= self.count_players():
-                self.answer()
-            self.send_scoreboard()
+                # go to the answer state
+                self.goto_answer_state()
+            self.broadcast(self.get_scoreboard())
 
-    @staticmethod
-    def sanitize(s):
-        # any special char unicode char to the closest ascci char
-        s = unidecode.unidecode(s)
-        # remove punctuation and remove whitespaces
-        s = s.translate(str.maketrans('', '', string.punctuation))
-        # only lower cases
-        s = s.lower()
-        # remove special char sequence
-        for sequence in Lobby.ignored_prefix_char_sequence:
-            l = len(sequence)
-            word_prefix = s[:l]
-            if word_prefix == sequence:
-                s = s[l:]
-                break
-        s = s.translate(str.maketrans('', '', string.whitespace))
-        return s
+    def player_set_settings(self, settings):
+        self.settings = settings
+        self.sauces = self.fetch_sauces_from_settings()
+        # for i in self.sauces:
+        #     print(i)
+        self.broadcast(self.get_settings())
 
-    def __str__(self):
-        s = "--" + self.name + ", status : " + str(self.state) + "\n"
-        for name, player in self.players.items():
-            s += "---- " + str(name) + " : " + str(player) + "\n"
-        return s
+#  ____  _        _                  _ ____   ___  _   _
+# / ___|| |_ __ _| |_ ___  ___      | / ___| / _ \| \ | |
+# \___ \| __/ _` | __/ _ \/ __|  _  | \___ \| | | |  \| |
+#  ___) | || (_| | ||  __/\__ \ | |_| |___) | |_| | |\  |
+# |____/ \__\__,_|\__\___||___/  \___/|____/ \___/|_| \_|
 
-    def send_settings(self):
+    def get_settings(self):
         settings = {}
         settings["settings"] = self.settings
         settings["datetime"] = self.datetime.timestamp()
-        data = {"type": "settings", "data": settings}
-        self.broadcast(data)
+        return {"type": "settings", "data": settings}
 
-    def send_scoreboard(self):
+    def get_scoreboard(self):
         # Players and spectators
         players = []
         spectators = []
@@ -332,60 +352,52 @@ class Lobby:
             scoreboard["history"].append(d)
 
         scoreboard["datetime"] = self.datetime.timestamp()
+        return {"type": "scoreboard", "data": scoreboard}
 
-        # print("send scoreboard", scoreboard)
-        data = {"type": "scoreboard", "data": scoreboard}
-        self.broadcast(data)
-
-    def send_waiting_for_players(self):
-        self.state = Lobby.WAITING_FOR_PLAYERS
+    def get_waiting_for_players(self):
         waiting_for_players = {}
         waiting_for_players["qte"] = Lobby.min_players - self.count_players()
-        waiting_for_players["datetime"] = self.datetime.timestamp()
-        # print("send waiting for players : ", waiting_for_players)
-        self.broadcast(
-            {"type": "waiting_for_players", "data": waiting_for_players})
+        return {"type": "waiting_for_players", "data": waiting_for_players}
 
-    def send_game_starts_soon(self):
-        self.state = Lobby.GAME_START_SOON
+    def get_game_starts_soon(self):
         game_starts_soon = {}
         game_starts_soon["datetime"] = self.datetime.timestamp()
-        # print("send game starts soon : ", game_starts_soon)
-        self.broadcast(
-            {"type": "game_starts_soon", "data": game_starts_soon})
+        return {"type": "game_starts_soon", "data": game_starts_soon}
 
-    def send_question(self):
-        self.state = Lobby.QUESTION
+    def get_question(self):
         question = {}
         question["question"] = self.current_sauce.question
         question["media_type"] = self.current_sauce.media_type
         question["category"] = self.current_sauce.sauce_category.name
         question["datetime"] = self.datetime.timestamp()
-        # print("send question : ", question)
-        self.broadcast({"type": "question", "data": question})
+        return {"type": "question", "data": question}
 
-    def send_answer(self):
-        if self.state is not Lobby.QUESTION:
-            return
-        self.state = Lobby.ANSWER
+    def get_answer(self):
         answer = {}
         answer["answer"] = self.current_sauce.answer
-        answer["datetime"] = self.datetime.timestamp()
-        # print("send answer : ", answer)
-        data = {"type": "answer", "data": answer}
-        self.broadcast(data)
+        answer["question"] = self.current_sauce.question
+        answer["media_type"] = self.current_sauce.media_type
+        answer["category"] = self.current_sauce.sauce_category.name
+        return {"type": "answer", "data": answer}
 
-    def send_game_end(self):
-        self.state = Lobby.GAME_END
+    def get_game_end(self):
         game_end = {}
-
-        game_end["datetime"] = self.datetime.timestamp()
         game_end["winner"] = self.get_best_player().name
+        return {"type": "game_end", "data": game_end}
 
-        # print("send game end : ", game_end)
-        self.broadcast({"type": "game_end", "data": game_end})
+#  __  __ _
+# |  \/  (_)___  ___
+# | |\/| | / __|/ __|
+# | |  | | \__ \ (__
+# |_|  |_|_|___/\___|
 
     def broadcast(self, data):
         jsondumps = json.dumps(data)
         for player in self.players.values():
             player.socket.send(text_data=jsondumps)
+
+    def __str__(self):
+        s = "--" + self.name + ", status : " + str(self.state) + "\n"
+        for name, player in self.players.items():
+            s += "---- " + str(name) + " : " + str(player) + "\n"
+        return s

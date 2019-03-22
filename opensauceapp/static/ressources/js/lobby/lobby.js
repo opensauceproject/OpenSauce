@@ -108,10 +108,11 @@ lobby_socket.addEventListener("message", function(e) {
 			break;
 		case "question":
 			state = STATES.QUESTION;
-			update_question(data);
+            update_question(data.question, data.media_type, data.category);
 			break;
 		case "answer":
 			state = STATES.ANSWER;
+            update_question(data.question, data.media_type, data.category);
 			update_answer(data.answer);
 			break;
 		case "game_end":
@@ -199,21 +200,21 @@ function update_date_time() {
 }
 
 // Update UI on messages
-function update_question(question) {
+function update_question(question, media_type, category) {
 	current_question.hidden = false;
 	game_message.innerHTML = "";
 	question_text.innerHTML = "";
 	question_image.style = "";
-	if (question["media_type"] == 0) {
+	if (0 == media_type) {
 		question_text.hidden = false;
 		question_image.hidden = true;
-		question_text.innerHTML = question["question"];
-	} else if (question["media_type"] == 1) {
+		question_text.innerHTML = question;
+	} else if (1 == media_type) {
 		question_text.hidden = true;
 		question_image.hidden = false;
-		question_image.style = "background-image : url('" + question["question"] + "')";
+		question_image.style = "background-image : url('" + question + "')";
 	}
-	category.innerHTML = question["category"];
+	category.innerHTML = category;
 
 	date_time_container.hidden = false;
 	game_message.hidden = true;
