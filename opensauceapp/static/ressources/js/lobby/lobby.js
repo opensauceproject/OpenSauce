@@ -1,7 +1,17 @@
 let lobby_socket;
 
-let history = [];
+let id;
+let hasJoined = false;
+let state = null;
 let datetime;
+
+let STATES = {
+	WAITING_FOR_PLAYERS: 0,
+	GAME_START_SOON: 1,
+	QUESTION: 2,
+	ANSWER: 3,
+	GAME_END: 4,
+}
 
 let game_message = document.getElementById("game_message");
 
@@ -40,6 +50,7 @@ let join_button = document.getElementById("join_button");
 leave_button.addEventListener("click", leave);
 copy_to_clipboard_url_button.addEventListener("click", copy_to_clipboard_url);
 
+// Join
 join_button.addEventListener("click", join);
 pseudo_field.addEventListener("keydown", function(e) {
 	if (e.keyCode === 13) join();
@@ -47,25 +58,22 @@ pseudo_field.addEventListener("keydown", function(e) {
 
 pseudo_field.focus();
 
-let id;
-let hasJoined = false;
-let state = null;
-
 try_to_connect();
 init_players_table();
 init_spectators_table();
 init_history_table();
 update_login_controls(false);
 
-let STATES = {
-	WAITING_FOR_PLAYERS: 0,
-	GAME_START_SOON: 1,
-	QUESTION: 2,
-	ANSWER: 3,
-	GAME_END: 4,
-}
-
+// To copy the URL to the clipboard
 copy_to_clipboard_url_input.value = window.location.href;
+function copy_to_clipboard_url() {
+	let dummy = document.createElement('input');
+	document.body.appendChild(dummy);
+	dummy.value = window.location.href;
+	dummy.select();
+	document.execCommand('copy');
+	document.body.removeChild(dummy);
+}
 
 window.setInterval(update_date_time, 99);
 
@@ -347,13 +355,4 @@ function update_history_table(h) {
 			[answer, link_report], ...players
 		]));
 	}
-}
-
-function copy_to_clipboard_url() {
-	let dummy = document.createElement('input');
-	document.body.appendChild(dummy);
-	dummy.value = window.location.href;
-	dummy.select();
-	document.execCommand('copy');
-	document.body.removeChild(dummy);
 }
