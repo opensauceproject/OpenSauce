@@ -22,19 +22,21 @@ class Lobby:
     ANSWER = 3
     GAME_END = 4
 
+    # Timeouts
     timeout_when_state_game_start_soon = datetime.timedelta(seconds=1)
     timeout_when_question = datetime.timedelta(seconds=4)
     timeout_when_answer = datetime.timedelta(seconds=4)
     timeout_when_game_end = datetime.timedelta(seconds=3)
 
+    # General settings
     score_goals = [10, 20, 30, 50, 100, 200]
     default_score_goal = 20
+    min_players = 3
+    max_rounds_without_points = 10
 
+    # Answer accepted error consts
     ignored_prefix = ["the", "a", "an", "le", "la", "les"]
     answer_max_delta = 1
-
-    min_players = 3
-    max_round_without_points = 10
 
     # the last is repeated for all the next players
     points_repartition = [5, 3, 2, 1]
@@ -46,7 +48,6 @@ class Lobby:
         self.goto_waiting_for_players()
 
     def set_default_settings(self):
-        """Everything is enabled by default"""
         settings = {}
         settings["categories"] = []
         settings["score_goal_value"] = Lobby.default_score_goal
@@ -61,16 +62,16 @@ class Lobby:
     def fetch_sauces_from_settings(self):
         all_sauces = Sauce.objects.all()
         filtred_sauces = []
-
         settings_lookup = {}
-        # print(self.settings)
+
+        # OPTIMIZE: it's difficult with filter so we do it manualy
+        # Create a lookup table and create the sauces list with the lookuptable
         for category in self.settings["categories"]:
             category_id = category["category_id"]
             difficulty = category["difficulty"]
             value = category["value"]
             settings_lookup[(category_id, difficulty)] = value
 
-        # it's difficult with filter so we do it manualy
         for sauce in all_sauces:
             if settings_lookup[(sauce.sauce_category.id, sauce.difficulty)]:
                 filtred_sauces.append(sauce)
@@ -79,6 +80,8 @@ class Lobby:
 
     def count(self):
         return len(self.players)
+
+# TODO: split spectators and players to 2 dictionary
 
     def get_players(self):
         return list(filter(lambda p: p.isPlaying, self.players.values()))
@@ -99,26 +102,14 @@ class Lobby:
         else:
             return playerSorted[0]
 
-    def get_current_state(self, complete_state = False):
-        if Lobby.WAITING_FOR_PLAYERS == self.state:
-            return self.get_waiting_for_players()
-        elif Lobby.GAME_START_SOON == self.state:
-            return self.get_game_starts_soon()
-        elif self.state == Lobby.QUESTION:
-            return self.get_question()
-        elif Lobby.ANSWER == self.state:
-            return self.get_answer()
-        elif Lobby.GAME_END == self.state:
-            return self.get_game_end()
-        else:
-            raise "Unhandled state"
-
 #  ____       _
 # |  _ \  ___| | __ _ _   _
 # | | | |/ _ \ |/ _` | | | |
 # | |_| |  __/ | (_| | |_| |
 # |____/ \___|_|\__,_|\__, |
 #                     |___/
+
+# This sections is about the function that do something after a certain time in certain states
 
     def delay_game_start_soon(self):
         self.datetime = datetime.datetime.now() + Lobby.timeout_when_state_game_start_soon
@@ -132,8 +123,8 @@ class Lobby:
         # Verify that this the correct state to give the answer
         if Lobby.QUESTION == self.state and state_id == self.state_id:
             self.goto_answer_state()
-            self.round_without_points += 1
-            if self.round_without_points >= Lobby.max_round_without_points:
+            self.rounds_without_points += 1
+            if self.rounds_without_points >= Lobby.max_rounds_without_points:
                 self.reset()
 
     def delay_answer(self):
@@ -149,7 +140,8 @@ class Lobby:
     def delay_game_end(self):
         self.datetime = datetime.datetime.now() + Lobby.timeout_when_game_end
         sleep(Lobby.timeout_when_game_end.total_seconds())
-        self.goto_waiting_for_players()
+        if Lobby.GAME_END == self.state:
+            self.goto_waiting_for_players()
 
 
 #   ____       _          ____  _        _
@@ -158,9 +150,11 @@ class Lobby:
 # | |_| | (_) | || (_) |  ___) | || (_| | ||  __/
 #  \____|\___/ \__\___/  |____/ \__\__,_|\__\___|
 
+# These function must be called to change state
+
     def goto_waiting_for_players(self):
         self.state = Lobby.WAITING_FOR_PLAYERS
-        self.round_without_points = 0
+        self.rounds_without_points = 0
         self.current_sauce = None
         self.state_id = token_hex(16)
         self.datetime = datetime.datetime.now()
@@ -221,11 +215,14 @@ class Lobby:
 # |  __/| | (_| | |_| |  __/ |
 # |_|   |_|\__,_|\__, |\___|_|
 #                |___/
-#  __  __                                     _
-# |  \/  | _____   _____ _ __ ___   ___ _ __ | |_ ___
-# | |\/| |/ _ \ \ / / _ \ '_ ` _ \ / _ \ '_ \| __/ __|
-# | |  | | (_) \ V /  __/ | | | | |  __/ | | | |_\__ \
-# |_|  |_|\___/ \_/ \___|_| |_| |_|\___|_| |_|\__|___/
+#     _        _   _
+#    / \   ___| |_(_) ___  _ __  ___
+#   / _ \ / __| __| |/ _ \| '_ \/ __|
+#  / ___ \ (__| |_| | (_) | | | \__ \
+# /_/   \_\___|\__|_|\___/|_| |_|___/
+
+
+# When the player ask something to the server, update the lobby state if nessesary
 
     def player_add(self, secKey, socket):
         player = Player(socket)
@@ -260,20 +257,6 @@ class Lobby:
         else:
             self.broadcast(self.get_scoreboard())
 
-#  ____  _                         __  __
-# |  _ \| | __ _ _   _  ___ _ __  |  \/  | ___  ___ ___  __ _  __ _  ___  ___
-# | |_) | |/ _` | | | |/ _ \ '__| | |\/| |/ _ \/ __/ __|/ _` |/ _` |/ _ \/ __|
-# |  __/| | (_| | |_| |  __/ |    | |  | |  __/\__ \__ \ (_| | (_| |  __/\__ \
-# |_|   |_|\__,_|\__, |\___|_|    |_|  |_|\___||___/___/\__,_|\__, |\___||___/
-#                |___/                                        |___/
-
-    def get_current_points(self):
-        index = len(self.player_that_found)
-        len_points_repartition_MinusOne = len(Lobby.points_repartition) - 1
-        if index >= len_points_repartition_MinusOne:
-            index = len_points_repartition_MinusOne
-        return Lobby.points_repartition[index]
-
     def player_submit(self, secKey, submited_answer):
         player = self.players[secKey]
         # Can you submit now ?
@@ -292,8 +275,7 @@ class Lobby:
         delta = str_delta(submited_answer_s, real_answer_s)
 
         if delta <= Lobby.answer_max_delta:
-            # correct answer
-            self.round_without_points = 0
+            self.rounds_without_points = 0
 
             player.add_points(self.get_current_points())
             self.player_that_found.append(player)
@@ -306,15 +288,29 @@ class Lobby:
     def player_set_settings(self, settings):
         self.settings = settings
         self.sauces = self.fetch_sauces_from_settings()
-        # for i in self.sauces:
-        #     print(i)
         self.broadcast(self.get_settings())
 
-#  ____  _        _                  _ ____   ___  _   _
-# / ___|| |_ __ _| |_ ___  ___      | / ___| / _ \| \ | |
-# \___ \| __/ _` | __/ _ \/ __|  _  | \___ \| | | |  \| |
-#  ___) | || (_| | ||  __/\__ \ | |_| |___) | |_| | |\  |
-# |____/ \__\__,_|\__\___||___/  \___/|____/ \___/|_| \_|
+#  ____  _        _         ____        _
+# / ___|| |_ __ _| |_ ___  |  _ \  __ _| |_ __ _
+# \___ \| __/ _` | __/ _ \ | | | |/ _` | __/ _` |
+#  ___) | || (_| | ||  __/ | |_| | (_| | || (_| |
+# |____/ \__\__,_|\__\___| |____/ \__,_|\__\__,_|
+
+# Return a useful dictionary representation of something
+
+    def get_current_state(self, complete_state=False):
+        if Lobby.WAITING_FOR_PLAYERS == self.state:
+            return self.get_waiting_for_players()
+        elif Lobby.GAME_START_SOON == self.state:
+            return self.get_game_starts_soon()
+        elif self.state == Lobby.QUESTION:
+            return self.get_question()
+        elif Lobby.ANSWER == self.state:
+            return self.get_answer()
+        elif Lobby.GAME_END == self.state:
+            return self.get_game_end()
+        else:
+            raise "Unhandled state"
 
     def get_settings(self):
         settings = {}
@@ -393,6 +389,15 @@ class Lobby:
 # | |\/| | / __|/ __|
 # | |  | | \__ \ (__
 # |_|  |_|_|___/\___|
+
+# Functions that do things
+
+    def get_current_points(self):
+        index = len(self.player_that_found)
+        len_points_repartition_MinusOne = len(Lobby.points_repartition) - 1
+        if index >= len_points_repartition_MinusOne:
+            index = len_points_repartition_MinusOne
+        return Lobby.points_repartition[index]
 
     def broadcast(self, data):
         jsondumps = json.dumps(data)
