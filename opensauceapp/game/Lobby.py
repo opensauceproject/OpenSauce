@@ -23,14 +23,14 @@ class Lobby:
     GAME_END = 4
 
     # Timeouts
-    timeout_when_state_game_start_soon = datetime.timedelta(seconds=1)
-    timeout_when_question = datetime.timedelta(seconds=4)
-    timeout_when_answer = datetime.timedelta(seconds=4)
-    timeout_when_game_end = datetime.timedelta(seconds=3)
+    timeout_when_state_game_start_soon = datetime.timedelta(seconds=5)
+    timeout_when_question = datetime.timedelta(seconds=15)
+    timeout_when_answer = datetime.timedelta(seconds=3)
+    timeout_when_game_end = datetime.timedelta(seconds=5)
 
     # General settings
     score_goals = [10, 20, 30, 50, 100, 200]
-    default_score_goal = 20
+    default_score_goal = 30
     min_players = 1
     max_rounds_without_points = 10
 
