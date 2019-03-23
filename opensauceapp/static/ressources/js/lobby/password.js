@@ -12,8 +12,8 @@ modal_join_button.addEventListener("click", login);
 $('#modal_password').on('shown.bs.modal', function(e) {
 	modal_password_input.focus();
 });
-$('#modal_password').on('hide.bs.modal', function(e) {
-	console.log("a");
+$('#modal_password').on('hidden.bs.modal', function(e) {
+    window.location.replace("/");
 });
 
 $('#modal_password').modal("show");

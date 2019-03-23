@@ -8,7 +8,9 @@ input_lobby_name.addEventListener("input", handle_create_lobby_button);
 input_lobby_name.addEventListener("keydown", handle_enter_key);
 
 update_lobbies_list();
-handle_create_lobby_button({srcElement: input_lobby_name});
+handle_create_lobby_button({
+	srcElement: input_lobby_name
+});
 
 //autorefresh
 setInterval(update_lobbies_list, 1000);
@@ -52,18 +54,28 @@ function update_lobbies_list() {
 
 					let right = document.createElement("span");
 
+					let badgePassword = document.createElement("span");
+					if (lobby["password"]) {
+						badgePassword.classList.add("badge", "badge-danger", "badge-pill");
+						badgePassword.innerHTML = '<i class="fas fa-lock"></i>';
+					} else {
+						badgePassword.classList.add("badge", "badge-success", "badge-pill");
+						badgePassword.innerHTML = '<i class="fas fa-lock-open"></i>';
+					}
+
 					let badgesPlayers = document.createElement("span");
 					badgesPlayers.classList.add("badge", "badge-dark", "badge-pill");
-					badgesPlayers.innerHTML = lobby["players"] + " <i class=\"fas fa-gamepad\"></i>";
+					badgesPlayers.innerHTML = lobby["players"] + ' <i class="fas fa-gamepad"></i>';
 
 					let badgesSpectators = document.createElement("span");
 					badgesSpectators.classList.add("badge", "badge-dark", "badge-pill");
-					badgesSpectators.innerHTML = lobby["spectators"] + " <i class=\"fas fa-eye\"></i>";
+					badgesSpectators.innerHTML = lobby["spectators"] + ' <i class="fas fa-eye"></i>';
 
 					lobby_link.innerHTML = lobby["name"];
 
 					right.appendChild(badgesPlayers);
 					right.appendChild(badgesSpectators);
+                    right.appendChild(badgePassword);
 					lobby_link.appendChild(right);
 					lobbies_list.appendChild(lobby_link);
 				}

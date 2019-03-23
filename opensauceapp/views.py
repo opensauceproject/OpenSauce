@@ -80,7 +80,8 @@ def lobbies_list(request):
             "name": lobby.name,
             "total": lobby.count(),
             "players": lobby.count_players(),
-            "spectators": lobby.count_spectators()
+            "spectators": lobby.count_spectators(),
+            "password": lobby.settings["password"] != ""
         }
         data["list"].append(l)
 
