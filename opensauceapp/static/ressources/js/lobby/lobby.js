@@ -278,7 +278,7 @@ function update_spectators_table(s) {
 function update_history_table(h) {
 	history_table.innerHTML = '';
 	// not the best practice be a bit boring to initalize properly
-	history_table.appendChild(Tools.create_row(["Answer", "1<sup>st</sup> <span class=\"badge badge-light\">+5</span>", "2<sup>nd</sup> <span class=\"badge badge-light\">+3</span>", "3<sup>rd</sup> <span class=\"badge badge-light\">+2</span>", " "],
+	history_table.appendChild(Tools.create_row(["Answer", '1<sup>st</sup> <span class="badge badge-light">+5</span>', '2<sup>nd</sup> <span class="badge badge-light">+3</span>', '3<sup>rd</sup> <span class="badge badge-light">+2</span>'],
 		"th"));
 
 	for (let i = 0; i < h.length; i++) {
@@ -303,15 +303,11 @@ function update_history_table(h) {
 		});
 
 		let exclamation_mark = document.createElement("i");
-		exclamation_mark.classList.add("fas");
-		exclamation_mark.classList.add("fa-exclamation");
+		exclamation_mark.classList.add("far");
+		exclamation_mark.classList.add("fa-flag");
+		exclamation_mark.classList.add("text-danger");
 
-		let badge_danger = document.createElement("span");
-		badge_danger.classList.add("badge");
-		badge_danger.classList.add("badge-danger");
-
-		badge_danger.appendChild(exclamation_mark);
-		link_report.appendChild(badge_danger);
+		link_report.appendChild(exclamation_mark);
 
 		history_table.appendChild(Tools.create_row([
 			[answer, link_report], ...players
