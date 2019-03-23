@@ -61,6 +61,7 @@ class Lobby:
 
     def set_default_settings(self):
         settings = {}
+        settings["password"] = ""
         settings["categories"] = []
         settings["score_goal_value"] = Lobby.default_score_goal
         categories = SauceCategory.objects.all()

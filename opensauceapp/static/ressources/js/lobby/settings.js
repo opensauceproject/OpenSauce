@@ -3,6 +3,7 @@ let catergory_difficulty_checkbox = [];
 
 let open_settings = document.getElementById("open_settings");
 let score_goal_select = document.getElementById("score_goal_select");
+let settings_password_text = document.getElementById("settings_password_text");
 let settings_save_button = document.getElementById("settings_save_button");
 let settings_cancel_button = document.getElementById("settings_cancel_button");
 
@@ -23,6 +24,7 @@ for(let checkbox of document.getElementsByClassName("catergory-difficulty-checkb
 function update_settings(settings)
 {
     current_settings = settings;
+    settings_password_text.value = settings["password"] ;
     for(let i = 0; i < score_goal_select.options.length; i++)
     {
         let option = score_goal_select.options[i];
@@ -38,6 +40,7 @@ function update_settings(settings)
 function send_settings()
 {
     let settings = {};
+    settings["password"] = settings_password_text.value;
     settings["score_goal_value"] = parseInt(score_goal_select.selectedOptions[0].value);
     settings["categories"] = [];
     for(let checkbox of catergory_difficulty_checkbox)
@@ -55,6 +58,7 @@ function send_settings()
 }
 
 function set_settings_disabled(b){
+    settings_password_text.disabled = b;
     score_goal_select.disabled = b;
     for(let cb of catergory_difficulty_checkbox)
     {

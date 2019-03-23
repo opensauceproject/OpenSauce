@@ -26,6 +26,12 @@ def index(request):
 
 
 def lobby(request, lobby_name):
+    lobby = Game.get_instance().get_lobby(lobby_name)
+    if lobby_name not in request.session:
+        if lobby.settings["password"] != "":
+            return redirect("lobby_password", lobby_name=lobby_name)
+    else:
+        del request.session[lobby_name]
     context = {}
     context["lobby_name"] = lobby_name
     context["lobby_name_json"] = json.dumps(lobby_name)
@@ -34,6 +40,36 @@ def lobby(request, lobby_name):
     context["score_goals"] = Lobby.score_goals
     context["default_score_goal"] = Lobby.default_score_goal
     return render(request, "opensauceapp/lobby/lobby.html", context)
+
+
+def lobby_password(request, lobby_name):
+    if request.method == "GET":
+        if not Game.get_instance().lobby_exist(lobby_name):
+            return redirect("/")
+        lobby = Game.get_instance().get_lobby(lobby_name)
+        if lobby.settings["password"] == "":
+            return redirect("lobby", lobby_name=lobby_name)
+        context = {}
+        context["lobby_name"] = lobby.name
+        context["url_lobby"] = "/lobby/" + lobby.name # find a way to get the name
+        return render(request, "opensauceapp/lobby/password.html", context)
+    elif request.method == "POST":
+        data = {
+        "lobby_exist" : False,
+        "need_password" : False,
+        "password_ok" : False,
+
+        }
+        if Game.get_instance().lobby_exist(lobby_name):
+            data["lobby_exist"] = True
+            lobby = Game.get_instance().get_lobby(lobby_name)
+            if lobby.settings["password"] != "":
+                data["need_password"] = True
+                if lobby.settings["password"] == request.POST["password"]:
+                    data["password_ok"] = True
+                    request.session[lobby_name] = True
+
+        return JsonResponse(data)
 
 
 def lobbies_list(request):
@@ -75,6 +111,7 @@ def reports(request):
     context["IMAGE"] = 1
     return render(request, "opensauceapp/reports.html", context)
 
+
 # no need of the csrf because anybody can use this route
 MAX_WIDTH = 1280
 MAX_HEIGHT = 1024
@@ -101,7 +138,8 @@ def add(request):
         elif sauce.media_type == 1:
             # image
             try:
-                image64_split = re.match('(data:image/.+;base64,)(.*)', data["question"])
+                image64_split = re.match(
+                    '(data:image/.+;base64,)(.*)', data["question"])
                 image64_header = image64_split.group(1)
                 image64_data = image64_split.group(2)
 
@@ -132,7 +170,6 @@ def add(request):
                 sauce.question = img_str
             except:
                 invalid = True
-
 
         sauce.ip = get_client_ip(request)
         if not invalid:

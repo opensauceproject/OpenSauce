@@ -5,8 +5,10 @@
 				<h5 class="modal-title">Settings</h5>
 			</div>
 			<div class="modal-body">
-				<h6>Score goal</h6>
-				<select id="score_goal_select" class="form-control form-control-lg">
+                <h6>Password</h6>
+                <input id="settings_password_text" class="form-control" type="text">
+				<h6 class="pt-3">Score goal</h6>
+				<select id="score_goal_select" class="form-control">
 					{% for score_goal in score_goals %}
 					{% if score_goal == default_score_goal %}
 					<option selected>{{score_goal}}</option>
