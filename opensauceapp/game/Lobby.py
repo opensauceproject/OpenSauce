@@ -237,8 +237,13 @@ class Lobby:
         self.broadcast(self.get_scoreboard())
 
     def player_remove(self, secKey):
-        if secKey in self.players:
-            del self.players[secKey]
+        wasAdmin = self.players[secKey].isAdmin
+        del self.players[secKey]
+        # If was an admin promote a new one
+        if wasAdmin:
+            players = list(self.players.values())
+            if len(players) > 0:
+                players[0].isAdmin = True
         self.broadcast(self.get_scoreboard())
         if Lobby.WAITING_FOR_PLAYERS == self.state:
             self.broadcast(self.get_current_state())
@@ -291,7 +296,11 @@ class Lobby:
                 self.goto_answer_state()
             self.broadcast(self.get_scoreboard())
 
-    def player_set_settings(self, settings):
+    def player_set_settings(self, secKey, settings):
+        player = self.players[secKey]
+        # Check the rights
+        if not player.isAdmin:
+            return
         self.settings = settings
         self.sauces = self.fetch_sauces_from_settings()
         self.broadcast(self.get_settings())

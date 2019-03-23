@@ -1,7 +1,16 @@
-let score_goal_select = document.getElementById("score_goal_select");
-score_goal_select.addEventListener("change", send_settings);
-
+let current_settings;
 let catergory_difficulty_checkbox = [];
+
+let open_settings = document.getElementById("open_settings");
+let score_goal_select = document.getElementById("score_goal_select");
+let settings_save_button = document.getElementById("settings_save_button");
+let settings_cancel_button = document.getElementById("settings_cancel_button");
+
+settings_save_button.addEventListener("click", send_settings);
+settings_cancel_button.addEventListener("click", function() {
+    update_settings(current_settings);
+});
+
 for(let checkbox of document.getElementsByClassName("catergory-difficulty-checkbox"))
 {
     catergory_difficulty_checkbox.push({
@@ -9,13 +18,11 @@ for(let checkbox of document.getElementsByClassName("catergory-difficulty-checkb
         category_id: parseInt(checkbox.dataset.category_id),
         difficulty: parseInt(checkbox.dataset.difficulty),
     });
-    checkbox.addEventListener("change", send_settings);
 }
 
 function update_settings(settings)
 {
-    // TODO Update settings according to the message
-    // score_goal_select. = settings["score_goal_value"];
+    current_settings = settings;
     for(let i = 0; i < score_goal_select.options.length; i++)
     {
         let option = score_goal_select.options[i];
@@ -45,4 +52,13 @@ function send_settings()
         "type": "settings",
         "settings": settings,
     }));
+}
+
+function set_settings_disabled(b){
+    score_goal_select.disabled = b;
+    for(let cb of catergory_difficulty_checkbox)
+    {
+        cb.checkbox.disabled = b;
+    }
+    settings_save_button.hidden = b;
 }

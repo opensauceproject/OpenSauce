@@ -247,6 +247,7 @@ function update_players_table(p) {
 		if (id == row["id"]) {
 			classes.push("font-weight-bold");
 			update_login_controls(true);
+            set_settings_disabled(!row["isAdmin"]);
 			hasFound = row.points_this_round > 0;
 		}
 
@@ -264,6 +265,7 @@ function update_spectators_table(s) {
 		li.innerHTML = row["name"] + " " + get_right_icon(row);
 		if (id == row["id"]) {
 			li.classList.add("font-weight-bold");
+            set_settings_disabled(!row["isAdmin"]);
 			update_login_controls(false);
 		}
 		spectators_table.appendChild(li)
