@@ -31,7 +31,7 @@ class Lobby:
     # General settings
     score_goals = [10, 20, 30, 50, 100, 200]
     default_score_goal = 20
-    min_players = 3
+    min_players = 1
     max_rounds_without_points = 10
 
     # Answer accepted error consts
@@ -45,6 +45,18 @@ class Lobby:
         self.name = name
         self.players = {}
         self.set_default_settings()
+        self.reset()
+
+    def reset(self):
+        self.rounds_without_points = 0
+        self.current_sauce = None
+        self.state_id = token_hex(16)
+        self.datetime = datetime.datetime.now()
+        self.player_that_found = []
+        for player in self.players.values():
+            player.reset_game()
+        self.history = []
+        self.sauces = self.fetch_sauces_from_settings()
         self.goto_waiting_for_players()
 
     def set_default_settings(self):
@@ -141,7 +153,7 @@ class Lobby:
         self.datetime = datetime.datetime.now() + Lobby.timeout_when_game_end
         sleep(Lobby.timeout_when_game_end.total_seconds())
         if Lobby.GAME_END == self.state:
-            self.goto_waiting_for_players()
+            self.reset()
 
 
 #   ____       _          ____  _        _
@@ -154,15 +166,6 @@ class Lobby:
 
     def goto_waiting_for_players(self):
         self.state = Lobby.WAITING_FOR_PLAYERS
-        self.rounds_without_points = 0
-        self.current_sauce = None
-        self.state_id = token_hex(16)
-        self.datetime = datetime.datetime.now()
-        self.player_that_found = []
-        for player in self.players.values():
-            player.reset_game()
-        self.history = []
-        self.sauces = self.fetch_sauces_from_settings()
         self.broadcast(self.get_scoreboard())
         self.broadcast(self.get_current_state())
 
@@ -227,7 +230,7 @@ class Lobby:
     def player_add(self, secKey, socket):
         player = Player(socket)
         if len(self.players) < 1:
-            player.isOwner = True
+            player.isAdmin = True
         self.players[secKey] = player
         player.send(self.get_current_state())
         player.send(self.get_settings())
@@ -237,6 +240,8 @@ class Lobby:
         if secKey in self.players:
             del self.players[secKey]
         self.broadcast(self.get_scoreboard())
+        if Lobby.WAITING_FOR_PLAYERS == self.state:
+            self.broadcast(self.get_current_state())
         # if the last player is remove the lobby tell to remove the lobby
         return self.count() <= 0
 
@@ -247,6 +252,7 @@ class Lobby:
         if Lobby.WAITING_FOR_PLAYERS == self.state:
             if self.count_players() >= Lobby.min_players:
                 self.goto_game_start_soon_state()
+            self.broadcast(self.get_current_state())
         self.broadcast(self.get_scoreboard())
 
     def player_leave(self, secKey):

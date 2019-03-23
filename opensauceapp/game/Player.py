@@ -13,7 +13,6 @@ class Player:
         self.id = token_hex(16)
         self.name = random.choice(Player.animals)
         self.isAdmin = False
-        self.isOwner = False
         self.reset_game()
         self.send_player_id()
 
@@ -64,7 +63,6 @@ class Player:
         status["id"] = self.id
         status["name"] = self.name
         status["isAdmin"] = self.isAdmin
-        status["isOwner"] = self.isOwner
         status["isPlaying"] = self.isPlaying
         status["score"] = self.score
         status["points_this_round"] = self.points_this_round
