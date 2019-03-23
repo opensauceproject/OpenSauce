@@ -9,6 +9,7 @@ let STATES = {
 let id;
 let state = null;
 let datetime;
+let isPlaying = false;
 let lobby_socket = new WebSocket("ws://" + window.location.host + "/lobby/" + lobby_name + "/");
 
 let game_message = document.getElementById("game_message");
@@ -149,10 +150,12 @@ function join() {
 		"pseudo": pseudo_join
 	}));
 	current_pseudo.value = pseudo_join;
+    isPlaying = true;
 }
 
 function leave() {
 	send_leave();
+    isPlaying = false;
 }
 
 function send_leave() {
@@ -185,7 +188,7 @@ function update_game_ui_visibility() {
 	category_container.hidden = !(state == STATES.QUESTION || state == STATES.ANSWER);
 	date_time_container.hidden = !(state == STATES.QUESTION || state == STATES.GAME_START_SOON);
 	game_message.hidden = state == STATES.QUESTION;
-	submit_answer.hidden = !(state == STATES.QUESTION && !hasFound);
+	submit_answer.hidden = !(state == STATES.QUESTION && !hasFound) || !isPlaying;
 	if (!submit_answer.hidden)
 		submit_answer.focus()
 }
