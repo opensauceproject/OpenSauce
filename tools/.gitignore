@@ -1,4 +1,8 @@
+# ignore everything in this folder to avoid pushing db
 **
 !remove_pk.py
 !.gitignore
-!dumpsauce.sh
+!dump_sauce.sh
+!load_dummy_sauces.cmd
+!reset_DB.cmd
+!reset_DB.sh
