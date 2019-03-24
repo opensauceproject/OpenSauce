@@ -6,3 +6,4 @@
 !load_dummy_sauces.cmd
 !reset_DB.cmd
 !reset_DB.sh
+!merge_sauce_json.py
