@@ -11,6 +11,7 @@ namespace :uwsgi do
     desc "Restart application"
     task :restart do
         on roles(:web) do |h|
+          execute :sudo, "rm ~/www/logs/uwsgi.log"
 	        execute :sudo, "sv reload uwsgi"
 	   end
     end
