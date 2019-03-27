@@ -10,6 +10,8 @@ const DIFFICULTY = {
 	HARD: 3
 };
 
+const MAX_SIZE = 1024 * 1024 * 2; // 2 MO
+
 let image_menu = document.getElementById("image_menu");
 let quote_menu = document.getElementById("quote_menu");
 
@@ -59,17 +61,32 @@ function update_image(e) {
 	//https://stackoverflow.com/questions/3814231/loading-an-image-to-a-img-from-input-file/16153675
 	if (e.target.files.length > 0) {
 		let selected_file = e.target.files[0];
-		let reader = new FileReader();
-		feedback_image_container.hidden = false;
 
-		input_image_path.innerHTML = selected_file.name;
+		let isValid = selected_file.size < MAX_SIZE;
 
-		reader.addEventListener("load", function(e) {
-			feedback_image.src = e.target.result;
-			sauce_image = e.target.result;
-		});
+		Tools.update_invalide_class(input_load_image, !isValid);
+		isValid = true;
+		if(isValid)
+		{
+			let reader = new FileReader();
+			feedback_image_container.hidden = false;
 
-		reader.readAsDataURL(selected_file);
+			input_image_path.innerHTML = selected_file.name;
+
+			reader.addEventListener("load", function(e) {
+				feedback_image.src = e.target.result;
+				sauce_image = e.target.result;
+			});
+
+			reader.readAsDataURL(selected_file);
+		}
+		else
+		{
+			feedback_image.src = "";
+			sauce_image = undefined;
+			return false;
+		}
+
 	}
 }
 
