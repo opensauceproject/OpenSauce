@@ -2,5 +2,16 @@
 This style sheet is used for the add page
 */
 #feedback_image {
-	max-height: 520px;
+    max-height: 520px;
+}
+
+#alerts {
+    display: flex;
+	flex-direction: column;
+    position: fixed;
+    width: 50%;
+	padding: auto;
+	left: 25%;
+    height: 100px;
+    bottom: 50px;
 }

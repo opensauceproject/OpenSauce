@@ -35,4 +35,11 @@ class Tools {
         }
         return condition;
     }
+
+    static toggle_class_timeout(div, className, t) {
+        div.classList.add(className);
+        setTimeout(function() {
+            div.classList.remove(className);
+        }, t);
+    }
 }
