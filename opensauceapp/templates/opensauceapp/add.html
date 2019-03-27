@@ -18,7 +18,7 @@ Add new sauce
 	{% include 'opensauceapp/title.html' %}
 	<h3>Add a new sauce</h3>
 	{% csrf_token %}
-	<form>
+	<form id="submit_sauce_form" onsubmit="return false">
 		<ul class="nav nav-tabs justify-content-center">
 			<li class="nav-item">
 				<a id="image_menu" class="nav-link" href="#image">Image</a>
@@ -107,6 +107,7 @@ Add new sauce
 			</div>
 		</div>
 	</form>
+	<div id="snackbar" class="text-center"><p>Sauce successfully added !</p></div>
 </div>
 
 

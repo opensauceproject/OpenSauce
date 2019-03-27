@@ -176,7 +176,7 @@ function send(e) {
 		post_data(`/add/`, data)
 			.then(function() {
 				send_button.disabled = false;
-                location.reload();
+				toast();
 			})
 			.catch(function() {
 
@@ -184,4 +184,24 @@ function send(e) {
 	} else {
 		e.preventDefault();
 	}
+}
+
+function toast() {
+	let snackbar = document.getElementById("snackbar");
+	snackbar.className = "show";
+	resetPage();
+	// After 1 second, remove the show class from DIV
+	setTimeout(function(){ snackbar.className = snackbar.className.replace("show", "");}, 3000);
+	
+  }
+
+function resetPage(){
+	let submit_sauce_form = document.getElementById("submit_sauce_form");
+	submit_sauce_form.reset();
+	sauce_type = undefined;
+	sauce_category = undefined;
+	sauce_image = undefined;
+	sauce_quote = undefined;
+	sauce_answer = undefined;
+	sauce_difficulty = undefined;
 }
