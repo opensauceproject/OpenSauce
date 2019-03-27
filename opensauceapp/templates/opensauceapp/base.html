@@ -13,16 +13,15 @@
 	{% load bootstrap4 %}
 	{% bootstrap_css %}
 	{% bootstrap_javascript jquery='full' %}
+
 	<!-- fontawesome -->
 	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
-	<!-- jquery UI -->
-	<!-- <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
-	<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css"> -->
 
 	<!-- custom scripts -->
 	<script src="{% static 'ressources/js/script.js' %}" charset="utf-8"></script>
 	<script src="{% static 'ressources/js/tools.js' %}" charset="utf-8"></script>
 
+	<!-- not in template script -->
 	{% block scripts %}{% endblock %}
 
 	<!-- custom stylesheets -->

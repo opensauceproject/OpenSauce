@@ -1,7 +1,6 @@
 let current_settings;
 let catergory_difficulty_checkbox = [];
 
-let open_settings = document.getElementById("open_settings");
 let score_goal_select = document.getElementById("score_goal_select");
 let settings_password_text = document.getElementById("settings_password_text");
 let settings_save_button = document.getElementById("settings_save_button");

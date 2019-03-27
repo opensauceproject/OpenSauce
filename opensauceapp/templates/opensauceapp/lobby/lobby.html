@@ -37,27 +37,21 @@
 	</div>
 </div>
 <div id="right_container" class="bg-dark text-white">
-	<div class="h3 row">
-		<div class="text-center w-100">
-			{% autoescape on %}{{lobby_name}}{% endautoescape %}
-			<div class="float-right">
-				<i id="open_settings" class="fas fa-cog" data-toggle="modal" data-target="#settings_modal"></i>
-			</div>
-		</div>
-	</div>
-	<div class="h3 row">
-		<div class="col-md-12">
-			<div class="input-group">
-				<input id="copy_to_clipboard_url_input" class="form-control" type="input" disabled>
-				<div class="input-group-append">
-					<button id="copy_to_clipboard_url_button" class="btn btn-light"><i class="far fa-copy"></i></button>
-				</div>
-			</div>
+	<h2 class="w-100 text-center">
+		{% autoescape on %}{{lobby_name}}{% endautoescape %}
+		<i class="fas fa-cog float-right" data-toggle="modal" data-target="#settings_modal"></i>
+	</h2>
+	<div class="input-group">
+		<input id="copy_to_clipboard_url_input" class="form-control" type="input" disabled>
+		<div class="input-group-append">
+			<button id="copy_to_clipboard_url_button" class="btn btn-light"><i class="far fa-copy"></i></button>
 		</div>
 	</div>
 	<hr class="bg-white">
 	<div id="connexion">
-		<div class="h3">Log in</div>
+		<h3>
+			Log in
+		</h3>
 		<div id="when_disconnected" class="input-group">
 			<div class="input-group-prepend">
 				<span class="input-group-text">Nickname</span>
@@ -77,23 +71,30 @@
 			</div>
 		</div>
 	</div>
-	<hr class="bg-white">
 	<div id="players_table_container">
-		<p class="h3">Players
+		<hr class="bg-white">
+		<h3>
+			Players
 			<i class="float-right fas fa-gamepad"></i>
-		</p>
+		</h3>
 		<table id="players_table" class="table table-borderless w-100">
 		</table>
 	</div>
-	<hr class="bg-white">
 	<div id="spectators_table_container">
-		<p class="h3">Spectators <i class="float-right fas fa-eye"></i></p>
+		<hr class="bg-white">
+		<h3>
+			Spectators
+			<i class="float-right fas fa-eye"></i>
+		</h3>
 		<ul id="spectators_table" class="w-100">
 		</ul>
 	</div>
 	<hr class="bg-white">
 	<div id="history_table_container">
-		<p class="h3">History <i class="float-right fas fa-history"></i></p>
+		<h3>
+			History
+			<i class="float-right fas fa-history"></i>
+		</h3>
 		<table id="history_table" class="table table-sm table-borderless w-100">
 		</table>
 	</div>

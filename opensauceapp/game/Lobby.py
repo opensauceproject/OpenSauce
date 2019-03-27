@@ -39,7 +39,7 @@ class Lobby:
     answer_max_delta = 1
 
     # the last is repeated for all the next players
-    points_repartition = [5, 3, 2, 1]
+    points_repartition = [30, 3, 2, 1]
 
     def __init__(self, name):
         print("init")

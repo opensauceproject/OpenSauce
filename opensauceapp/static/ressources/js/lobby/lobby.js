@@ -21,7 +21,9 @@ let copy_to_clipboard_url_button = document.getElementById("copy_to_clipboard_ur
 
 //Tables
 let players_table = document.getElementById("players_table");
+let players_table_container = document.getElementById("players_table_container");
 let spectators_table = document.getElementById("spectators_table");
+let spectators_table_container = document.getElementById("spectators_table_container");
 let history_table = document.getElementById("history_table");
 
 // Game
@@ -258,7 +260,7 @@ function update_players_table(p) {
 
 		players_table.appendChild(Tools.create_row([i + 1, row["name"] + " " + get_right_icon(row), row.score + bonus], "td", classes));
 	}
-
+	players_table_container.hidden = p.length <= 0;
 }
 
 function update_spectators_table(s) {
@@ -275,6 +277,7 @@ function update_spectators_table(s) {
 		}
 		spectators_table.appendChild(li)
 	}
+	spectators_table_container.hidden = s.length <= 0;
 }
 
 function update_history_table(h) {
