@@ -18,6 +18,20 @@ Add new sauce
 	{% include 'opensauceapp/title.html' %}
 	<h3>Add a new sauce</h3>
 	{% csrf_token %}
+	<div id="alerts">
+		<div id="alert_success" class="alert fade alert-dismissible alert-success" role="alert">
+			Sauce successfully added !
+			<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			</button>
+		</div>
+		<div id="alert_failure" class="alert fade alert-dismissible alert-danger" role="alert">
+			The sauce couldn't be added
+			<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			</button>
+		</div>
+	</div>
 	<form id="submit_sauce_form" onsubmit="return false">
 		<ul class="nav nav-tabs justify-content-center">
 			<li class="nav-item">
@@ -95,23 +109,22 @@ Add new sauce
 					Keep in mind that the questions should always be related to popculture.
 				</small>
 			</div>
-			<div class="row">	
+			<div class="row">
 				<div class="col-md-1 col-sm-12 text-center">
-				<a href="{% url 'index' %}" role="button" class="btn btn-danger btn-block"> <i class="fas fa-window-close"></i></a>
+					<a href="{% url 'index' %}" role="button" class="btn btn-danger btn-block"> <i class="fas fa-window-close"></i></a>
 				</div>
 				<div class="col-md-3 col-sm-12 text-center">
-						<button id="send_button" class="btn btn-primary btn-block"> Submit</button>
+					<button id="send_button" class="btn btn-primary btn-block"> Submit</button>
 				</div>
 				<div class="col-md-8 col-sm-12 text-center">
 				</div>
 			</div>
 		</div>
 	</form>
-	<div id="snackbar" class="text-center"><p>Sauce successfully added !</p></div>
 </div>
 
 
-	
+
 {% include 'opensauceapp/footer.html' %}
 
 
