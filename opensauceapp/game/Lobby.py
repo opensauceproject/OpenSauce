@@ -9,7 +9,7 @@ from asgiref.sync import async_to_sync
 
 from ..models import Sauce
 from ..models import SauceCategory
-from .Tools import sanitize, str_delta
+from .Tools import sanitize, str_delta, escape_dict
 
 from .Player import Player
 
@@ -393,8 +393,9 @@ class Lobby:
         question = {}
         question["question"] = self.current_sauce.question
         question["media_type"] = self.current_sauce.media_type
-        question["category"] = self.current_sauce.sauce_category.name
         question["datetime"] = self.datetime.timestamp()
+        question["category"] = self.current_sauce.sauce_category.name
+        question = escape_dict(question)
         return {"type": "question", "data": question}
 
     def get_answer(self):
@@ -403,6 +404,7 @@ class Lobby:
         answer["question"] = self.current_sauce.question
         answer["media_type"] = self.current_sauce.media_type
         answer["category"] = self.current_sauce.sauce_category.name
+        answer = escape_dict(answer)
         return {"type": "answer", "data": answer}
 
     def get_game_end(self):
