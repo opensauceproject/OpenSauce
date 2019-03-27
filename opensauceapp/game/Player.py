@@ -13,7 +13,7 @@ class Player:
         self.id = token_hex(16)
         self.name = random.choice(Player.animals)
         self.isAdmin = False
-        self.reset_game()
+        self.leave()
         self.send_player_id()
 
     def set_name(self, new_name):
@@ -24,7 +24,11 @@ class Player:
     def can_earn_points(self):
         return self.points_this_round <= 0
 
-    def reset_game(self):
+    def join(self, playerName):
+        self.isPlaying = True
+        self.set_name(playerName)
+
+    def leave(self):
         self.score = 0
         self.points_this_round = 0
         self.isPlaying = False

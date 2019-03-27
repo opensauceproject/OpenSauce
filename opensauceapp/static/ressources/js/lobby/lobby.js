@@ -83,6 +83,7 @@ lobby_socket.addEventListener("message", function(e) {
 			update_players_table(data.players);
 			update_spectators_table(data.spectators);
 			update_history_table(data.history);
+			update_game_ui_visibility();
 			break;
 		case "settings":
 			update_settings(data.settings);

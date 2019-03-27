@@ -42,19 +42,21 @@ class Lobby:
     points_repartition = [5, 3, 2, 1]
 
     def __init__(self, name):
+        print("init")
         self.name = name
         self.players = {}
         self.set_default_settings()
         self.reset()
 
     def reset(self):
+        print("reset")
         self.rounds_without_points = 0
         self.current_sauce = None
         self.state_id = token_hex(16)
         self.datetime = datetime.datetime.now()
         self.player_that_found = []
-        for player in self.players.values():
-            player.reset_game()
+        for player in list(self.players.values()):
+            player.leave()
         self.history = []
         self.sauces = self.fetch_sauces_from_settings()
         self.goto_waiting_for_players()
@@ -97,10 +99,10 @@ class Lobby:
 # TODO: split spectators and players to 2 dictionary
 
     def get_players(self):
-        return list(filter(lambda p: p.isPlaying, self.players.values()))
+        return list(filter(lambda p: p.isPlaying, list(self.players.values())))
 
     def get_spectators(self):
-        return list(filter(lambda p: not p.isPlaying, self.players.values()))
+        return list(filter(lambda p: not p.isPlaying, list(self.players.values())))
 
     def count_players(self):
         return len(self.get_players())
@@ -124,10 +126,10 @@ class Lobby:
 
 # This sections is about the function that do something after a certain time in certain states
 
-    def delay_game_start_soon(self):
+    def delay_game_start_soon(self, state_id):
         self.datetime = datetime.datetime.now() + Lobby.timeout_when_state_game_start_soon
         sleep(Lobby.timeout_when_state_game_start_soon.total_seconds())
-        if Lobby.GAME_START_SOON == self.state:
+        if Lobby.GAME_START_SOON == self.state and state_id == self.state_id:
             self.goto_question_state(True)
 
     def delay_question(self, state_id):
@@ -140,20 +142,20 @@ class Lobby:
             if self.rounds_without_points >= Lobby.max_rounds_without_points:
                 self.reset()
 
-    def delay_answer(self):
+    def delay_answer(self, state_id):
         self.datetime = datetime.datetime.now() + Lobby.timeout_when_answer
         sleep(Lobby.timeout_when_answer.total_seconds())
-        if Lobby.ANSWER == self.state:
+        if Lobby.ANSWER == self.state and state_id == self.state_id:
             best_player = self.get_best_player()
             if best_player and best_player.score + best_player.points_this_round >= self.settings["score_goal_value"]:
                 self.goto_game_end_state()
             else:
                 self.goto_question_state()
 
-    def delay_game_end(self):
+    def delay_game_end(self, state_id):
         self.datetime = datetime.datetime.now() + Lobby.timeout_when_game_end
         sleep(Lobby.timeout_when_game_end.total_seconds())
-        if Lobby.GAME_END == self.state:
+        if Lobby.GAME_END == self.state and state_id == self.state_id:
             self.reset()
 
 
@@ -174,7 +176,7 @@ class Lobby:
         self.state = Lobby.QUESTION
 
         # Reset previous round
-        for player in self.players.values():
+        for player in list(self.players.values()):
             player.reset_round()
         self.player_that_found = []
 
@@ -200,17 +202,20 @@ class Lobby:
         self.history.append((self.current_sauce, self.player_that_found))
 
         # Run a thread to continue after giving the answer
-        Thread(target=self.delay_answer).start()
+        self.state_id = token_hex(16)
+        Thread(target=self.delay_answer, args=(self.state_id,)).start()
         self.broadcast(self.get_answer())
 
     def goto_game_start_soon_state(self):
         self.state = Lobby.GAME_START_SOON
-        Thread(target=self.delay_game_start_soon).start()
+        self.state_id = token_hex(16)
+        Thread(target=self.delay_game_start_soon, args=(self.state_id,)).start()
         self.broadcast(self.get_current_state())
 
     def goto_game_end_state(self):
         self.state = Lobby.GAME_END
-        Thread(target=self.delay_game_end).start()
+        self.state_id = token_hex(16)
+        Thread(target=self.delay_game_end, args=(self.state_id,)).start()
         self.broadcast(self.get_current_state())
 
 #  ____  _
@@ -229,6 +234,7 @@ class Lobby:
 # When the player ask something to the server, update the lobby state if nessesary
 
     def player_add(self, secKey, socket):
+        print("add")
         player = Player(socket)
         if len(self.players) < 1:
             player.isAdmin = True
@@ -238,6 +244,8 @@ class Lobby:
         self.broadcast(self.get_scoreboard())
 
     def player_remove(self, secKey):
+        print("remove")
+        self.player_leave(secKey)
         wasAdmin = self.players[secKey].isAdmin
         del self.players[secKey]
         # If was an admin promote a new one
@@ -252,18 +260,20 @@ class Lobby:
         return self.count() <= 0
 
     def player_join(self, secKey, playerName):
+        print("join")
         player = self.players[secKey]
-        player.isPlaying = True
-        player.set_name(playerName)
+        player.join(playerName)
         if Lobby.WAITING_FOR_PLAYERS == self.state:
             if self.count_players() >= Lobby.min_players:
                 self.goto_game_start_soon_state()
+            # to update the waiting for player counter
             self.broadcast(self.get_current_state())
         self.broadcast(self.get_scoreboard())
 
     def player_leave(self, secKey):
+        print("leave")
         player = self.players[secKey]
-        player.reset_game()
+        player.leave()
         if self.count_players() <= 0:
             self.reset()
         else:
@@ -338,7 +348,7 @@ class Lobby:
         # Players and spectators
         players = []
         spectators = []
-        for player in self.players.values():
+        for player in list(self.players.values()):
             player_status = player.get_status()
             if player.isPlaying:
                 players.append(player_status)
@@ -417,7 +427,7 @@ class Lobby:
 
     def broadcast(self, data):
         jsondumps = json.dumps(data)
-        for player in self.players.values():
+        for player in list(self.players.values()):
             player.socket.send(text_data=jsondumps)
 
     def __str__(self):
