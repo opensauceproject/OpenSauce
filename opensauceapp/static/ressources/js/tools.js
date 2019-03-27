@@ -36,10 +36,10 @@ class Tools {
         return condition;
     }
 
-    static toggle_class_timeout(div, className, t) {
-        div.classList.add(className);
+    static toggle_alert_timeout(name, t) {
+        $(name).show();
         setTimeout(function() {
-            div.classList.remove(className);
+            $(name).hide();
         }, t);
     }
 }

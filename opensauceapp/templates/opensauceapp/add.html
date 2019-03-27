@@ -18,19 +18,17 @@ Add new sauce
 	{% include 'opensauceapp/title.html' %}
 	<h3>Add a new sauce</h3>
 	{% csrf_token %}
-	<div id="alerts">
-		<div id="alert_success" class="alert fade alert-dismissible alert-success" role="alert">
-			Sauce successfully added !
-			<button type="button" class="close" data-dismiss="alert" aria-label="Close">
-				<span aria-hidden="true">&times;</span>
-			</button>
-		</div>
-		<div id="alert_failure" class="alert fade alert-dismissible alert-danger" role="alert">
-			The sauce couldn't be added
-			<button type="button" class="close" data-dismiss="alert" aria-label="Close">
-				<span aria-hidden="true">&times;</span>
-			</button>
-		</div>
+	<div id="alert_success" class="alert show alert-dismissible alert-success" role="alert">
+		Sauce successfully added !
+		<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+			<span aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	<div id="alert_failure" class="alert show alert-dismissible alert-danger" role="alert">
+		The sauce couldn't be added !
+		<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+			<span aria-hidden="true">&times;</span>
+		</button>
 	</div>
 	<form id="submit_sauce_form" onsubmit="return false">
 		<ul class="nav nav-tabs justify-content-center">

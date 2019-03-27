@@ -5,13 +5,11 @@ This style sheet is used for the add page
     max-height: 520px;
 }
 
-#alerts {
-    display: flex;
-	flex-direction: column;
+.alert {
+    z-index: 9000;
     position: fixed;
     width: 50%;
-	padding: auto;
 	left: 25%;
-    height: 100px;
     bottom: 50px;
+    display: none;
 }

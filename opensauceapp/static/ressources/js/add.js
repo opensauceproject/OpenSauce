@@ -57,35 +57,32 @@ if (window.location.hash == "#quote") {
 clear_difficulites();
 
 function update_image(e) {
-	//https://stackoverflow.com/questions/3814231/loading-an-image-to-a-img-from-input-file/16153675
-	if (e.target.files.length > 0) {
-		let selected_file = e.target.files[0];
+    //https://stackoverflow.com/questions/3814231/loading-an-image-to-a-img-from-input-file/16153675
+    if (e.target.files.length > 0) {
+        let selected_file = e.target.files[0];
 
-		let isValid = selected_file.size < MAX_SIZE;
+        let isValid = selected_file.size < MAX_SIZE;
 
-		Tools.update_invalide_class(input_load_image, !isValid);
+        Tools.update_invalide_class(input_load_image, !isValid);
         feedback_image_container.hidden = !isValid;
-		if(isValid)
-		{
-			let reader = new FileReader();
+        if (isValid) {
+            let reader = new FileReader();
 
-			input_image_path.innerHTML = selected_file.name;
+            input_image_path.innerHTML = selected_file.name;
 
-			reader.addEventListener("load", function(e) {
-				feedback_image.src = e.target.result;
-				sauce_image = e.target.result;
-			});
+            reader.addEventListener("load", function(e) {
+                feedback_image.src = e.target.result;
+                sauce_image = e.target.result;
+            });
 
-			reader.readAsDataURL(selected_file);
-		}
-		else
-		{
-			feedback_image.src = "";
-			sauce_image = undefined;
-			return false;
-		}
+            reader.readAsDataURL(selected_file);
+        } else {
+            feedback_image.src = "";
+            sauce_image = undefined;
+            return false;
+        }
 
-	}
+    }
 }
 
 function show_image_tab() {
@@ -186,13 +183,12 @@ function send(e) {
         data["sauce_category"] = input_categories.options[input_categories.selectedIndex].value;
         post_data("/add/", data)
             .then(function() {
-                send_button.disabled = false;
-				Tools.toggle_class_timeout(alert_success, "show", 5000);
+                Tools.toggle_alert_timeout("#alert_success", 5000);
                 reset_page();
             })
             .catch(function() {
-				Tools.toggle_class_timeout(alert_failure, "show", 5000);
-			});
+                Tools.toggle_alert_timeout("#alert_failure", 5000);
+            });
     } else {
         e.preventDefault();
     }
@@ -203,6 +199,11 @@ function reset_page() {
     sauce_quote = undefined;
     sauce_answer = undefined;
     sauce_difficulty = undefined;
+
+    feedback_image.src = "";
+    feedback_image_container.hidden = true;
+
+    send_button.disabled = false;
 
     input_categories.selectedIndex = 0;
     input_categories.classList.remove("is-valid");
