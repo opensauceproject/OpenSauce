@@ -13,3 +13,9 @@ This style sheet is used for the add page
     bottom: 50px;
     display: none;
 }
+
+.tooltip-inner {
+    max-width: 400px;
+    width: 400px;
+    text-align: left;
+}

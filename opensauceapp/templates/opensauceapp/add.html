@@ -81,8 +81,11 @@ Add new sauce
 					Please add the answer...
 				</div>
 			</div>
+
 			<div class="form-group">
-				<label for="difficulty_easy">Difficulty</label>
+				<label for="difficulty_easy">Difficulty
+					<i id="difficulty_tooltip" role="button" class="fas fa-question text-muted" data-toggle="tooltip"></i>
+				</label>
 				<ul id="input_difficulty" class="nav nav-pills nav-fill form-control font-weight-bold">
 					<li class="nav-item">
 						<a id="input_difficulty_easy" class="nav-link cursor-pointer">Easy</a>
@@ -97,24 +100,35 @@ Add new sauce
 				<div class="invalid-feedback">
 					Please choose a difficulty...
 				</div>
-				<small class="form-text text-muted">
-					We categories in 3 diffrents difficulties :
-					<ul>
-						<li>Easy : Anybody who heard of it can answer</li>
-						<li>Medium : The image or the quote is not famous, doesn't show any protagonistes (display names in case of a quote)</li>
-						<li>Hard : Only a real fan can answer it, i.e : fan-art of antagonist, landscape without characters, unknown quote / scene</li>
-					</ul>
-					Keep in mind that the questions should always be related to popculture.
-				</small>
 			</div>
-			<div class="row">
-				<div class="col-md-1 col-sm-12 text-center">
+
+			<div id="tooltip_difficulty_content" hidden>
+				We categorize in 3 diffrents difficulties :
+				<ul>
+					<li>Easy : Anybody who heard of it can answer</li>
+					<li>Medium : The image or the quote is not famous, doesn't show any protagonistes (display names in case of a quote)</li>
+					<li>Hard : Only a real fan can answer it, i.e : fan-art of antagonist, landscape without characters, unknown quote / scene</li>
+				</ul>
+				Keep in mind that the questions should always be related to popculture.
+			</div>
+
+			<script>
+				let content = document.getElementById("tooltip_difficulty_content");
+				let tooltip = document.getElementById("difficulty_tooltip");
+				tooltip.title = content.innerHTML;
+				console.log(content.outerHTML);
+			</script>
+
+			<div class="row p-5">
+				<div class="col-md-3 col-sm-12 text-center">
+				</div>
+				<div class="col-md-3 col-sm-12 text-center">
 					<a href="{% url 'index' %}" role="button" class="btn btn-danger btn-block"> <i class="fas fa-window-close"></i></a>
 				</div>
 				<div class="col-md-3 col-sm-12 text-center">
-					<button id="send_button" class="btn btn-primary btn-block"> Submit</button>
+					<button id="send_button" class="btn btn-success btn-block"> <i class="fas fa-check"></i></button>
 				</div>
-				<div class="col-md-8 col-sm-12 text-center">
+				<div class="col-md-3 col-sm-12 text-center">
 				</div>
 			</div>
 		</div>
