@@ -10,6 +10,7 @@ let id;
 let state = null;
 let datetime;
 let isPlaying = false;
+let hasFound = false;
 let lobby_socket = new WebSocket("ws://" + window.location.host + "/lobby/" + lobby_name + "/");
 
 let game_message = document.getElementById("game_message");
