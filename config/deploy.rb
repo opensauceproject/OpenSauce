@@ -6,6 +6,7 @@ set :repo_url, "git@github.com:HE-Arc/OpenSauce.git"
 
 after 'deploy:updating', 'python:create_venv'
 after 'deploy:updated', 'django:collect_static'
+after 'deploy:updated', 'django:migrate'
 # after 'deploy:updated', 'django:setProd'
 after 'deploy:publishing', 'uwsgi:restart'
 
@@ -39,6 +40,13 @@ end
 namespace :django do
 # thanks PayPixPlace
 # thanks Synai
+    desc 'Migrate'
+    task :migrate do
+        on roles([:app, :web]) do |h|
+        execute "#{venv_path}/bin/python #{release_path}/manage.py migrate"
+        end
+    end
+
     desc 'Collect static files'
     task :collect_static do
         on roles([:app, :web]) do |h|
