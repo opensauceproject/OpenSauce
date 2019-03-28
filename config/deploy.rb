@@ -29,6 +29,7 @@ namespace :python do
 	    execute "rm -rf #{venv_path}"
 	    execute "python -m venv #{venv_path}"
         execute "source #{venv_path}/bin/activate"
+        execute "python --version"
 	    execute "python -m pip install -r #{release_path}/requirements.txt"
         end
     end
