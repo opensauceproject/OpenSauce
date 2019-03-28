@@ -13,12 +13,12 @@ from PIL import Image
 from io import BytesIO
 import base64
 
-
 from .game.Game import Game, Lobby
 from .tools import get_client_ip
 
 from .models import *
 
+DEBUG = True
 
 def index(request):
     context = {}
@@ -34,6 +34,13 @@ def lobby(request, lobby_name):
         del request.session[lobby_name]
     context = {}
     context["lobby_name"] = lobby_name
+
+    if DEBUG:
+        protocol_websocket = "ws://"
+    else:
+        protocol_websocket = "wss://"
+
+    context["lobby_socket_url"] = protocol_websocket + request.get_host() + "/ws/lobby/" + lobby_name + "/"
     context["lobby_name_json"] = json.dumps(lobby_name)
     context["report_categories"] = ReportCategory.objects.all()
     context["sauce_categories"] = SauceCategory.objects.all()
