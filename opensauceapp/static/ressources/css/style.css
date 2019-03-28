@@ -39,12 +39,12 @@ h1, h2, h3, h4, h5, h6, title-font {
 
 @font-face {
 	font-family: "DTLProkyonST";
-	src: url("http://db.onlinewebfonts.com/t/d0374bf16da70eff39d6f085935f8882.eot");
-	src: url("http://db.onlinewebfonts.com/t/d0374bf16da70eff39d6f085935f8882.eot?#iefix") format("embedded-opentype"),
-		url("http://db.onlinewebfonts.com/t/d0374bf16da70eff39d6f085935f8882.woff2") format("woff2"),
-		url("http://db.onlinewebfonts.com/t/d0374bf16da70eff39d6f085935f8882.woff") format("woff"),
-		url("http://db.onlinewebfonts.com/t/d0374bf16da70eff39d6f085935f8882.ttf") format("truetype"),
-		url("http://db.onlinewebfonts.com/t/d0374bf16da70eff39d6f085935f8882.svg#DTLProkyonST") format("svg");
+	src: url("../fonts/DTLProkyonT.eot");
+	src: url("../fonts/DTLProkyonT?#iefix") format("embedded-opentype"),
+		url("../fonts/DTLProkyonT.woff2") format("woff2"),
+		url("../fonts/DTLProkyonT.woff") format("woff"),
+		url("../fonts/DTLProkyonT.ttf") format("truetype"),
+		url("../fonts/DTLProkyonT.svg#DTLProkyonST") format("svg");
 }
 
 .hide-if-overflow {
