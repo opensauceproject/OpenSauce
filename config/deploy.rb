@@ -6,7 +6,7 @@ set :repo_url, "git@github.com:HE-Arc/OpenSauce.git"
 
 after 'deploy:updating', 'python:create_venv'
 after 'deploy:updated', 'django:collect_static'
-after 'deploy:updated', 'django:setProd'
+# after 'deploy:updated', 'django:setProd'
 after 'deploy:publishing', 'uwsgi:restart'
 
 namespace :uwsgi do
