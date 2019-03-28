@@ -28,7 +28,7 @@ namespace :python do
         on roles([:app, :web]) do |h|
 	    execute "rm -rf #{venv_path}"
 	    execute "python -m venv #{venv_path}"
-	    execute "source #{venv_path}/bin/activate; python -m pip install -r #{release_path}/requirements.txt"
+	    execute "source #{venv_path}/bin/activate; python -m pip install -r #{release_path}/requirements.txt; python #{release_path}/manage.py collectstatic"
         end
     end
 end
