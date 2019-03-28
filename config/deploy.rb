@@ -4,8 +4,10 @@ lock "~> 3.11.0"
 set :application, "OpenSauce"
 set :repo_url, "git@github.com:HE-Arc/OpenSauce.git"
 
-after 'deploy:publishing', 'uwsgi:restart'
 after 'deploy:updating', 'python:create_venv'
+after 'deploy:updated', 'django:collect_static'
+after 'deploy:updated', 'django:setProd'
+after 'deploy:publishing', 'uwsgi:restart'
 
 namespace :uwsgi do
     desc "Restart application"
@@ -28,11 +30,29 @@ namespace :python do
         on roles([:app, :web]) do |h|
 	    execute "rm -rf #{venv_path}"
 	    execute "python -m venv #{venv_path}"
-	    execute "source #{venv_path}/bin/activate; python -m pip install -r #{release_path}/requirements.txt; python #{release_path}/manage.py collectstatic"
+	    execute "source #{venv_path}/bin/activate"
+        execute "#{venv_path}/bin/pip install -r #{release_path}/requirements.txt"
         end
     end
 end
 
+namespace :django do
+# thanks PayPixPlace
+# thanks Synai
+    desc 'Collect static files'
+    task :collect_static do
+        on roles([:app, :web]) do |h|
+        execute "#{venv_path}/bin/python #{release_path}/manage.py collectstatic --noinput"
+        end
+    end
+
+    desc 'Set debug to False'
+    task :setProd do
+        on roles([:app, :web]) do |h|
+        execute "sed -i 's/DEBUG = True/DEBUG = False/g' #{release_path}/Synai/settings.py"
+        end
+    end
+end
 # Default branch is :master
 # ask :branch, `git rev-parse --abbrev-ref HEAD`.chomp
 
