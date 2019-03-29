@@ -85,14 +85,18 @@ def lobbies_list(request):
     data = {"list": []}
     lobbies = Game.get_instance().get_lobbies_list()
     for lobby in lobbies.values():
-        l = {
-            "name": lobby.name,
-            "total": lobby.count(),
-            "players": lobby.count_players(),
-            "spectators": lobby.count_spectators(),
-            "password": lobby.settings["password"] != ""
-        }
-        data["list"].append(l)
+        total_count = lobby.count()
+        if total_count > 0:
+            l = {
+                "name": lobby.name,
+                "total": total_count,
+                "players": lobby.count_players(),
+                "spectators": lobby.count_spectators(),
+                "password": lobby.settings["password"] != ""
+            }
+            data["list"].append(l)
+        else:
+            Game.get_instance().remove_lobby(lobby.name)
 
     data["list"] = sorted(
         data["list"], key=lambda d: (-d["total"], -d["players"], -d["spectators"]))
