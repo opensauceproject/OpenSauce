@@ -15,7 +15,7 @@ namespace :uwsgi do
     task :restart do
         on roles(:web) do |h|
           execute :sudo, "rm -f ~/www/logs/uwsgi.log"
-	        execute :sudo, "sv reload uwsgi nginx daphne"
+	        execute :sudo, "sv restart uwsgi nginx daphne"
 	   end
     end
 end
