@@ -22,7 +22,7 @@ class Game:
         return s
 
     def get_lobbies_list(self):
-        return self.lobbies
+        return dict(self.lobbies)
 
     def get_lobby(self, lobby_name):
         if not self.lobby_exist(lobby_name):

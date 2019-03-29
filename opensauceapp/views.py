@@ -20,6 +20,7 @@ from .models import *
 
 DEBUG = True
 
+
 def index(request):
     context = {}
     return render(request, "opensauceapp/index.html", context)
@@ -40,7 +41,8 @@ def lobby(request, lobby_name):
     else:
         protocol_websocket = "wss://"
 
-    context["lobby_socket_url"] = protocol_websocket + request.get_host() + "/ws/lobby/" + lobby_name + "/"
+    context["lobby_socket_url"] = protocol_websocket + \
+        request.get_host() + "/ws/lobby/" + lobby_name + "/"
     context["lobby_name_json"] = json.dumps(lobby_name)
     context["report_categories"] = ReportCategory.objects.all()
     context["sauce_categories"] = SauceCategory.objects.all()
@@ -58,14 +60,14 @@ def lobby_password(request, lobby_name):
             return redirect("lobby", lobby_name=lobby_name)
         context = {}
         context["lobby_name"] = lobby.name
-        context["url_lobby"] = "/lobby/" + lobby.name # find a way to get the name
+        context["url_lobby"] = "/lobby/" + \
+            lobby.name  # find a way to get the name
         return render(request, "opensauceapp/lobby/password.html", context)
     elif request.method == "POST":
         data = {
-        "lobby_exist" : False,
-        "need_password" : False,
-        "password_ok" : False,
-
+            "lobby_exist": False,
+            "need_password": False,
+            "password_ok": False,
         }
         if Game.get_instance().lobby_exist(lobby_name):
             data["lobby_exist"] = True
@@ -124,6 +126,7 @@ def reports(request):
 MAX_WIDTH = 1280
 MAX_HEIGHT = 1024
 MAX_RATIO = MAX_WIDTH / MAX_HEIGHT
+
 
 @csrf_exempt
 def add(request):

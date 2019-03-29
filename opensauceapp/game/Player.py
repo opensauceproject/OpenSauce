@@ -2,6 +2,7 @@ import json
 from secrets import token_hex
 import random
 import string
+import datetime
 
 class Player:
 
@@ -44,7 +45,10 @@ class Player:
     def send_player_id(self):
         data = {}
         data["type"] = "welcome"
-        data["data"] = self.id
+        d = {}
+        d["id"] = self.id
+        d["server_datetime"] = datetime.datetime.now().timestamp()
+        data["data"] = d
         jsondumps = json.dumps(data)
         self.socket.send(text_data=jsondumps)
 

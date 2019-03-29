@@ -9,6 +9,7 @@ let STATES = {
 let id;
 let state = null;
 let datetime;
+let delta_server_client = 0;
 let isPlaying = false;
 let hasFound = false;
 let lobby_socket = new WebSocket(lobby_socket_url);
@@ -75,12 +76,18 @@ lobby_socket.addEventListener("message", function(e) {
 	console.log(message);
 
 	let data = message.data;
-	datetime = new Date(data.datetime * 1000);
+	if (data.datetime != undefined) {
+		datetime = new Date(data.datetime * 1000  + delta_server_client);
+		console.log(datetime)
+	}
 
 	switch (message.type) {
 		// informal state
 		case "welcome":
-			id = data;
+			let client_date_now = new Date();
+			let server_date_now = new Date(data.server_datetime * 1000);
+			delta_server_client = client_date_now - server_date_now;
+			id = data.id;
 			break;
 		case "scoreboard":
 			update_players_table(data.players);
@@ -154,12 +161,12 @@ function join() {
 		"pseudo": pseudo_join
 	}));
 	current_pseudo.value = pseudo_join;
-    isPlaying = true;
+	isPlaying = true;
 }
 
 function leave() {
 	send_leave();
-    isPlaying = false;
+	isPlaying = false;
 }
 
 function send_leave() {
@@ -235,9 +242,9 @@ function get_right_icon(player) {
 	let rights = "";
 	if (player.isAdmin)
 		rights += '<i class="fas fa-user-tie" data-toggle="tooltip" title="Administrator"></i>';
-    $(function () {
-      $('[data-toggle="tooltip"]').tooltip()
-    })
+	$(function() {
+		$('[data-toggle="tooltip"]').tooltip()
+	})
 	return rights;
 }
 
@@ -254,7 +261,7 @@ function update_players_table(p) {
 		if (id == row["id"]) {
 			classes.push("font-weight-bold");
 			update_login_controls(true);
-            set_settings_disabled(!row["isAdmin"]);
+			set_settings_disabled(!row["isAdmin"]);
 			hasFound = row.points_this_round > 0;
 		}
 
@@ -272,7 +279,7 @@ function update_spectators_table(s) {
 		li.innerHTML = row["name"] + " " + get_right_icon(row);
 		if (id == row["id"]) {
 			li.classList.add("font-weight-bold");
-            set_settings_disabled(!row["isAdmin"]);
+			set_settings_disabled(!row["isAdmin"]);
 			update_login_controls(false);
 		}
 		spectators_table.appendChild(li)
