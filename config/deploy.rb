@@ -7,7 +7,7 @@ set :repo_url, "git@github.com:HE-Arc/OpenSauce.git"
 after 'deploy:updating', 'python:create_venv'
 after 'deploy:updated', 'django:collect_static'
 after 'deploy:updated', 'django:migrate'
-# after 'deploy:updated', 'django:setProd'
+after 'deploy:updated', 'django:set_to_production'
 after 'deploy:publishing', 'uwsgi:restart'
 
 namespace :uwsgi do
@@ -54,10 +54,11 @@ namespace :django do
         end
     end
 
-    desc 'Set debug to False'
-    task :setProd do
+    desc 'Set Debugs to False'
+    task :set_to_production do
         on roles([:app, :web]) do |h|
-        execute "sed -i 's/DEBUG = True/DEBUG = False/g' #{release_path}/Synai/settings.py"
+        execute "sed -i -E 's/DEBUG *= *True/DEBUG = False/g' opensauceproject/settings.py"
+        execute "sed -i -E 's/DEBUG *= *True/DEBUG = False/g' opensauceapp/views.py"
         end
     end
 end
