@@ -84,7 +84,9 @@ def lobby_password(request, lobby_name):
 def lobbies_list(request):
     data = {"list": []}
     lobbies = Game.get_instance().get_lobbies_list()
-    for lobby in lobbies.values():
+    for lobbyname, lobby in lobbies.items():
+
+        print(lobbyname, lobby)
         total_count = lobby.count()
         # if total_count > 0:
         l = {
