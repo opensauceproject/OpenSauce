@@ -57,8 +57,8 @@ namespace :django do
     desc 'Set Debugs to False'
     task :set_to_production do
         on roles([:app, :web]) do |h|
-        execute "sed -i -E 's/DEBUG *= *True/DEBUG = False/g' opensauceproject/settings.py"
-        execute "sed -i -E 's/DEBUG *= *True/DEBUG = False/g' opensauceapp/views.py"
+        execute "sed -i -E 's/DEBUG *= *True/DEBUG = False/g' #{release_path}/opensauceproject/settings.py"
+        execute "sed -i -E 's/DEBUG *= *True/DEBUG = False/g' #{release_path}/opensauceapp/views.py"
         end
     end
 end
