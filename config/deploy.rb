@@ -6,6 +6,7 @@ set :repo_url, "git@github.com:HE-Arc/OpenSauce.git"
 
 after 'deploy:updating', 'python:create_venv'
 after 'deploy:updated', 'django:collect_static'
+after 'deploy:updated', 'django:copy_sqlite'
 after 'deploy:updated', 'django:migrate'
 after 'deploy:updated', 'django:set_to_production'
 after 'deploy:publishing', 'application_server:restart'
@@ -38,6 +39,13 @@ end
 namespace :django do
 # thanks to PayPixPlace
 # thanks to Synai
+    desc 'Restore the db file'
+    task :copy_sqlite do
+        on roles([:app, :web]) do |h|
+        execute "cp #{current_path}/db.sqlite3 #{release_path}/db.sqlite3"
+        end
+    end
+
     desc 'Migrate'
     task :migrate do
         on roles([:app, :web]) do |h|
