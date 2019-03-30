@@ -4,11 +4,10 @@ import json
 
 from .Game import Game
 
-
 class OpenSauceConsumer(WebsocketConsumer):
 
     def connect(self):
-        print("websocket co")
+        print("websocket connect")
         self.accept()
         self.lobby_name = self.scope["url_route"]["kwargs"]["lobby_name"]
         # convert from byte to string the secret key of the socket
@@ -19,7 +18,7 @@ class OpenSauceConsumer(WebsocketConsumer):
         print(Game.get_instance())
 
     def disconnect(self, close_code):
-        print("websocket disco")
+        print("websocket dicconnect")
         result = Game.get_instance().get_lobby(
             self.lobby_name).player_remove(self.secKey)
         if result:

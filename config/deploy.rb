@@ -8,20 +8,18 @@ after 'deploy:updating', 'python:create_venv'
 after 'deploy:updated', 'django:collect_static'
 after 'deploy:updated', 'django:migrate'
 after 'deploy:updated', 'django:set_to_production'
-after 'deploy:publishing', 'uwsgi:restart'
+after 'deploy:publishing', 'application_server:restart'
 
-namespace :uwsgi do
+namespace :application_server do
     desc "Restart application"
     task :restart do
         on roles(:web) do |h|
-          execute :sudo, "rm -f ~/www/logs/uwsgi.log"
-	        execute :sudo, "sv restart uwsgi nginx daphne"
-	   end
+        execute :sudo, "sv restart nginx daphne"
+       end
     end
 end
 
 namespace :python do
-
     def venv_path
         File.join(shared_path, "venv")
     end
@@ -29,17 +27,17 @@ namespace :python do
     desc "Create venv"
     task :create_venv do
         on roles([:app, :web]) do |h|
-	    execute "rm -rf #{venv_path}"
-	    execute "python -m venv #{venv_path}"
-	    execute "source #{venv_path}/bin/activate"
+        execute "rm -rf #{venv_path}"
+        execute "python -m venv #{venv_path}"
+        execute "source #{venv_path}/bin/activate"
         execute "#{venv_path}/bin/pip install -r #{release_path}/requirements.txt"
         end
     end
 end
 
 namespace :django do
-# thanks PayPixPlace
-# thanks Synai
+# thanks to PayPixPlace
+# thanks to Synai
     desc 'Migrate'
     task :migrate do
         on roles([:app, :web]) do |h|
@@ -58,7 +56,7 @@ namespace :django do
     task :set_to_production do
         on roles([:app, :web]) do |h|
         execute "sed -i -E 's/DEBUG *= *True/DEBUG = False/g' #{release_path}/opensauceproject/settings.py"
-        execute "sed -i -E 's/DEBUG *= *True/DEBUG = False/g' #{release_path}/opensauceapp/views.py"
+        execute "sed -i -E 's/DEBUG *= *True/DEBUG = False/g' #{release_path}/opensauceapp/apps.py"
         end
     end
 end

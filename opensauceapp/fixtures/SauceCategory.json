@@ -43,7 +43,7 @@
     {
         "model": "opensauceapp.saucecategory",
         "fields": {
-            "name": "Flags"
+            "name": "Computer Science"
         }
     }
 ]

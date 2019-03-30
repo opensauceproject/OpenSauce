@@ -42,14 +42,12 @@ class Lobby:
     points_repartition = [5, 3, 2, 1]
 
     def __init__(self, name):
-        print("init")
         self.name = name
         self.players = {}
         self.set_default_settings()
         self.reset()
 
     def reset(self):
-        print("reset")
         self.rounds_without_points = 0
         self.current_sauce = None
         self.state_id = token_hex(16)
