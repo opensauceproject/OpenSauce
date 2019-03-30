@@ -22,6 +22,9 @@ class Player:
         if(len(without_space_name) > 0):
             self.name = new_name
 
+    def score_total(self):
+        return self.score + self.points_this_round
+
     def can_earn_points(self):
         return self.points_this_round <= 0
 

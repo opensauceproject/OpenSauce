@@ -42,12 +42,14 @@ class Lobby:
     points_repartition = [5, 3, 2, 1]
 
     def __init__(self, name):
+        print("init")
         self.name = name
         self.players = {}
         self.set_default_settings()
         self.reset()
 
     def reset(self):
+        print("reset")
         self.rounds_without_points = 0
         self.current_sauce = None
         self.state_id = token_hex(16)
@@ -109,7 +111,7 @@ class Lobby:
         return len(self.get_spectators())
 
     def get_best_player(self):
-        playerSorted = sorted(self.get_players(), key=lambda p: p.score)
+        playerSorted = sorted(self.get_players(), key=lambda p: -p.score_total())
         if len(playerSorted) <= 0:
             return False
         else:
@@ -135,20 +137,20 @@ class Lobby:
         sleep(Lobby.timeout_when_question.total_seconds())
         # Verify that this the correct state to give the answer
         if Lobby.QUESTION == self.state and state_id == self.state_id:
-            self.goto_answer_state()
             self.rounds_without_points += 1
             if self.rounds_without_points >= Lobby.max_rounds_without_points:
                 self.reset()
+            print("answer state timeout")
+            self.goto_answer_state()
 
     def delay_answer(self, state_id):
         self.datetime = datetime.datetime.now() + Lobby.timeout_when_answer
         sleep(Lobby.timeout_when_answer.total_seconds())
+        best_player = self.get_best_player()
+        if best_player and best_player.score_total() >= self.settings["score_goal_value"]:
+            self.goto_game_end_state()
         if Lobby.ANSWER == self.state and state_id == self.state_id:
-            best_player = self.get_best_player()
-            if best_player and best_player.score + best_player.points_this_round >= self.settings["score_goal_value"]:
-                self.goto_game_end_state()
-            else:
-                self.goto_question_state()
+            self.goto_question_state()
 
     def delay_game_end(self, state_id):
         self.datetime = datetime.datetime.now() + Lobby.timeout_when_game_end
@@ -302,6 +304,7 @@ class Lobby:
 
             if len(self.player_that_found) >= self.count_players():
                 # go to the answer state
+                print("answer state all players found")
                 self.goto_answer_state()
             self.broadcast(self.get_scoreboard())
 
