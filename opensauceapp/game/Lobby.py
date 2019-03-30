@@ -149,7 +149,7 @@ class Lobby:
         best_player = self.get_best_player()
         if best_player and best_player.score_total() >= self.settings["score_goal_value"]:
             self.goto_game_end_state()
-        if Lobby.ANSWER == self.state and state_id == self.state_id:
+        elif Lobby.ANSWER == self.state and state_id == self.state_id:
             self.goto_question_state()
 
     def delay_game_end(self, state_id):
