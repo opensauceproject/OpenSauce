@@ -21,6 +21,8 @@ from .apps import DEBUG
 
 def index(request):
     context = {}
+    last_sauces = Sauce.objects.order_by("-date")[:10]
+    context["last_sauces"] = last_sauces
     return render(request, "opensauceapp/index.html", context)
 
 
@@ -83,10 +85,7 @@ def lobbies_list(request):
     data = {"list": []}
     lobbies = Game.get_instance().get_lobbies_list()
     for lobbyname, lobby in lobbies.items():
-
-        print(lobbyname, lobby)
         total_count = lobby.count()
-        # if total_count > 0:
         l = {
             "name": lobby.name,
             "total": total_count,
@@ -95,8 +94,6 @@ def lobbies_list(request):
             "password": lobby.settings["password"] != ""
         }
         data["list"].append(l)
-        # else:
-            # Game.get_instance().remove_lobby(lobby.name)
 
     data["list"] = sorted(
         data["list"], key=lambda d: (-d["total"], -d["players"], -d["spectators"]))
