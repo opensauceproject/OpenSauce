@@ -15,7 +15,7 @@ namespace :application_server do
     desc "Restart application"
     task :restart do
         on roles(:web) do |h|
-        execute :sudo, "sv restart nginx daphne"
+        execute :sudo, "sv restart nginx daphne redis-server"
        end
     end
 end
