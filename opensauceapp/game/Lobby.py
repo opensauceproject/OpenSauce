@@ -58,7 +58,7 @@ class Lobby:
         for player in list(self.players.values()):
             player.leave()
         self.history = []
-        self.sauces = self.fetch_sauces_from_settings()
+        self.sauces_id = self.fetch_sauces_from_settings()
         self.goto_waiting_for_players()
 
     def set_default_settings(self):
@@ -89,7 +89,7 @@ class Lobby:
 
         for sauce in all_sauces:
             if settings_lookup[(sauce.sauce_category.id, sauce.difficulty)]:
-                filtred_sauces.append(sauce)
+                filtred_sauces.append(sauce.id)
 
         return filtred_sauces
 
@@ -185,7 +185,7 @@ class Lobby:
             self.broadcast(self.get_scoreboard())
 
         # Set new sauce
-        self.current_sauce = random.choice(self.sauces)
+        self.current_sauce = Sauce.objects.filter(id=random.choice(self.sauces_id))[0]
         # Set a new state id, used for delayed thread
         self.state_id = token_hex(16)
         # Set the end time
@@ -314,7 +314,7 @@ class Lobby:
         if not player.isAdmin:
             return
         self.settings = settings
-        self.sauces = self.fetch_sauces_from_settings()
+        self.sauces_id = self.fetch_sauces_from_settings()
         self.broadcast(self.get_settings())
 
 #  ____  _        _         ____        _
