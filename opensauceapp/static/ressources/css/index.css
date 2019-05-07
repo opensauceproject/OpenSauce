@@ -1,29 +1,21 @@
 /*
 This style sheet is used for the index page
 */
-.custom_number {
-	text-align: center;
+#recently_added {
 	width: 100%;
-	margin-bottom: 0;
-	padding-top: 0.375rem;
-	padding-right: 1.75rem;
-	padding-bottom: 0.375rem;
-	padding-left: 0.75rem;
-	line-height: 1.5;
-	color: #495057;
-	vertical-align: middle;
-	border-radius: .25rem;
-	border-style: solid;
-	border-width: .1rem;
-	border-top-left-radius: 0.25rem;
-	border-top-right-radius: 0.25rem;
-	border-bottom-right-radius: 0.25rem;
-	border-bottom-left-radius: 0.25rem;
+	overflow-x: scroll;
+    white-space: nowrap;
 }
 
-.giffed {
-	background-image: url('http://37.media.tumblr.com/2b9166b4e7859921d363331015424038/tumblr_n3lzui9VLx1rhhw7fo1_500.gif');
-	background-size: cover;
-	padding: 0;
-	margin: 0;
+#recently_added div {
+    max-width : 400px;
+    display: inline-block;
+}
+
+.recently_added_image {
+    width: 200px;
+    height: 115px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
 }
