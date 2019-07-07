@@ -17,10 +17,12 @@ from .game.Game import Game, Lobby
 from .tools import get_client_ip
 
 from .models import *
-from .apps import DEBUG
+from .apps import DEBUG, web_sockets_protocol
+
 
 def index(request):
     context = {}
+    context["lobby_socket_url"] = f"{web_sockets_protocol}{request.get_host()}/index/"
     last_sauces = Sauce.objects.order_by("-date")[:10]
     context["last_sauces"] = last_sauces
     return render(request, "opensauceapp/index.html", context)
@@ -36,13 +38,7 @@ def lobby(request, lobby_name):
     context = {}
     context["lobby_name"] = lobby_name
 
-    if DEBUG:
-        protocol_websocket = "ws://"
-    else:
-        protocol_websocket = "wss://"
-
-    context["lobby_socket_url"] = protocol_websocket + \
-        request.get_host() + "/lobby/" + lobby_name + "/"
+    context["lobby_socket_url"] = f"{web_sockets_protocol}{request.get_host()}/lobby/{lobby_name}/"
     context["lobby_name_json"] = json.dumps(lobby_name)
     context["report_categories"] = ReportCategory.objects.all()
     context["sauce_categories"] = SauceCategory.objects.all()
@@ -79,27 +75,6 @@ def lobby_password(request, lobby_name):
                     request.session[lobby_name] = True
 
         return JsonResponse(data)
-
-
-def lobbies_list(request):
-    data = {"list": []}
-    lobbies = Game.get_instance().get_lobbies_list()
-    for lobbyname, lobby in lobbies.items():
-        total_count = lobby.count()
-        l = {
-            "name": lobby.name,
-            "total": total_count,
-            "players": lobby.count_players(),
-            "spectators": lobby.count_spectators(),
-            "password": lobby.settings["password"] != ""
-        }
-        data["list"].append(l)
-
-    data["list"] = sorted(
-        data["list"], key=lambda d: (-d["total"], -d["players"], -d["spectators"]))
-
-    return JsonResponse(data)
-
 
 # used to fetch the info when reporting
 def sauce_infos(request, sauce_id):

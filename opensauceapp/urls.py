@@ -10,7 +10,6 @@ urlpatterns = [
     path(r'lobby/<lobby_name>/', views.lobby, name='lobby'),
     path(r'lobby_password/<lobby_name>', views.lobby_password, name='lobby_password'),
     path(r'lobby/', RedirectView.as_view(url='/')),
-    path(r'lobbies_list/', views.lobbies_list, name='lobbies_list'),
 
     path(r'reports/', views.reports, name='reports'),
     path(r'report_add/', views.report_add, name='report_add'),

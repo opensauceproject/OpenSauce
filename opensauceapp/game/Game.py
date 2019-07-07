@@ -1,5 +1,7 @@
 from .Lobby import Lobby
 
+from opensauceapp.websockets.UpdateLobbiesConsumer import UpdateLobbiesConsumer
+
 class Game:
     # Singleton
     instance = None
@@ -34,3 +36,4 @@ class Game:
 
     def remove_lobby(self, lobby_name):
         del self.lobbies[lobby_name]
+        UpdateLobbiesConsumer.update_open_sockets()

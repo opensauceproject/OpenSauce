@@ -13,6 +13,7 @@ from .Tools import sanitize, str_delta, escape_dict
 
 from .Player import Player
 
+from opensauceapp.websockets.UpdateLobbiesConsumer import UpdateLobbiesConsumer
 
 class Lobby:
     # States
@@ -47,6 +48,7 @@ class Lobby:
         self.players = {}
         self.set_default_settings()
         self.reset()
+        UpdateLobbiesConsumer.update_open_sockets()
 
     def reset(self):
         print("reset")
@@ -242,6 +244,7 @@ class Lobby:
         player.send(self.get_current_state())
         player.send(self.get_settings())
         self.broadcast(self.get_scoreboard())
+        UpdateLobbiesConsumer.update_open_sockets()
 
     def player_remove(self, secKey):
         print("remove")
@@ -257,6 +260,7 @@ class Lobby:
         if Lobby.WAITING_FOR_PLAYERS == self.state:
             self.broadcast(self.get_current_state())
         # if the last player is remove the lobby tell to remove the lobby
+        UpdateLobbiesConsumer.update_open_sockets()
         return self.count() <= 0
 
     def player_join(self, secKey, playerName):
@@ -269,6 +273,7 @@ class Lobby:
             # to update the waiting for player counter
             self.broadcast(self.get_current_state())
         self.broadcast(self.get_scoreboard())
+        UpdateLobbiesConsumer.update_open_sockets()
 
     def player_leave(self, secKey):
         print("leave")
@@ -278,6 +283,7 @@ class Lobby:
             self.reset()
         else:
             self.broadcast(self.get_scoreboard())
+        UpdateLobbiesConsumer.update_open_sockets()
 
     def player_submit(self, secKey, submited_answer):
         player = self.players[secKey]
