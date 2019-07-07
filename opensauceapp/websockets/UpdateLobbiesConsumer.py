@@ -7,19 +7,11 @@ class UpdateLobbiesConsumer(WebsocketConsumer):
 
     @staticmethod
     def update_open_sockets():
-        lobbies_list = UpdateLobbiesConsumer.lobbies_list()
-        for socket in UpdateLobbiesConsumer.open_sockets:
-            socket.send(text_data=lobbies_list)
-
-    def connect(self):
-        print("websocket connect")
-        self.accept()
-        self.send(text_data=UpdateLobbiesConsumer.lobbies_list())
-        self.open_sockets.append(self)
-
-    def disconnect(self, close_code):
-        print("websocket disconnect")
-        self.open_sockets.remove(self)
+        open_sockets = UpdateLobbiesConsumer.open_sockets[:]
+        if len(open_sockets) > 0:
+            lobbies_list = UpdateLobbiesConsumer.lobbies_list()
+            for socket in open_sockets:
+                socket.send(text_data=lobbies_list)
 
     @staticmethod
     def lobbies_list():
@@ -33,7 +25,8 @@ class UpdateLobbiesConsumer(WebsocketConsumer):
                 "total": total_count,
                 "players": lobby.count_players(),
                 "spectators": lobby.count_spectators(),
-                "password": lobby.settings["password"] != ""
+                "password": lobby.settings["password"] != "",
+                "max_players": lobby.settings["max_players"],
             }
             data["list"].append(l)
 
@@ -41,3 +34,11 @@ class UpdateLobbiesConsumer(WebsocketConsumer):
             data["list"], key=lambda d: (-d["total"], -d["players"], -d["spectators"]))
 
         return json.dumps(data)
+
+    def connect(self):
+        self.accept()
+        self.send(text_data=UpdateLobbiesConsumer.lobbies_list())
+        self.open_sockets.append(self)
+
+    def disconnect(self, close_code):
+        self.open_sockets.remove(self)

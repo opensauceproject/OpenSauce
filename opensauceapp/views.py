@@ -44,6 +44,8 @@ def lobby(request, lobby_name):
     context["sauce_categories"] = SauceCategory.objects.all()
     context["score_goals"] = Lobby.score_goals
     context["default_score_goal"] = Lobby.default_score_goal
+    context["min_max_players"], context["max_max_players"] = Lobby.range_max_players
+    context["default_max_players"] = Lobby.default_max_players
     return render(request, "opensauceapp/lobby/lobby.html", context)
 
 

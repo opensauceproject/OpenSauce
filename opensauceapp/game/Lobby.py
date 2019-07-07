@@ -15,6 +15,7 @@ from .Player import Player
 
 from opensauceapp.websockets.UpdateLobbiesConsumer import UpdateLobbiesConsumer
 
+
 class Lobby:
     # States
     WAITING_FOR_PLAYERS = 0
@@ -32,6 +33,10 @@ class Lobby:
     # General settings
     score_goals = [10, 20, 30, 50, 100, 200]
     default_score_goal = 30
+
+    range_max_players = (1, 20)
+    default_max_players = 10
+
     min_players = 1
     max_rounds_without_points = 10
 
@@ -66,6 +71,7 @@ class Lobby:
     def set_default_settings(self):
         settings = {}
         settings["password"] = ""
+        settings["max_players"] = Lobby.default_max_players
         settings["categories"] = []
         settings["score_goal_value"] = Lobby.default_score_goal
         categories = SauceCategory.objects.all()
@@ -113,7 +119,8 @@ class Lobby:
         return len(self.get_spectators())
 
     def get_best_player(self):
-        playerSorted = sorted(self.get_players(), key=lambda p: -p.score_total())
+        playerSorted = sorted(self.get_players(),
+                              key=lambda p: -p.score_total())
         if len(playerSorted) <= 0:
             return False
         else:
@@ -169,6 +176,7 @@ class Lobby:
 
 # These function must be called to change state
 
+
     def goto_waiting_for_players(self):
         self.state = Lobby.WAITING_FOR_PLAYERS
         self.broadcast(self.get_scoreboard())
@@ -187,7 +195,8 @@ class Lobby:
             self.broadcast(self.get_scoreboard())
 
         # Set new sauce
-        self.current_sauce = Sauce.objects.filter(id=random.choice(self.sauces_id))[0]
+        self.current_sauce = Sauce.objects.filter(
+            id=random.choice(self.sauces_id))[0]
         # Set a new state id, used for delayed thread
         self.state_id = token_hex(16)
         # Set the end time
@@ -211,7 +220,8 @@ class Lobby:
     def goto_game_start_soon_state(self):
         self.state = Lobby.GAME_START_SOON
         self.state_id = token_hex(16)
-        Thread(target=self.delay_game_start_soon, args=(self.state_id,)).start()
+        Thread(target=self.delay_game_start_soon,
+               args=(self.state_id,)).start()
         self.broadcast(self.get_current_state())
 
     def goto_game_end_state(self):
@@ -234,6 +244,7 @@ class Lobby:
 
 
 # When the player ask something to the server, update the lobby state if nessesary
+
 
     def player_add(self, secKey, socket):
         print("add")
@@ -319,9 +330,16 @@ class Lobby:
         # Check the rights
         if not player.isAdmin:
             return
+
+        had_password = self.settings["password"] != ""
+        has_password = settings["password"] != ""
+
         self.settings = settings
         self.sauces_id = self.fetch_sauces_from_settings()
         self.broadcast(self.get_settings())
+
+        if had_password != has_password:
+            UpdateLobbiesConsumer.update_open_sockets()
 
 #  ____  _        _         ____        _
 # / ___|| |_ __ _| |_ ___  |  _ \  __ _| |_ __ _
