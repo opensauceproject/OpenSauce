@@ -20,7 +20,7 @@ idna==2.8
 incremental==17.5.0
 msgpack==0.6.1
 msgpack-python==0.5.6
-Pillow==5.4.1
+Pillow==6.2.0
 pycparser==2.19
 PyHamcrest==1.9.0
 pytz==2018.9
