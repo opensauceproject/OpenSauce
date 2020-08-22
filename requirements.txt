@@ -12,7 +12,7 @@ channels-redis==2.3.3
 constantly==15.1.0
 cryptography==2.6.1
 daphne==2.2.5
-Django==2.1.7
+Django==2.2.13
 django-bootstrap4==0.0.7
 hiredis==1.0.0
 hyperlink==18.0.0
