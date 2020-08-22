@@ -8,13 +8,15 @@
 
 {% block scripts %}
 <script src="{% static 'ressources/js/lobby/lobby.js' %}" charset="utf-8" defer></script>
+<script src="{% static 'ressources/js/lobby/password_modal.js' %}" charset="utf-8" defer></script>
 <script src="{% static 'ressources/js/lobby/report_modal.js' %}" charset="utf-8" defer></script>
-<script src="{% static 'ressources/js/lobby/settings.js' %}" charset="utf-8" defer></script>
+<script src="{% static 'ressources/js/lobby/settings_modal.js' %}" charset="utf-8" defer></script>
 {% endblock %}
 
 {% block content %}
 {% include 'opensauceapp/lobby/report_modal.html' %}
 {% include 'opensauceapp/lobby/settings_modal.html' %}
+{% include 'opensauceapp/lobby/password_modal.html' %}
 <script>
 	let lobby_name = "{{lobby_name}}";
 	let lobby_socket_url = "{{lobby_socket_url}}";

@@ -83,6 +83,9 @@ lobby_socket.addEventListener("message", function(e) {
 
 	switch (message.type) {
 		// informal state
+        case "need_password":
+            $('#modal_password').modal("show");
+            break;
 		case "welcome":
 			let client_date_now = new Date();
 			let server_date_now = new Date(data.server_datetime * 1000);

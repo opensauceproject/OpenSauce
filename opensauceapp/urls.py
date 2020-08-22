@@ -8,7 +8,6 @@ from django.contrib.auth import views as reg_views
 urlpatterns = [
     path('', views.index, name='index'),
     path(r'lobby/<lobby_name>/', views.lobby, name='lobby'),
-    path(r'lobby_password/<lobby_name>', views.lobby_password, name='lobby_password'),
     path(r'lobby/', RedirectView.as_view(url='/')),
 
     path(r'reports/', views.reports, name='reports'),
